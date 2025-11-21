@@ -1,0 +1,43 @@
+<html><head>
+  <SCRIPT src="http://java.com/js/dtjava.js"></SCRIPT>
+<script>
+    function launchApplication(jnlpfile) {
+        dtjava.launch(            {
+                url : 'ProjectPattern_IngSoft_2017.jnlp'
+            },
+            {
+                javafx : '8.0+'
+            },
+            {}
+        );
+        return false;
+    }
+</script>
+
+<script>
+    function javafxEmbedProjectPattern_IngSoft_2017_id() {
+        dtjava.embed(
+            {
+                id : 'ProjectPattern_IngSoft_2017_id',
+                url : 'ProjectPattern_IngSoft_2017.jnlp',
+                placeholder : 'javafx-app-placeholder',
+                width : '600',
+                height : '400'
+            },
+            {
+                javafx : '8.0+'
+            },
+            {}
+        );
+    }
+    <!-- Embed FX application into web page once page is loaded -->
+    dtjava.addOnloadCallback(javafxEmbedProjectPattern_IngSoft_2017_id);
+</script>
+
+</head><body>
+<h2>Test page for <b>ProjectPattern_IngSoft_2017</b></h2>
+  <b>Webstart:</b> <a href='ProjectPattern_IngSoft_2017.jnlp' onclick="return launchApplication('ProjectPattern_IngSoft_2017.jnlp');">click to launch this app as webstart</a><br><hr><br>
+
+  <!-- Applet will be inserted here -->
+  <div id='javafx-app-placeholder'></div>
+</body></html>
