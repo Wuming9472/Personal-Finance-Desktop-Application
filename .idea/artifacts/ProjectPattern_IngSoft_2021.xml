@@ -1,0 +1,20 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="ProjectPattern_IngSoft_2021">
+    <output-path>$PROJECT_DIR$/out/artifacts/ProjectPattern_IngSoft_2021</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="it.unicas.project.template.address.MainApp" />
+        <option name="description" value="Inspired to the example on:&#10;http://code.makery.ch/library/javafx-8-tutorial&#10;created by:" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="title" value="Project Pattern - Software Engineering" />
+        <option name="vendor" value="Unicas" />
+        <option name="version" value="0.1" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="ProjectPattern_IngSoft_2017.jar">
+        <element id="module-output" name="ProjectPattern_IngSoft_2022" />
+      </element>
+    </root>
+  </artifact>
+</component>
