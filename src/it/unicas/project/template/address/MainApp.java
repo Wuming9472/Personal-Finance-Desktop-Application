@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.prefs.Preferences;
-
+import it.unicas.project.template.address.util.ThemeManager;
 import it.unicas.project.template.address.model.Amici;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.view.*;
@@ -24,6 +24,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+
 public class MainApp extends Application {
 
     private Stage primaryStage;
@@ -35,6 +36,7 @@ public class MainApp extends Application {
     public MainApp() {
     }
 
+    /**
     /**
      * The data as an observable list of Colleghis.
      */
@@ -50,6 +52,7 @@ public class MainApp extends Application {
 
   @Override
   public void start(Stage primaryStage) {
+    ThemeManager.setTheme(ThemeManager.NORD_THEME_LIGHT);
     this.primaryStage = primaryStage;
     this.primaryStage.setTitle("Amici app");
 
