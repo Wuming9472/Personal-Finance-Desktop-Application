@@ -31,7 +31,7 @@ public class ThemeManager {
      * @return percorso da usare con getResource()
      */
     public static String getThemePath() {
-        return "/view/css/" + currentTheme;
+        return "/resources/view/css/" + currentTheme;
     }
 
     /**

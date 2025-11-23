@@ -79,8 +79,25 @@ public class MainApp extends Application {
                     .getResource("view/RootLayout.fxml"));
             rootLayout = (BorderPane) loader.load();
 
+
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
+
+            // =================================================================
+            String themePath = ThemeManager.getThemePath();
+
+            // Cerchiamo la risorsa. Nota: il path deve essere corretto (vedi punto 2)
+            java.net.URL cssResource = getClass().getResource(themePath);
+
+            if (cssResource != null) {
+                scene.getStylesheets().add(cssResource.toExternalForm());
+            } else {
+                System.err.println("ERRORE: Impossibile trovare il file CSS al percorso: " + themePath);
+                // Debug: Stampa dove sta cercando Java
+                System.out.println("Nota: getClass().getResource cerca relativo alla classe o dalla root se inizia con /");
+            }
+            // =================================================================
+
             primaryStage.setScene(scene);
 
             primaryStage.setOnCloseRequest(windowEvent ->
