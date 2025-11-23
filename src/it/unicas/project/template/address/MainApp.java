@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.prefs.Preferences;
-import it.unicas.project.template.address.util.ThemeManager;
+
 import it.unicas.project.template.address.model.Amici;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.view.*;
@@ -52,7 +52,6 @@ public class MainApp extends Application {
 
   @Override
   public void start(Stage primaryStage) {
-    ThemeManager.setTheme(ThemeManager.NORD_THEME_LIGHT);
     this.primaryStage = primaryStage;
     this.primaryStage.setTitle("Amici app");
 
@@ -82,21 +81,6 @@ public class MainApp extends Application {
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
-
-            // =================================================================
-            String themePath = ThemeManager.getThemePath();
-
-            // Cerchiamo la risorsa. Nota: il path deve essere corretto (vedi punto 2)
-            java.net.URL cssResource = getClass().getResource(themePath);
-
-            if (cssResource != null) {
-                scene.getStylesheets().add(cssResource.toExternalForm());
-            } else {
-                System.err.println("ERRORE: Impossibile trovare il file CSS al percorso: " + themePath);
-                // Debug: Stampa dove sta cercando Java
-                System.out.println("Nota: getClass().getResource cerca relativo alla classe o dalla root se inizia con /");
-            }
-            // =================================================================
 
             primaryStage.setScene(scene);
 

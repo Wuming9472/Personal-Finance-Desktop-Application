@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="363.0" prefWidth="816.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.ColleghiOverviewController">
+<AnchorPane prefHeight="363.0" prefWidth="816.0" stylesheets="@css/primer-light.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.ColleghiOverviewController">
     <children>
         <SplitPane dividerPositions="0.3541666666666667" layoutX="153.0" layoutY="70.0" prefHeight="363.0" prefWidth="854.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <items>
@@ -50,10 +50,10 @@
                         </GridPane>
                         <ButtonBar layoutX="54.0" layoutY="250.0" prefHeight="33.0" prefWidth="462.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
                             <buttons>
-                              <Button mnemonicParsing="false" onAction="#handleSearchColleghi" text="Search ..." />
-                              <Button mnemonicParsing="false" onAction="#handleNewColleghi" text="New..." />
-                              <Button mnemonicParsing="false" onAction="#handleEditColleghi" text="Edit..." />
-                              <Button minWidth="66.0" mnemonicParsing="false" onAction="#handleDeleteColleghi" prefHeight="33.0" prefWidth="120.0" text="Delete" />
+                                <Button mnemonicParsing="false" onAction="#handleSearchColleghi" text="Search ..." />
+                                <Button mnemonicParsing="false" onAction="#handleNewColleghi" text="New..." />
+                                <Button mnemonicParsing="false" onAction="#handleEditColleghi" text="Edit..." />
+                                <Button minWidth="66.0" mnemonicParsing="false" onAction="#handleDeleteColleghi" prefHeight="33.0" prefWidth="120.0" text="Delete" />
                             </buttons>
                         </ButtonBar>
                     </children>

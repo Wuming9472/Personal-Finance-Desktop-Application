@@ -4,7 +4,7 @@
 <?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="900.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.RootLayoutController">
+<BorderPane prefHeight="400.0" prefWidth="900.0" stylesheets="@css/primer-light.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.RootLayoutController">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
