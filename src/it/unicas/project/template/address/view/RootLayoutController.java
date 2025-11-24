@@ -8,33 +8,28 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 
 /**
- * The controller for the root layout. The root layout provides the basic
- * application layout containing a sidebar, a top bar and space where other JavaFX
- * elements can be placed.
+ * Il controller per il layout principale (Barra Laterale + Barra Superiore).
+ * Gestisce la navigazione tra le varie schermate.
  */
 public class RootLayoutController {
 
-    // Riferimento alla MainApp
+    // Riferimento alla MainApp per chiamare i metodi di cambio schermata
     private MainApp mainApp;
 
-    // Riferimento alla Label del titolo nella TopBar (collegata via fx:id="lblPageTitle")
+    // Riferimento alla Label del titolo nella TopBar (collegata via fx:id="lblPageTitle" nel FXML)
     @FXML
     private Label lblPageTitle;
 
     /**
-     * Initializes the controller class. This method is automatically called
-     * after the fxml file has been loaded.
+     * Inizializza il controller. Viene chiamato automaticamente dopo il caricamento del fxml.
      */
     @FXML
     private void initialize() {
-        // Imposta un titolo di default all'avvio
-        if (lblPageTitle != null) {
-            lblPageTitle.setText("Dashboard");
-        }
+        // Imposta un titolo di default se necessario, ma viene gestito meglio dai metodi sotto
     }
 
     /**
-     * Is called by the main application to give a reference back to itself.
+     * Chiamato dalla MainApp per darsi un riferimento a se stessa.
      * @param mainApp
      */
     public void setMainApp(MainApp mainApp) {
@@ -42,9 +37,8 @@ public class RootLayoutController {
     }
 
     /**
-     * Metodo pubblico per cambiare il titolo della pagina dalla MainApp
-     * o internamente quando si cliccano i bottoni.
-     * @param title Il nuovo titolo da mostrare in alto
+     * Aggiorna il titolo visualizzato nella barra in alto.
+     * @param title Il nuovo titolo da mostrare
      */
     public void setPageTitle(String title) {
         if (lblPageTitle != null) {
@@ -53,60 +47,66 @@ public class RootLayoutController {
     }
 
     // ==========================================
-    // GESTIONE SIDEBAR (Bottoni a Sinistra)
+    // GESTIONE SIDEBAR (NAVIGAZIONE)
     // ==========================================
 
     @FXML
     private void handleShowDashboard() {
-        setPageTitle("Dashboard");
-        // Qui chiami il metodo della MainApp per mostrare la Dashboard
-        // Esempio: mainApp.showPersonOverview(); oppure mainApp.showDashboard();
-        if (mainApp != null) mainApp.showBirthdayStatistics(); // Esempio temporaneo
+        if (mainApp != null) {
+            // Mostra la Dashboard (Home)
+            mainApp.showDashboard();
+            // Il titolo viene aggiornato dentro showDashboard() o possiamo forzarlo qui
+            setPageTitle("Dashboard");
+        }
     }
 
     @FXML
     private void handleShowMovements() {
-        setPageTitle("Movimenti");
-        // TODO: Creare metodo mainApp.showMovements();
-        System.out.println("Navigazione: Movimenti");
+        if (mainApp != null) {
+            // Mostra la schermata Movimenti
+            mainApp.showMovimenti();
+            setPageTitle("Movimenti");
+        }
     }
 
     @FXML
     private void handleShowBudget() {
-        setPageTitle("Budget");
-        // TODO: Creare metodo mainApp.showBudget();
-        System.out.println("Navigazione: Budget");
+        if (mainApp != null) {
+            // Mostra la schermata Budget
+            mainApp.showBudget();
+            setPageTitle("Pianificazione Budget");
+        }
     }
 
     // ==========================================
-    // GESTIONE MENU UTENTE & IMPOSTAZIONI
+    // GESTIONE MENU UTENTE & SISTEMA
     // ==========================================
 
     /**
-     * Gestisce il click su "Impostazioni" o "Profilo"
+     * Gestisce il click su "Impostazioni" (es. Database).
      */
     @FXML
     private void handleSettings() {
         DAOMySQLSettings daoMySQLSettings = DAOMySQLSettings.getCurrentDAOMySQLSettings();
-        if (mainApp.showSettingsEditDialog(daoMySQLSettings)){
+        if (mainApp != null && mainApp.showSettingsEditDialog(daoMySQLSettings)){
             DAOMySQLSettings.setCurrentDAOMySQLSettings(daoMySQLSettings);
         }
     }
 
     /**
-     * Opens an about dialog.
+     * Apre il dialog delle informazioni (About).
      */
     @FXML
     private void handleAbout() {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("BalanceSuite");
-        alert.setHeaderText("About");
-        alert.setContentText("Author: Mario Molinara\nApp Version: 1.0");
+        alert.setHeaderText("Informazioni su BalanceSuite");
+        alert.setContentText("Applicazione di gestione finanziaria personale.\nVersione: 1.0\nAutore: Mario Molinara");
         alert.showAndWait();
     }
 
     /**
-     * Closes the application.
+     * Chiude l'applicazione.
      */
     @FXML
     private void handleExit() {

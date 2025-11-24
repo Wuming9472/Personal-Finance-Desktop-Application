@@ -109,7 +109,7 @@
         <VBox prefHeight="520.0" prefWidth="220.0" spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #e2e8f0; -fx-border-width: 0 1 0 0;" BorderPane.alignment="CENTER">
             <children>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Dashboard" textFill="#475569">
+                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowDashboard" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Dashboard" textFill="#475569">
                     <font>
                         <Font name="System Medium" size="14.0" />
                     </font>
@@ -118,7 +118,7 @@
                     </padding>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Movimenti" textFill="#475569">
+                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowMovements" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Movimenti" textFill="#475569">
                     <font>
                         <Font name="System Medium" size="14.0" />
                     </font>
@@ -127,7 +127,7 @@
                     </padding>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Budget" textFill="#475569">
+                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowBudget" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Budget" textFill="#475569">
                     <font>
                         <Font name="System Medium" size="14.0" />
                     </font>
