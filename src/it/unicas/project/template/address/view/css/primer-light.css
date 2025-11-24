@@ -4963,3 +4963,46 @@ Text {
   -fx-opacity: 0.85;
   -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 6px, 0.3, 0, 2);
 }
+/* =========================================================================
+   PATCH CORRETTIVA - INCOLLA QUESTO ALLA FINE DEL TUO FILE ORIGINALE
+   Serve a sbloccare i colori personalizzati su Scene Builder
+   ========================================================================= */
+
+/* 1. SBLOCCO PROGRESS BAR
+   Forza la barra a usare il colore definito in -fx-accent (quello che metti nell'FXML)
+   invece del blu fisso della libreria. */
+.progress-bar .bar {
+    -fx-background-color: -fx-accent !important;
+}
+
+.progress-bar .track {
+    -fx-background-color: #e2e8f0 !important; /* Grigio chiaro pulito per lo sfondo */
+}
+
+/* 2. SBLOCCO BOTTONI
+   Se il bottone ha uno stile inline (es. style="-fx-background-color: red"),
+   questa regola impedisce al tema di sovrascriverlo col bianco/grigio standard. */
+.button {
+    -fx-background-color: -fx-background; /* Usa il colore di background calcolato */
+}
+
+/* 3. PULIZIA TABELLA
+   Rimuove solo le righe blu/grigie pesanti, mantenendo il font della libreria */
+.table-view, .tree-table-view {
+    -fx-background-color: white !important;
+    -fx-table-cell-border-color: transparent !important;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #eff6ff !important; /* Azzurro chiarissimo selezione */
+}
+
+.table-row-cell:selected .text {
+    -fx-fill: #2563eb !important; /* Testo blu scuro su selezione */
+}
+/* FIX DEFINITIVO COLORI LABEL */
+.label {
+    /* "inherit" dice al CSS: "Non imporre il tuo colore,
+       usa quello che l'utente ha messo nel FXML (Scene Builder)" */
+    -fx-text-fill: inherit !important;
+}
