@@ -12,12 +12,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import it.unicas.project.template.address.MainApp;
-import it.unicas.project.template.address.util.DateUtil;
 import javafx.util.Callback;
 
 import java.util.List;
 
-public class ColleghiOverviewController {
+public class DashboardController {
     @FXML
     private TableView<Amici> colleghiTableView;
     @FXML
@@ -43,7 +42,7 @@ public class ColleghiOverviewController {
      * The constructor.
      * The constructor is called before the initialize() method.
      */
-    public ColleghiOverviewController() {
+    public DashboardController() {
     }
 
     /**

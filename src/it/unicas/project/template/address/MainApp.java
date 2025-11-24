@@ -59,7 +59,7 @@ public class MainApp extends Application {
     primaryStage.getIcons().add(new Image("file:resources/images/address_book_32.png"));
 
     initRootLayout();
-    showColleghiOverview();
+    showDashboard();
 
     primaryStage.show();
 
@@ -125,17 +125,17 @@ public class MainApp extends Application {
     /**
      * Shows the Amici overview inside the root layout.
      */
-    public void showColleghiOverview() {
+    public void showDashboard() {
         try {
             // Load Amici overview.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/ColleghiOverview.fxml"));
+            loader.setLocation(MainApp.class.getResource("view/Dashboard.fxml"));
 
             // Set Amici overview into the center of root layout.
             rootLayout.setCenter(loader.load());
 
             // Give the controller access to the main app.
-            ColleghiOverviewController controller = loader.getController();
+            DashboardController controller = loader.getController();
             controller.setMainApp(this);
 
         } catch (IOException e) {
