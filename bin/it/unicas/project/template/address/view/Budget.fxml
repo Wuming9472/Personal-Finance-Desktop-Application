@@ -216,7 +216,7 @@
                                                         <Label text="Limite: € 200.00" textFill="#64748b" />
                                                     </children>
                                                 </HBox>
-                                                <ProgressBar maxWidth="1.7976931348623157E308" progress="0.85" style="-fx-accent: #f59e0b; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
+                                                <ProgressBar focusTraversable="false" maxWidth="1.7976931348623157E308" progress="0.85" style="-fx-accent: #f59e0b; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
                                             </children>
                                         </VBox>
                                     </children>

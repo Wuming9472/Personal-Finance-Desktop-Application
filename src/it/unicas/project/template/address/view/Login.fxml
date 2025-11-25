@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.LoginController">
+    <children>
+        <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+
+                <!-- ============================================ -->
+                <!-- LATO SINISTRO: BRANDING (Blu Scuro) -->
+                <!-- ============================================ -->
+                <VBox alignment="CENTER" prefWidth="400.0" spacing="20.0" style="-fx-background-color: #0f172a;" HBox.hgrow="NEVER">
+                    <children>
+                        <!-- LOGO GEOMETRICO -->
+                        <StackPane>
+                            <children>
+                                <!-- Cerchio Sfondo (Leggermente più chiaro dello sfondo per contrasto) -->
+                                <Circle fill="#1e293b" radius="50.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+
+                                <!-- Grafico a Barre -->
+                                <HBox alignment="BOTTOM_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="6.0">
+                                    <children>
+                                        <Rectangle arcHeight="6.0" arcWidth="6.0" fill="#60a5fa" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="12.0" />
+                                        <Rectangle arcHeight="6.0" arcWidth="6.0" fill="#3b82f6" height="48.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="12.0" />
+                                        <Rectangle arcHeight="6.0" arcWidth="6.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="12.0" />
+                                    </children>
+                                    <padding>
+                                        <Insets bottom="20.0" />
+                                    </padding>
+                                </HBox>
+                            </children>
+                        </StackPane>
+
+                        <!-- SCRITTA LOGO -->
+                        <TextFlow textAlignment="CENTER">
+                            <children>
+                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Balance">
+                                    <font>
+                                        <Font name="Segoe UI Bold" size="32.0" />
+                                    </font>
+                                </Text>
+                                <Text fill="#3b82f6" strokeType="OUTSIDE" strokeWidth="0.0" text="Suite">
+                                    <font>
+                                        <Font name="Segoe UI Regular" size="32.0" />
+                                    </font>
+                                </Text>
+                            </children>
+                        </TextFlow>
+
+                        <Label text="Gestisci le tue finanze con eleganza." textFill="#94a3b8">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <effect>
+                        <DropShadow radius="10.0" width="21.0">
+                            <color>
+                                <Color opacity="0.3" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                </VBox>
+
+                <!-- ============================================ -->
+                <!-- LATO DESTRO: FORM DI LOGIN (Bianco) -->
+                <!-- ============================================ -->
+                <VBox alignment="CENTER" prefWidth="500.0" spacing="25.0" style="-fx-background-color: white;" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+                    </padding>
+                    <children>
+
+                        <!-- HEADER -->
+                        <VBox alignment="CENTER_LEFT" prefWidth="100.0" spacing="5.0">
+                            <children>
+                                <Label text="Bentornato!" textFill="#1e293b">
+                                    <font>
+                                        <Font name="System Bold" size="28.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Inserisci le tue credenziali per accedere." textFill="#64748b">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <VBox.margin>
+                                <Insets bottom="20.0" />
+                            </VBox.margin>
+                        </VBox>
+
+                        <!-- CAMPO USERNAME CON ICONA -->
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label text="Username" textFill="#334155">
+                                    <font>
+                                        <Font name="System Bold" size="12.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6;">
+                                    <children>
+                                        <StackPane prefHeight="40.0" prefWidth="40.0">
+                                            <children>
+                                                <!-- Icona Utente SVG -->
+                                                <SVGPath content="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#94a3b8" scaleX="0.7" scaleY="0.7" />
+                                            </children>
+                                        </StackPane>
+                                        <TextField fx:id="usernameField" promptText="es. mario.rossi" style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS">
+                                            <font>
+                                                <Font size="14.0" />
+                                            </font>
+                                        </TextField>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- CAMPO PASSWORD CON ICONA -->
+                        <VBox spacing="5.0">
+                            <children>
+                                <HBox alignment="CENTER_LEFT">
+                                    <children>
+                                        <Label text="Password" textFill="#334155">
+                                            <font>
+                                                <Font name="System Bold" size="12.0" />
+                                            </font>
+                                        </Label>
+                                        <Region HBox.hgrow="ALWAYS" /> <!-- Spazio vuoto -->
+                                        <!-- Import javafx.scene.layout.Region se manca -->
+                                    </children>
+                                </HBox>
+
+                                <HBox alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6;">
+                                    <children>
+                                        <StackPane prefHeight="40.0" prefWidth="40.0">
+                                            <children>
+                                                <!-- Icona Lucchetto SVG -->
+                                                <SVGPath content="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-9-2c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" fill="#94a3b8" scaleX="0.7" scaleY="0.7" />
+                                            </children>
+                                        </StackPane>
+                                        <PasswordField fx:id="passwordField" promptText="••••••••" style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS">
+                                            <font>
+                                                <Font size="14.0" />
+                                            </font>
+                                        </PasswordField>
+                                    </children>
+                                </HBox>
+                                <HBox alignment="CENTER_RIGHT" />
+                            </children>
+                        </VBox>
+
+                        <!-- BOTTONE LOGIN -->
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogin" prefHeight="45.0" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand;" text="ACCEDI">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                            <effect>
+                                <DropShadow height="10.0" radius="4.5" width="10.0">
+                                    <color>
+                                        <Color red="0.23" green="0.5" blue="0.96" opacity="0.4" />
+                                    </color>
+                                </DropShadow>
+                            </effect>
+                        </Button>
+                            <Hyperlink text="Non hai un account? Registrati." textFill="#3b82f6" />
+
+                        <Label fx:id="errorLabel" text="" textFill="#ef4444" visible="false" />
+
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>

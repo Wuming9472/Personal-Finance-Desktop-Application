@@ -3,11 +3,7 @@ package it.unicas.project.template.address;
 import java.io.IOException;
 
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
-import it.unicas.project.template.address.view.BudgetController;
-import it.unicas.project.template.address.view.DashboardController;
-import it.unicas.project.template.address.view.MovimentiController;
-import it.unicas.project.template.address.view.RootLayoutController;
-import it.unicas.project.template.address.view.SettingsEditDialogController;
+import it.unicas.project.template.address.view.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -34,7 +30,7 @@ public class MainApp extends Application {
         initRootLayout();
 
         // All'avvio mostra subito la Dashboard
-        showDashboard();
+        showLogin();
     }
 
     /**
@@ -56,6 +52,30 @@ public class MainApp extends Application {
             rootController.setMainApp(this);
 
             primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void showLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/Login.fxml"));
+            AnchorPane view = (AnchorPane) loader.load();
+
+            // Imposta la vista al centro
+            rootLayout.setCenter(view);
+
+            // Collega il controller
+            LoginController controller = loader.getController();
+            // controller.setMainApp(this); // Scommenta se aggiungi il metodo setMainApp nel controller
+
+            // Aggiorna il titolo nella barra in alto
+            if (rootController != null) {
+                rootController.setPageTitle("Login");
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
