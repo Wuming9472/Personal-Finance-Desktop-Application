@@ -7,7 +7,6 @@ import it.unicas.project.template.address.view.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
@@ -17,24 +16,48 @@ public class MainApp extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
-    private RootLayoutController rootController; // Riferimento al controller della barra laterale/superiore
+
+    // Riferimento al controller della barra laterale/superiore
+    private RootLayoutController rootController;
 
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("BalanceSuite");
 
-        // Imposta l'icona dell'applicazione (assicurati di avere il file o rimuovi questa riga)
-        // this.primaryStage.getIcons().add(new Image("file:resources/images/logo.png"));
-
-        initRootLayout();
-
-        // All'avvio mostra subito la Dashboard
+        // STEP 1: All'avvio mostriamo SOLO il Login.
+        // Non carichiamo ancora il RootLayout.
         showLogin();
+
     }
 
     /**
-     * Inizializza il layout principale (Barra laterale + Barra superiore).
+     * Mostra la schermata di Login a schermo intero (o dimensione prefissata).
+     * Questa sostituisce qualsiasi altra scena precedente.
+     */
+    public void showLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/Login.fxml"));
+            AnchorPane loginView = (AnchorPane) loader.load();
+
+            // Creiamo la scena direttamente con la vista del Login
+            Scene scene = new Scene(loginView);
+            primaryStage.setScene(scene);
+
+            // Collega il controller
+            LoginController controller = loader.getController();
+            controller.setMainApp(this); // Passiamo this per permettere al Login di chiamare initRootLayout() dopo
+
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Inizializza il layout principale (Menu laterale + Barra superiore).
+     * Questo metodo viene chiamato DAL LOGIN CONTROLLER dopo che l'accesso è riuscito.
      */
     public void initRootLayout() {
         try {
@@ -43,38 +66,21 @@ public class MainApp extends Application {
             loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
             rootLayout = (BorderPane) loader.load();
 
-            // Mostra la scena contenente il root layout
+            // Sostituisce la scena del Login con quella dell'App Principale
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
+
+            // Imposta dimensioni minime o massimizza se vuoi
+            // primaryStage.setMaximized(true);
 
             // Dà al controller accesso alla main app (per la navigazione)
             rootController = loader.getController();
             rootController.setMainApp(this);
 
             primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-
-    public void showLogin() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/Login.fxml"));
-            AnchorPane view = (AnchorPane) loader.load();
-
-            // Imposta la vista al centro
-            rootLayout.setCenter(view);
-
-            // Collega il controller
-            LoginController controller = loader.getController();
-            // controller.setMainApp(this); // Scommenta se aggiungi il metodo setMainApp nel controller
-
-            // Aggiorna il titolo nella barra in alto
-            if (rootController != null) {
-                rootController.setPageTitle("Login");
-            }
+            // Una volta caricato lo scheletro (Root), carichiamo subito la Dashboard al centro
+            showDashboard();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,16 +93,16 @@ public class MainApp extends Application {
     public void showDashboard() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            // Assicurati che il nome del file sia corretto (es. DashboardOverview.fxml)
+            // Assicurati che il nome file sia corretto (Dashboard.fxml o DashboardOverview.fxml)
             loader.setLocation(MainApp.class.getResource("view/Dashboard.fxml"));
             AnchorPane view = (AnchorPane) loader.load();
 
-            // Imposta la vista al centro
+            // Imposta la vista al centro del RootLayout
             rootLayout.setCenter(view);
 
             // Collega il controller
             DashboardController controller = loader.getController();
-            // controller.setMainApp(this); // Scommenta se aggiungi il metodo setMainApp nel controller
+            // controller.setMainApp(this);
 
             // Aggiorna il titolo nella barra in alto
             if (rootController != null) {
@@ -159,12 +165,14 @@ public class MainApp extends Application {
      */
     public void showBirthdayStatistics() {
         try {
+            // Nota: Qui puntavi a Budget.fxml per errore, rimetto BirthdayStatistics se esiste,
+            // altrimenti commenta questo blocco.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/Budget.fxml"));
+            loader.setLocation(MainApp.class.getResource("view/BirthdayStatistics.fxml"));
             AnchorPane page = (AnchorPane) loader.load();
 
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Birthday Statistics");
+            dialogStage.setTitle("Statistiche");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             Scene scene = new Scene(page);
@@ -194,6 +202,9 @@ public class MainApp extends Application {
 
             SettingsEditDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
+
+            // IMPORTANTE: Assicurati che il metodo nel controller si chiami così
+            // Se nel controller è "setSettings", cambia questa riga in controller.setSettings(...)
             controller.setSettings(daoMySQLSettings);
 
             dialogStage.showAndWait();
