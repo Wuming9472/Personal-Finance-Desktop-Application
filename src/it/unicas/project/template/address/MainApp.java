@@ -31,6 +31,25 @@ public class MainApp extends Application {
 
     }
 
+
+    public void showRegister() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/Register.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            Scene scene = new Scene(page);
+            primaryStage.setScene(scene);
+
+            RegisterController controller = loader.getController();
+            controller.setMainApp(this);
+
+            primaryStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Mostra la schermata di Login a schermo intero (o dimensione prefissata).
      * Questa sostituisce qualsiasi altra scena precedente.
@@ -80,7 +99,7 @@ public class MainApp extends Application {
             primaryStage.show();
 
             // Una volta caricato lo scheletro (Root), carichiamo subito la Dashboard al centro
-            showDashboard();
+            //showDashboard();
 
         } catch (IOException e) {
             e.printStackTrace();

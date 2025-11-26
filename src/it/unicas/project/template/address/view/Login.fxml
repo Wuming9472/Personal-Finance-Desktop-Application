@@ -158,7 +158,7 @@
                         </VBox>
 
                         <!-- BOTTONE LOGIN -->
-                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogin" prefHeight="45.0" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand;" text="ACCEDI">
+                        <Button defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogin" prefHeight="45.0" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand;" text="ACCEDI">
                             <font>
                                 <Font name="System Bold" size="14.0" />
                             </font>
