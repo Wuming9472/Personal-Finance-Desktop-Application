@@ -1,15 +1,15 @@
 package it.unicas.project.template.address.model.dao.mysql;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import it.unicas.project.template.address.view.LoginController;
 
 public class DAOMySQLSettings {
 
     public final static String DRIVERNAME = "com.mysql.cj.jdbc.Driver";
     public final static String HOST = "localhost";
-    public final static String USERNAME = "admin";
+    public final static String USERNAME = "user";
     public final static String PWD = "password";
     public final static String SCHEMA = "personal_finance_db";
     public final static String PARAMETERS = "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
@@ -90,11 +90,20 @@ public class DAOMySQLSettings {
     }
 
 
-    public static Statement getStatement() throws SQLException{
-        if (currentDAOMySQLSettings == null){
+    public static Connection getConnection() throws SQLException {
+        if (currentDAOMySQLSettings == null) {
             currentDAOMySQLSettings = getDefaultDAOSettings();
         }
-        return DriverManager.getConnection("jdbc:mysql://" + currentDAOMySQLSettings.host  + "/" + currentDAOMySQLSettings.schema + PARAMETERS, currentDAOMySQLSettings.userName, currentDAOMySQLSettings.pwd).createStatement();
+
+        return DriverManager.getConnection(
+                "jdbc:mysql://" + currentDAOMySQLSettings.host + "/" + currentDAOMySQLSettings.schema + PARAMETERS,
+                currentDAOMySQLSettings.userName,
+                currentDAOMySQLSettings.pwd
+        );
+    }
+
+    public static Statement getStatement() throws SQLException{
+        return getConnection().createStatement();
     }
 
     public static void closeStatement(Statement st) throws SQLException{
