@@ -1,5 +1,6 @@
 package it.unicas.project.template.address.model.dao.mysql;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -89,11 +90,20 @@ public class DAOMySQLSettings {
     }
 
 
-    public static Statement getStatement() throws SQLException{
-        if (currentDAOMySQLSettings == null){
+    public static Connection getConnection() throws SQLException {
+        if (currentDAOMySQLSettings == null) {
             currentDAOMySQLSettings = getDefaultDAOSettings();
         }
-        return DriverManager.getConnection("jdbc:mysql://" + currentDAOMySQLSettings.host  + "/" + currentDAOMySQLSettings.schema + PARAMETERS, currentDAOMySQLSettings.userName, currentDAOMySQLSettings.pwd).createStatement();
+
+        return DriverManager.getConnection(
+                "jdbc:mysql://" + currentDAOMySQLSettings.host + "/" + currentDAOMySQLSettings.schema + PARAMETERS,
+                currentDAOMySQLSettings.userName,
+                currentDAOMySQLSettings.pwd
+        );
+    }
+
+    public static Statement getStatement() throws SQLException{
+        return getConnection().createStatement();
     }
 
     public static void closeStatement(Statement st) throws SQLException{

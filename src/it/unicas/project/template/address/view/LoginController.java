@@ -5,6 +5,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class LoginController {
 
@@ -62,14 +68,15 @@ public class LoginController {
                 mainApp.showDashboard();
             }
         } else {
-            // Login fallito
-            showError("Username o password non validi.");
+            // Se non c'è già un messaggio d'errore specifico, mostriamo quello generico
+            if (errorLabel == null || !errorLabel.isVisible()) {
+                showError("Username o password non validi.");
+            }
         }
     }
 
     /**
-     * Logica di validazione delle credenziali.
-     * Per ora è hardcoded, in futuro qui farai la query al DB.
+     * Logica di validazione delle credenziali contro la tabella Users.
      */
     private boolean isValidCredentials(String user, String pass) {
         // Controllo campi vuoti
@@ -77,9 +84,21 @@ public class LoginController {
             return false;
         }
 
-        // TODO: Sostituire con controllo reale sul Database (DAO)
-        // Per ora accetta tutto purché non vuoto, oppure metti "admin" "admin"
-        return true;
+        try (Connection connection = DAOMySQLSettings.getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     "SELECT 1 FROM Users WHERE username = ? AND password = ? LIMIT 1")) {
+
+            statement.setString(1, user.trim());
+            statement.setString(2, pass.trim());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Errore di connessione al database.");
+            return false;
+        }
     }
 
     /**
