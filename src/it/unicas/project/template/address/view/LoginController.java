@@ -9,9 +9,9 @@ import javafx.scene.control.TextField;
 public class LoginController {
 
     @FXML
-    private TextField usernameField;
+    static private TextField usernameField;
     @FXML
-    private PasswordField passwordField;
+    static private PasswordField passwordField;
     @FXML
     private Label errorLabel;
 
@@ -22,6 +22,15 @@ public class LoginController {
      * Inizializza il controller.
      * Viene chiamato automaticamente dopo il caricamento dell'FXML.
      */
+
+    public static String getUsernameField() {
+        return usernameField.getText();
+    }
+
+    public String getPasswordField() {
+        return passwordField.getText();
+    }
+
     @FXML
     private void initialize() {
         // Nascondiamo il messaggio di errore all'avvio

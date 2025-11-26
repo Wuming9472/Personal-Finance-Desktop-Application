@@ -3,12 +3,13 @@ package it.unicas.project.template.address.model.dao.mysql;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import it.unicas.project.template.address.view.LoginController;
 
 public class DAOMySQLSettings {
 
     public final static String DRIVERNAME = "com.mysql.cj.jdbc.Driver";
     public final static String HOST = "localhost";
-    public final static String USERNAME = "user";
+    public final static String USERNAME = "admin";
     public final static String PWD = "password";
     public final static String SCHEMA = "personal_finance_db";
     public final static String PARAMETERS = "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
