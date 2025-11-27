@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.AreaChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #f8fafc;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.DashboardController">
@@ -202,6 +202,36 @@
                         </GridPane>
 
                         <!-- ========================================= -->
+                        <!-- SEZIONE NUOVA: GRAFICO CHART          -->
+                        <!-- ========================================= -->
+                        <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
+                            <children>
+                                <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT">
+                                            <children>
+                                                <Label text="Andamento Finanziario" textFill="#1e293b">
+                                                    <font>
+                                                        <Font name="System Bold" size="18.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </HBox>
+                                        <!-- CHART: AreaChart per riempimento colore -->
+                                        <AreaChart fx:id="chartAndamento" createSymbols="false" legendVisible="false" minHeight="250.0" prefHeight="300.0" style="-fx-background-color: transparent;" verticalGridLinesVisible="false">
+                                            <xAxis>
+                                                <CategoryAxis side="BOTTOM" tickLabelFill="#64748b" />
+                                            </xAxis>
+                                            <yAxis>
+                                                <NumberAxis side="LEFT" tickLabelFill="#64748b" />
+                                            </yAxis>
+                                        </AreaChart>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </AnchorPane>
+
+                        <!-- ========================================= -->
                         <!-- SEZIONE 2: BUDGET & MOVIMENTI -->
                         <!-- ========================================= -->
                         <GridPane hgap="30.0" vgap="20.0">
@@ -329,124 +359,8 @@
                                                 </Label>
 
                                                 <!-- MOVIMENTI LIST -->
-                                                <VBox spacing="15.0">
-                                                    <children>
-
-                                                        <!-- ROW 1 -->
-                                                        <HBox alignment="CENTER_LEFT" spacing="15.0">
-                                                            <children>
-                                                                <StackPane>
-                                                                    <children>
-                                                                        <Circle fill="#dcfce7" radius="18.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                                                                        <Label text="↑" textFill="#16a34a">
-                                                                            <font>
-                                                                                <Font name="System Bold" size="16.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                    </children>
-                                                                </StackPane>
-                                                                <VBox>
-                                                                    <children>
-                                                                        <Label text="Stipendio" textFill="#334155">
-                                                                            <font>
-                                                                                <Font name="System Bold" size="14.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                        <Label text="2023-10-25" textFill="#94a3b8">
-                                                                            <font>
-                                                                                <Font size="11.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                    </children>
-                                                                </VBox>
-                                                                <Region HBox.hgrow="ALWAYS" />
-                                                                <Label text="+ € 2500.00" textFill="#16a34a">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="14.0" />
-                                                                    </font>
-                                                                </Label>
-                                                            </children>
-                                                        </HBox>
-
-                                                        <Separator />
-
-                                                        <!-- ROW 2 -->
-                                                        <HBox alignment="CENTER_LEFT" spacing="15.0">
-                                                            <children>
-                                                                <StackPane>
-                                                                    <children>
-                                                                        <Circle fill="#fee2e2" radius="18.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                                                                        <Label text="↓" textFill="#dc2626">
-                                                                            <font>
-                                                                                <Font name="System Bold" size="16.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                    </children>
-                                                                </StackPane>
-                                                                <VBox>
-                                                                    <children>
-                                                                        <Label text="Spesa Supermercato" textFill="#334155">
-                                                                            <font>
-                                                                                <Font name="System Bold" size="14.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                        <Label text="2023-10-26" textFill="#94a3b8">
-                                                                            <font>
-                                                                                <Font size="11.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                    </children>
-                                                                </VBox>
-                                                                <Region HBox.hgrow="ALWAYS" />
-                                                                <Label text="- € 120.50" textFill="#dc2626">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="14.0" />
-                                                                    </font>
-                                                                </Label>
-                                                            </children>
-                                                        </HBox>
-
-                                                        <Separator layoutX="10.0" layoutY="56.0" />
-
-                                                        <!-- ROW 3 -->
-                                                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="69.0" spacing="15.0">
-                                                            <children>
-                                                                <StackPane>
-                                                                    <children>
-                                                                        <Circle fill="#fee2e2" radius="18.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                                                                        <Label text="↓" textFill="#dc2626">
-                                                                            <font>
-                                                                                <Font name="System Bold" size="16.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                    </children>
-                                                                </StackPane>
-                                                                <VBox>
-                                                                    <children>
-                                                                        <Label text="Benzina" textFill="#334155">
-                                                                            <font>
-                                                                                <Font name="System Bold" size="14.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                        <Label text="2023-10-27" textFill="#94a3b8">
-                                                                            <font>
-                                                                                <Font size="11.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                    </children>
-                                                                </VBox>
-                                                                <Region HBox.hgrow="ALWAYS" />
-                                                                <Label text="- € 50.00" textFill="#dc2626">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="14.0" />
-                                                                    </font>
-                                                                </Label>
-                                                            </children>
-                                                        </HBox>
-
-                                                    </children>
+                                                <VBox fx:id="boxUltimiMovimenti" spacing="15.0">
                                                 </VBox>
-
                                             </children>
                                         </VBox>
                                     </children>

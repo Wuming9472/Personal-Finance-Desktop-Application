@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ProjectPattern_IngSoft_2022.iml" filepath="$PROJECT_DIR$/ProjectPattern_IngSoft_2022.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BalanceSuite.iml" filepath="$PROJECT_DIR$/BalanceSuite.iml" />
     </modules>
   </component>
 </project>

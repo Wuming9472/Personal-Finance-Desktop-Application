@@ -19,7 +19,7 @@ public class MovimentiController {
     @FXML private TableColumn<Movimenti, LocalDate> dateColumn;
     @FXML private TableColumn<Movimenti, String> typeColumn;
     @FXML private TableColumn<Movimenti, String> categoryColumn; // Ora si popolerà!
-    @FXML private TableColumn<Movimenti, String> descriptionColumn;
+    @FXML private TableColumn<Movimenti, String> titleColumn;
     @FXML private TableColumn<Movimenti, String> paymentMethodColumn;
     @FXML private TableColumn<Movimenti, Number> amountColumn;
 
@@ -47,11 +47,9 @@ public class MovimentiController {
         // 1. SETUP COLONNE
         dateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
         typeColumn.setCellValueFactory(cellData -> cellData.getValue().typeProperty());
-        descriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+        titleColumn.setCellValueFactory(cellData -> cellData.getValue().titleProperty());
         paymentMethodColumn.setCellValueFactory(cellData -> cellData.getValue().payment_methodProperty());
         amountColumn.setCellValueFactory(cellData -> cellData.getValue().amountProperty());
-
-        // **FIX BUG CATEGORIA**: Ora usiamo la property categoryName che abbiamo aggiunto al model!
         categoryColumn.setCellValueFactory(cellData -> cellData.getValue().categoryNameProperty());
 
         // Colori Importo
@@ -61,7 +59,7 @@ public class MovimentiController {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(String.format("€ %.2f", item.floatValue()));
+                    setText(String.format("€%.2f", item.floatValue()));
                     Movimenti row = getTableView().getItems().get(getIndex());
                     if (row.getType().equalsIgnoreCase("Uscita")) {
                         setTextFill(Color.web("#ef4444"));
@@ -147,6 +145,10 @@ public class MovimentiController {
         }
         if (categoryField.getValue() == null) {
             showError("Seleziona una categoria.");
+            return;
+        }
+        if (Float.parseFloat(amountField.getText()) <= 0) {
+            showError("Inserisci un importo maggiore di 0.");
             return;
         }
 

@@ -6,6 +6,7 @@ import it.unicas.project.template.address.model.dao.DAOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import  javafx.util.Pair;
 
 public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
 
@@ -45,7 +46,7 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
                             rs.getString("type"),
                             rs.getDate("date").toLocalDate(),
                             rs.getFloat("amount"),
-                            rs.getString("description"),
+                            rs.getString("title"),
                             rs.getString("payment_method")
                     );
 
@@ -67,13 +68,13 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
     }
 
     private void insertInternal(Movimenti m, int userId, int categoryId) throws SQLException {
-        String query = "INSERT INTO movements (type, date, amount, description, payment_method, user_id, category_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO movements (type, date, amount, title, payment_method, user_id, category_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, m.getType());
             pstmt.setDate(2, Date.valueOf(m.getDate()));
             pstmt.setFloat(3, m.getAmount());
-            pstmt.setString(4, m.getDescription());
+            pstmt.setString(4, m.getTitle());
             pstmt.setString(5, m.getPayment_method());
             pstmt.setInt(6, userId);
             pstmt.setInt(7, categoryId);
@@ -93,6 +94,92 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
         }
+    }
+
+    public List<Movimenti> selectLastByUser(int userId, int limit) throws SQLException {
+        ArrayList<Movimenti> lista = new ArrayList<>();
+        // Usa la tabella 'movements' come confermato
+        String query = "SELECT m.*, c.name as cat_name FROM movements m " +
+                "LEFT JOIN categories c ON m.category_id = c.category_id " +
+                "WHERE m.user_id = ? " +
+                "ORDER BY m.date DESC LIMIT ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, limit);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Movimenti mov = new Movimenti(
+                            rs.getInt("movement_id"),
+                            rs.getString("type"),
+                            rs.getDate("date").toLocalDate(),
+                            rs.getFloat("amount"),
+                            rs.getString("title"),
+                            rs.getString("payment_method")
+                    );
+                    mov.setCategoryId(rs.getInt("category_id"));
+                    mov.setCategoryName(rs.getString("cat_name"));
+                    lista.add(mov);
+                }
+            }
+        }
+        return lista;
+    }
+
+    public float getSumByMonth(int userId, int month, int year, String type) throws SQLException {
+        float total = 0f;
+        String query = "SELECT SUM(amount) FROM movements " +
+                "WHERE user_id = ? " +
+                "AND MONTH(date) = ? AND YEAR(date) = ? " +
+                "AND type = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, month);
+            pstmt.setInt(3, year);
+            pstmt.setString(4, type);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    total = rs.getFloat(1); // Recupera il risultato della SUM()
+                }
+            }
+        }
+        return total;
+    }
+
+    public List<javafx.util.Pair<String, Float>> getMonthlyTrend(int userId) throws SQLException {
+        List<javafx.util.Pair<String, Float>> data = new ArrayList<>();
+
+        // QUERY CORRETTA E ROBUSTA
+        // 1. Raggruppa per anno-mese formattato
+        // 2. Gestisce sia italiano (entrata) che inglese (income) e maiuscole/minuscole
+        String query = "SELECT DATE_FORMAT(date, '%Y-%m') as mese, " +
+                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE -amount END) as saldo " +
+                "FROM movements " +
+                "WHERE user_id = ? " +
+                "GROUP BY DATE_FORMAT(date, '%Y-%m') " +
+                "ORDER BY mese ASC LIMIT 12";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, userId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String mese = rs.getString("mese");
+                    float saldo = rs.getFloat("saldo");
+                    data.add(new javafx.util.Pair<>(mese, saldo));
+                }
+            }
+        }
+        return data;
     }
 
     // Metodi dell'interfaccia DAO generica (non usati direttamente qui ma richiesti)

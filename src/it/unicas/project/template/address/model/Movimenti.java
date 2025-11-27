@@ -14,7 +14,7 @@ public class Movimenti {
     private final StringProperty type;
     private final ObjectProperty<LocalDate> date;
     private final FloatProperty amount;
-    private final StringProperty description;
+    private final StringProperty title;
     private final StringProperty payment_method;
 
     // NUOVI CAMPI (Per visualizzare la Categoria nella tabella)
@@ -33,12 +33,12 @@ public class Movimenti {
         this(null, null, null, null, null, null);
     }
 
-    public Movimenti(Integer id, String type, LocalDate date, Float amount, String description, String payment_method) {
+    public Movimenti(Integer id, String type, LocalDate date, Float amount, String title, String payment_method) {
         this.movement_id = new SimpleIntegerProperty(id != null ? id : -1); // Un piccolo fix per evitare null pointer sul Integer
         this.type = new SimpleStringProperty(type);
         this.date = new SimpleObjectProperty<>(date);
         this.amount = new SimpleFloatProperty(amount != null ? amount : 0.0f);
-        this.description = new SimpleStringProperty(description != null ? description : "");
+        this.title = new SimpleStringProperty(title != null ? title : "");
         this.payment_method = new SimpleStringProperty(payment_method != null ? payment_method : "");
     }
 
@@ -47,8 +47,8 @@ public class Movimenti {
     // ========================================================================
 
     // Metodo per aggiungere la descrizione (opzionale)
-    public Movimenti description(String val) {
-        this.description.set(val);
+    public Movimenti title(String val) {
+        this.title.set(val);
         return this;
     }
 
@@ -114,17 +114,17 @@ public class Movimenti {
         return amount;
     }
 
-    // --- DESCRIPTION ---
-    public String getDescription() {
-        return description.get();
+    // --- TITLE ---
+    public String getTitle() {
+        return title.get();
     }
 
-    public void setDescription(String description) {
-        this.description.set(description);
+    public void setTitle(String title) {
+        this.title.set(title);
     }
 
-    public StringProperty descriptionProperty() {
-        return description;
+    public StringProperty titleProperty() {
+        return title;
     }
 
     // --- PAYMENT METHOD ---

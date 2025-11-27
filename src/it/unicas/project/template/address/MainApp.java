@@ -117,18 +117,15 @@ public class MainApp extends Application {
     public void showDashboard() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            // Assicurati che il nome file sia corretto (Dashboard.fxml o DashboardOverview.fxml)
-            loader.setLocation(MainApp.class.getResource("view/Dashboard.fxml"));
+            loader.setLocation(MainApp.class.getResource("view/Dashboard.fxml")); // O DashboardOverview.fxml
             AnchorPane view = (AnchorPane) loader.load();
 
-            // Imposta la vista al centro del RootLayout
             rootLayout.setCenter(view);
 
-            // Collega il controller
+            // ECCO IL PUNTO FONDAMENTALE:
             DashboardController controller = loader.getController();
-            // controller.setMainApp(this);
+            controller.setMainApp(this); // <--- SENZA QUESTO RIMANE A "..."
 
-            // Aggiorna il titolo nella barra in alto
             if (rootController != null) {
                 rootController.setPageTitle("Dashboard");
             }

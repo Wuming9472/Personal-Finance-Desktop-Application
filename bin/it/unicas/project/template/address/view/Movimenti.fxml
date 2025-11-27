@@ -77,7 +77,7 @@
                             <children>
                                 <HBox alignment="CENTER_LEFT">
                                     <children>
-                                        <Label text="Descrizione (Opzionale)" textFill="#64748b" />
+                                        <Label text="Titolo (Opzionale)" textFill="#64748b" />
                                         <Region HBox.hgrow="ALWAYS" />
                                         <Label fx:id="charCountLabel" text="0/100" textFill="#cbd5e1">
                                             <font>
@@ -94,7 +94,7 @@
                         <Region VBox.vgrow="ALWAYS" />
 
                         <!-- BOTTONE SALVA -->
-                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleNewTransaction" prefHeight="45.0" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;" text="REGISTRA MOVIMENTO">
+                        <Button defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleNewTransaction" prefHeight="45.0" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;" text="REGISTRA MOVIMENTO">
                             <font>
                                 <Font name="System Bold" size="14.0" />
                             </font>
@@ -127,12 +127,12 @@
                             </children>
                         </HBox>
 
-                        <TableView fx:id="transactionTable" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="transactionTable" prefHeight="622.0" prefWidth="494.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-border-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);" VBox.vgrow="ALWAYS">
                             <columns>
                                 <TableColumn fx:id="dateColumn" prefWidth="100.0" text="DATA" />
                                 <TableColumn fx:id="typeColumn" prefWidth="90.0" style="-fx-alignment: CENTER;" text="TIPO" />
                                 <TableColumn fx:id="categoryColumn" prefWidth="140.0" text="CATEGORIA" />
-                                <TableColumn fx:id="descriptionColumn" prefWidth="250.0" text="DESCRIZIONE" />
+                                <TableColumn fx:id="titleColumn" prefWidth="250.0" text="TITOLO" />
                                 <TableColumn fx:id="paymentMethodColumn" prefWidth="130.0" text="METODO" />
                                 <TableColumn fx:id="amountColumn" prefWidth="120.0" style="-fx-alignment: CENTER-RIGHT;" text="IMPORTO" />
                             </columns>

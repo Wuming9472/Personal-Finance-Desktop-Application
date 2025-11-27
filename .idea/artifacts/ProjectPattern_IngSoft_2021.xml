@@ -13,7 +13,7 @@
     </properties>
     <root id="root">
       <element id="archive" name="ProjectPattern_IngSoft_2017.jar">
-        <element id="module-output" name="ProjectPattern_IngSoft_2022" />
+        <element id="module-output" name="BalanceSuite" />
       </element>
     </root>
   </artifact>

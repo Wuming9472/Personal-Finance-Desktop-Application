@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `personal_finance_db`.`movements` (
   `type` VARCHAR(20) NOT NULL,
   `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data della transazione',
   `amount` DECIMAL(10,2) NOT NULL COMMENT 'Importo della transazione',
-  `description` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Breve descrizione o nota',
+  `title` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Breve descrizione o nota',
   `payment_method` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Metodo di pagamento (es. Carta di Credito, Contanti, Bonifico)',
   PRIMARY KEY (`movement_id`),
   INDEX `category_id` (`category_id` ASC) VISIBLE,
