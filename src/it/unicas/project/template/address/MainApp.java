@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.view.*;
+import it.unicas.project.template.address.model.User;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,6 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+
 public class MainApp extends Application {
 
     private Stage primaryStage;
@@ -19,6 +21,9 @@ public class MainApp extends Application {
 
     // Riferimento al controller della barra laterale/superiore
     private RootLayoutController rootController;
+
+    private User loggedUser;
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -245,4 +250,15 @@ public class MainApp extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+    // GETTER E SETTER UTENTE LOGGATO
+
+    public void setLoggedUser(User user) {
+        this.loggedUser = user;
+    }
+
+    public User getLoggedUser() {
+        return loggedUser;
+    }
+
 }

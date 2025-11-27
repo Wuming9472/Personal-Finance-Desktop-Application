@@ -6,7 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
-
+import it.unicas.project.template.address.model.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,9 +46,9 @@ public class LoginController {
         this.mainApp = mainApp;
     }
 
-    /**
-     * Gestisce il click sul bottone "ACCEDI".
-     */
+
+    private User loggedUser;
+
     @FXML
     private void handleLogin() {
         // Resetta gli stili di errore (bordi rossi)
@@ -62,9 +62,11 @@ public class LoginController {
             System.out.println("Login effettuato con successo: " + user);
 
             if (mainApp != null) {
-                // 1. Carica il layout principale (Barra laterale + Topbar)
+
+                mainApp.setLoggedUser(loggedUser);
+
                 mainApp.initRootLayout();
-                // 2. Carica la dashboard al centro
+
                 mainApp.showDashboard();
             }
         } else {
@@ -92,15 +94,28 @@ public class LoginController {
             return false;
         }
 
+        String sql = "SELECT user_id, username, password FROM Users WHERE username = ? AND password = ? LIMIT 1";
+
         try (Connection connection = DAOMySQLSettings.getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     "SELECT 1 FROM Users WHERE username = ? AND password = ? LIMIT 1")) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, user.trim());
             statement.setString(2, pass.trim());
 
             try (ResultSet resultSet = statement.executeQuery()) {
-                return resultSet.next();
+                if (resultSet.next()) {
+                    int id = resultSet.getInt("user_id");
+                    String usernameDb = resultSet.getString("username");
+                    String passwordDb = resultSet.getString("password");
+
+
+                    loggedUser = new User(id, usernameDb, passwordDb);
+
+                    return true;
+                } else {
+                    loggedUser = null; // nessun utente trovato
+                    return false;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -108,6 +123,7 @@ public class LoginController {
             return false;
         }
     }
+
 
     /**
      * Mostra l'errore a video e colora i bordi di rosso.

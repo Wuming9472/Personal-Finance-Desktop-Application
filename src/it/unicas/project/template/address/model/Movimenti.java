@@ -37,9 +37,7 @@ public class Movimenti {
         this.payment_method = new SimpleStringProperty(payment_method != null ? payment_method : "");
     }
 
-    // ========================================================================
-    // METODI FLUENT (INTATTI come richiesto)
-    // ========================================================================
+
 
     // Metodo per aggiungere la descrizione (opzionale)
     public Movimenti description(String val) {
@@ -53,9 +51,9 @@ public class Movimenti {
         return this;
     }
 
-    // ========================================================================
-    // GETTERS & SETTERS & PROPERTIES (Aggiornati per Movimenti)
-    // ========================================================================
+
+    // GETTERS  SETTERS  PROPERTIES (Aggiornati per Movimenti)
+
 
     // --- ID ---
     public Integer getMovement_id() {
