@@ -17,6 +17,11 @@ public class Movimenti {
     private final StringProperty description;
     private final StringProperty payment_method;
 
+    // NUOVI CAMPI (Per visualizzare la Categoria nella tabella)
+    // Li inizializziamo fuori dal costruttore per non romperlo
+    private final StringProperty categoryName = new SimpleStringProperty("");
+    private final IntegerProperty categoryId = new SimpleIntegerProperty(0);
+
     // ========================================================================
     // COSTRUTTORI (INTATTI come richiesto)
     // ========================================================================
@@ -37,7 +42,9 @@ public class Movimenti {
         this.payment_method = new SimpleStringProperty(payment_method != null ? payment_method : "");
     }
 
-
+    // ========================================================================
+    // METODI FLUENT (INTATTI come richiesto)
+    // ========================================================================
 
     // Metodo per aggiungere la descrizione (opzionale)
     public Movimenti description(String val) {
@@ -51,9 +58,9 @@ public class Movimenti {
         return this;
     }
 
-
-    // GETTERS  SETTERS  PROPERTIES (Aggiornati per Movimenti)
-
+    // ========================================================================
+    // GETTERS & SETTERS & PROPERTIES (Aggiornati per Movimenti)
+    // ========================================================================
 
     // --- ID ---
     public Integer getMovement_id() {
@@ -131,5 +138,30 @@ public class Movimenti {
 
     public StringProperty payment_methodProperty() {
         return payment_method;
+    }
+
+    // --- NUOVI GETTERS/SETTERS PER CATEGORIA ---
+    public String getCategoryName() {
+        return categoryName.get();
+    }
+
+    public void setCategoryName(String name) {
+        this.categoryName.set(name);
+    }
+
+    public StringProperty categoryNameProperty() {
+        return categoryName;
+    }
+
+    public int getCategoryId() {
+        return categoryId.get();
+    }
+
+    public void setCategoryId(int id) {
+        this.categoryId.set(id);
+    }
+
+    public IntegerProperty categoryIdProperty() {
+        return categoryId;
     }
 }

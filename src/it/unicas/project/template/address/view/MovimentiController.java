@@ -2,107 +2,200 @@ package it.unicas.project.template.address.view;
 
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Movimenti;
+import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-
+import javafx.scene.control.*;
+import javafx.scene.paint.Color;
+import java.sql.*;
 import java.time.LocalDate;
 
 public class MovimentiController {
 
-    @FXML
-    private TableView<Movimenti> transactionTable;
+    // TABELLA
+    @FXML private TableView<Movimenti> transactionTable;
+    @FXML private TableColumn<Movimenti, LocalDate> dateColumn;
+    @FXML private TableColumn<Movimenti, String> typeColumn;
+    @FXML private TableColumn<Movimenti, String> categoryColumn; // Ora si popolerà!
+    @FXML private TableColumn<Movimenti, String> descriptionColumn;
+    @FXML private TableColumn<Movimenti, String> paymentMethodColumn;
+    @FXML private TableColumn<Movimenti, Number> amountColumn;
 
-    @FXML
-    private TableColumn<Movimenti, LocalDate> dateColumn;
-    @FXML
-    private TableColumn<Movimenti, String> descriptionColumn;
-    @FXML
-    private TableColumn<Movimenti, String> categoryColumn; // per ora vuota
-    @FXML
-    private TableColumn<Movimenti, Number> amountColumn;
-    @FXML
-    private TableColumn<Movimenti, Void> actionsColumn; // c'è nell'FXML
+    // INPUT SINISTRA
+    @FXML private TextField amountField;
+    @FXML private ComboBox<String> typeField;
+    @FXML private DatePicker dateField;
+    @FXML private ComboBox<CategoryItem> categoryField; // Dal DB
+    @FXML private ComboBox<String> methodField; // Fisso
+    @FXML private TextArea descArea;
+    @FXML private Label charCountLabel;
 
     private MainApp mainApp;
-
     private final ObservableList<Movimenti> movementData = FXCollections.observableArrayList();
+
+    // Wrapper per ComboBox Categorie
+    private static class CategoryItem {
+        int id; String name;
+        public CategoryItem(int id, String name) { this.id = id; this.name = name; }
+        @Override public String toString() { return name; }
+    }
 
     @FXML
     private void initialize() {
-        // collega le colonne alle property della classe Movimenti
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-        descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
-        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
-        // categoryColumn e actionsColumn le sistemerai dopo
+        // 1. SETUP COLONNE
+        dateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
+        typeColumn.setCellValueFactory(cellData -> cellData.getValue().typeProperty());
+        descriptionColumn.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
+        paymentMethodColumn.setCellValueFactory(cellData -> cellData.getValue().payment_methodProperty());
+        amountColumn.setCellValueFactory(cellData -> cellData.getValue().amountProperty());
+
+        // **FIX BUG CATEGORIA**: Ora usiamo la property categoryName che abbiamo aggiunto al model!
+        categoryColumn.setCellValueFactory(cellData -> cellData.getValue().categoryNameProperty());
+
+        // Colori Importo
+        amountColumn.setCellFactory(col -> new TableCell<>() {
+            @Override protected void updateItem(Number item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(String.format("€ %.2f", item.floatValue()));
+                    Movimenti row = getTableView().getItems().get(getIndex());
+                    if (row.getType().equalsIgnoreCase("Uscita")) {
+                        setTextFill(Color.web("#ef4444"));
+                        setText("- " + getText());
+                    } else {
+                        setTextFill(Color.web("#10b981"));
+                        setText("+ " + getText());
+                    }
+                }
+            }
+        });
+
+        // 2. SETUP INPUT FIELDS
+        typeField.getItems().addAll("Entrata", "Uscita");
+        typeField.setValue("Uscita");
+        dateField.setValue(LocalDate.now());
+
+        // Metodi di Pagamento (Ordine Richiesto)
+        methodField.getItems().addAll("Contanti", "Bancomat", "Carta di credito", "Bonifico", "Addebito SDD");
+
+        // 3. LIMITE CARATTERI DESCRIZIONE (Max 100)
+        descArea.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.length() > 100) {
+                descArea.setText(oldVal); // Blocca scrittura
+            } else {
+                charCountLabel.setText(newVal.length() + "/100");
+            }
+        });
 
         transactionTable.setItems(movementData);
+        loadCategories();
     }
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
-        loadMovementsForCurrentUser();   // appena ho la MainApp, carico i movimenti dal DB
+        loadMovementsForCurrentUser();
+    }
+
+    private void loadCategories() {
+        DAOMySQLSettings settings = DAOMySQLSettings.getCurrentDAOMySQLSettings();
+        String url = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
+                + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
+
+        // Ordine per ID ASC come richiesto
+        String sql = "SELECT category_id, name FROM categories ORDER BY category_id ASC";
+
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            ObservableList<CategoryItem> categories = FXCollections.observableArrayList();
+            while (rs.next()) {
+                categories.add(new CategoryItem(rs.getInt("category_id"), rs.getString("name")));
+            }
+            categoryField.setItems(categories);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadMovementsForCurrentUser() {
-        if (mainApp == null || mainApp.getLoggedUser() == null) {
-            return;
-        }
-
-        int userId = mainApp.getLoggedUser().getUser_id();  // ⬅ usa la tua classe User
-
+        if (mainApp == null || mainApp.getLoggedUser() == null) return;
         try {
-            movementData.setAll(MovimentiDAOMySQLImpl.findByUser(userId));
+            movementData.setAll(MovimentiDAOMySQLImpl.findByUser(mainApp.getLoggedUser().getUser_id()));
             transactionTable.refresh();
         } catch (Exception e) {
             e.printStackTrace();
-            showError("Errore durante il caricamento dei movimenti.");
         }
     }
 
     @FXML
     private void handleNewTransaction() {
         if (mainApp == null || mainApp.getLoggedUser() == null) {
-            showError("Nessun utente loggato.");
+            showError("Devi effettuare il login.");
             return;
         }
 
-        int userId = mainApp.getLoggedUser().getUser_id();
-
-        // 🔴 TEST: inseriamo un movimento finto
-        Movimenti m = new Movimenti(
-                null,
-                "entrata",                    // type
-                LocalDate.now(),              // date
-                10.0f,                        // amount
-                "Test inserimento",           // description
-                "Contanti"                    // payment_method
-        );
-
-        int categoryId = 1; // ⚠️ metti qui un category_id che ESISTE nel DB
+        // Validazione Minima (Importo e Categoria)
+        if (amountField.getText().isEmpty()) {
+            showError("Inserisci un importo.");
+            return;
+        }
+        if (categoryField.getValue() == null) {
+            showError("Seleziona una categoria.");
+            return;
+        }
 
         try {
-            MovimentiDAOMySQLImpl.insert(m, userId, categoryId);
-            loadMovementsForCurrentUser();
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Errore durante l'inserimento del movimento.");
-        }
-    }
+            int userId = mainApp.getLoggedUser().getUser_id();
+            int categoryId = categoryField.getValue().id;
 
-    @FXML
-    private void handleEditTransaction() {
-        System.out.println("Modifica transazione cliccata");
+            String type = typeField.getValue();
+            LocalDate date = dateField.getValue();
+            float amount = Float.parseFloat(amountField.getText().replace(",", "."));
+
+            // Facoltativi
+            String desc = (descArea.getText() == null) ? "" : descArea.getText().trim();
+            String method = (methodField.getValue() == null) ? "" : methodField.getValue();
+
+            Movimenti m = new Movimenti(null, type, date, amount, desc, method);
+
+            // Insert DB
+            MovimentiDAOMySQLImpl.insert(m, userId, categoryId);
+
+            loadMovementsForCurrentUser();
+
+            // Reset Campi (lascio la data e il tipo perché comodi)
+            amountField.clear();
+            descArea.clear();
+            methodField.getSelectionModel().clearSelection();
+            categoryField.getSelectionModel().clearSelection();
+
+        } catch (NumberFormatException e) {
+            showError("L'importo non è valido.");
+        } catch (Exception e) {
+            showError("Errore salvataggio: " + e.getMessage());
+        }
     }
 
     @FXML
     private void handleDeleteTransaction() {
-        System.out.println("Elimina transazione cliccata");
+        int index = transactionTable.getSelectionModel().getSelectedIndex();
+        if (index >= 0) {
+            Movimenti selected = transactionTable.getItems().get(index);
+            try {
+                MovimentiDAOMySQLImpl.delete(selected.getMovement_id());
+                transactionTable.getItems().remove(index);
+            } catch (Exception e) {
+                showError("Errore cancellazione: " + e.getMessage());
+            }
+        } else {
+            showError("Seleziona una riga da eliminare.");
+        }
     }
 
     private void showError(String msg) {
