@@ -1,90 +1,78 @@
 package it.unicas.project.template.address.view;
 
 import it.unicas.project.template.address.MainApp;
+import it.unicas.project.template.address.model.User;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
 
-/**
- * Il controller per il layout principale (Barra Laterale + Barra Superiore).
- * Gestisce la navigazione tra le varie schermate.
- */
 public class RootLayoutController {
 
-    // Riferimento alla MainApp per chiamare i metodi di cambio schermata
     private MainApp mainApp;
 
-    // Riferimento alla Label del titolo nella TopBar (collegata via fx:id="lblPageTitle" nel FXML)
-    @FXML
-    private Label lblPageTitle;
+    @FXML private Label lblPageTitle;
+    @FXML private Label lblInitials;
+    @FXML private MenuButton btnUser;
 
-    /**
-     * Inizializza il controller. Viene chiamato automaticamente dopo il caricamento del fxml.
-     */
     @FXML
     private void initialize() {
-        // Imposta un titolo di default se necessario, ma viene gestito meglio dai metodi sotto
+        // Init
     }
 
-    /**
-     * Chiamato dalla MainApp per darsi un riferimento a se stessa.
-     * @param mainApp
-     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
+
+        // Appena colleghiamo la MainApp, recuperiamo l'utente loggato e aggiorniamo la grafica
+        if (mainApp != null && mainApp.getLoggedUser() != null) {
+            updateUserInfo(mainApp.getLoggedUser().getUsername());
+        }
     }
 
     /**
-     * Aggiorna il titolo visualizzato nella barra in alto.
-     * @param title Il nuovo titolo da mostrare
+     * Aggiorna nome e iniziali nella barra in alto.
      */
+    public void updateUserInfo(String username) {
+        if (username == null || username.isEmpty()) {
+            btnUser.setText("Ospite");
+            lblInitials.setText("?");
+            return;
+        }
+
+        // 1. Imposta il nome completo nel menu
+        btnUser.setText(username);
+
+        // 2. Calcola le iniziali
+        String initials = "";
+        String[] parts = username.trim().split("\\s+"); // Divide per spazi
+
+        if (parts.length == 1) {
+            // Caso: Solo una parola (es. "mario" -> "M")
+            if (parts[0].length() > 0) {
+                initials = parts[0].substring(0, 1).toUpperCase();
+            }
+        } else if (parts.length >= 2) {
+            // Caso: Due o più parole (es. "Mario Rossi" -> "MR")
+            String first = parts[0].substring(0, 1);
+            String second = parts[1].substring(0, 1);
+            initials = (first + second).toUpperCase();
+        }
+
+        lblInitials.setText(initials);
+    }
+
     public void setPageTitle(String title) {
-        if (lblPageTitle != null) {
-            lblPageTitle.setText(title);
-        }
+        if (lblPageTitle != null) lblPageTitle.setText(title);
     }
 
-    // ==========================================
-    // GESTIONE SIDEBAR (NAVIGAZIONE)
-    // ==========================================
+    // --- NAVIGAZIONE ---
+    @FXML private void handleShowDashboard() { if (mainApp != null) mainApp.showDashboard(); }
+    @FXML private void handleShowMovements() { if (mainApp != null) mainApp.showMovimenti(); }
+    @FXML private void handleShowBudget() { if (mainApp != null) mainApp.showBudget(); }
 
-    @FXML
-    private void handleShowDashboard() {
-        if (mainApp != null) {
-            // Mostra la Dashboard (Home)
-            mainApp.showDashboard();
-            // Il titolo viene aggiornato dentro showDashboard() o possiamo forzarlo qui
-            setPageTitle("Dashboard");
-        }
-    }
-
-    @FXML
-    private void handleShowMovements() {
-        if (mainApp != null) {
-            // Mostra la schermata Movimenti
-            mainApp.showMovimenti();
-            setPageTitle("Movimenti");
-        }
-    }
-
-    @FXML
-    private void handleShowBudget() {
-        if (mainApp != null) {
-            // Mostra la schermata Budget
-            mainApp.showBudget();
-            setPageTitle("Pianificazione Budget");
-        }
-    }
-
-    // ==========================================
-    // GESTIONE MENU UTENTE & SISTEMA
-    // ==========================================
-
-    /**
-     * Gestisce il click su "Impostazioni" (es. Database).
-     */
+    // --- MENU UTENTE ---
     @FXML
     private void handleSettings() {
         DAOMySQLSettings daoMySQLSettings = DAOMySQLSettings.getCurrentDAOMySQLSettings();
@@ -93,21 +81,15 @@ public class RootLayoutController {
         }
     }
 
-    /**
-     * Apre il dialog delle informazioni (About).
-     */
     @FXML
     private void handleAbout() {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("BalanceSuite");
-        alert.setHeaderText("Informazioni su BalanceSuite");
-        alert.setContentText("Applicazione di gestione finanziaria personale.\nVersione: 1.0\nAutore: Mario Molinara");
+        alert.setHeaderText("Informazioni");
+        alert.setContentText("BalanceSuite v1.0\nGestione Finanziaria Personale");
         alert.showAndWait();
     }
 
-    /**
-     * Chiude l'applicazione.
-     */
     @FXML
     private void handleExit() {
         System.exit(0);

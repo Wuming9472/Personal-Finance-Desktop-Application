@@ -1,24 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.DropShadow?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #f8fafc;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.MovimentiController">
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #f8fafc;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.MovimentiController">
     <children>
         <HBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <padding>
@@ -61,7 +50,7 @@
                                 <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                     <children>
                                         <Label text="Data" textFill="#64748b" />
-                                        <DatePicker fx:id="dateField" maxWidth="1.7976931348623157E308" style="-fx-background-color: transparent;" />
+                                        <DatePicker fx:id="dateField" maxHeight="26.0" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="130.0" style="-fx-background-color: transparent;" />
                                     </children>
                                 </VBox>
                             </children>
@@ -79,7 +68,7 @@
                         <VBox spacing="5.0">
                             <children>
                                 <Label text="Metodo Pagamento (Opzionale)" textFill="#64748b" />
-                                <ComboBox fx:id="methodField" maxWidth="1.7976931348623157E308" promptText="Seleziona..." style="-fx-background-color: #f1f5f9; -fx-background-radius: 8;" editable="true"/>
+                                <ComboBox fx:id="methodField" editable="true" maxWidth="1.7976931348623157E308" promptText="Seleziona..." style="-fx-background-color: #f1f5f9; -fx-background-radius: 8;" />
                             </children>
                         </VBox>
 
@@ -112,7 +101,7 @@
                             <effect>
                                 <DropShadow height="15.0" radius="7.0" width="15.0">
                                     <color>
-                                        <Color blue="0.96" green="0.5" red="0.23" opacity="0.3" />
+                                        <Color red="0.23" green="0.5" blue="0.96" opacity="0.3" />
                                     </color>
                                 </DropShadow>
                             </effect>

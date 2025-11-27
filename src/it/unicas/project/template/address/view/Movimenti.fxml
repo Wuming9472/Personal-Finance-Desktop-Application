@@ -50,7 +50,7 @@
                                 <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                                     <children>
                                         <Label text="Data" textFill="#64748b" />
-                                        <DatePicker fx:id="dateField" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="0.0" style="-fx-background-color: transparent;" />
+                                        <DatePicker fx:id="dateField" maxHeight="26.0" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="130.0" style="-fx-background-color: transparent;" />
                                     </children>
                                 </VBox>
                             </children>
