@@ -75,6 +75,14 @@ public class LoginController {
         }
     }
 
+    @FXML
+    private void handleRegister() {
+        System.out.println("Click su Registrati");
+        if (mainApp != null) {
+            mainApp.showRegister();
+        }
+    }
+
     /**
      * Logica di validazione delle credenziali contro la tabella Users.
      */

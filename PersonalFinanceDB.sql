@@ -16,11 +16,11 @@ CREATE SCHEMA IF NOT EXISTS `personal_finance_db` DEFAULT CHARACTER SET utf8mb4 
 USE `personal_finance_db` ;
 
 -- -----------------------------------------------------
--- Table `personal_finance_db`.`Categories`
+-- Table `personal_finance_db`.`categories`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `personal_finance_db`.`Categories` ;
+DROP TABLE IF EXISTS `personal_finance_db`.`categories` ;
 
-CREATE TABLE IF NOT EXISTS `personal_finance_db`.`Categories` (
+CREATE TABLE IF NOT EXISTS `personal_finance_db`.`categories` (
   `category_id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL COMMENT 'Nome della categoria (es. Alimentari, Stipendio)',
   PRIMARY KEY (`category_id`),
@@ -32,43 +32,70 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `personal_finance_db`.`Budgets`
+-- Table `personal_finance_db`.`users`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `personal_finance_db`.`Budgets` ;
+DROP TABLE IF EXISTS `personal_finance_db`.`users` ;
 
-CREATE TABLE IF NOT EXISTS `personal_finance_db`.`Budgets` (
-  `budget_id` INT NOT NULL AUTO_INCREMENT,
-  `category_id` INT NOT NULL,
-  `month` INT NOT NULL COMMENT 'Mese del budget (1-12)',
-  `amount` DECIMAL(10,2) NOT NULL COMMENT 'Importo massimo allocato',
-  PRIMARY KEY (`budget_id`),
-  UNIQUE INDEX `category_id` (`category_id` ASC, `month` ASC) VISIBLE,
-  CONSTRAINT `budgets_ibfk_1`
-    FOREIGN KEY (`category_id`)
-    REFERENCES `personal_finance_db`.`Categories` (`category_id`)
-    ON DELETE CASCADE)
+CREATE TABLE IF NOT EXISTS `personal_finance_db`.`users` (
+  `user_id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(16) NOT NULL,
+  `password` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`user_id`),
+  UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `personal_finance_db`.`Moviments`
+-- Table `personal_finance_db`.`budgets`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `personal_finance_db`.`Moviments` ;
+DROP TABLE IF EXISTS `personal_finance_db`.`budgets` ;
 
-CREATE TABLE IF NOT EXISTS `personal_finance_db`.`Moviments` (
+CREATE TABLE IF NOT EXISTS `personal_finance_db`.`budgets` (
+  `budget_id` INT NOT NULL AUTO_INCREMENT,
+  `category_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `month` INT NOT NULL COMMENT 'Mese del budget (1-12)',
+  `amount` DECIMAL(10,2) NOT NULL COMMENT 'Importo massimo allocato',
+  PRIMARY KEY (`budget_id`),
+  UNIQUE INDEX `category_id` (`category_id` ASC, `month` ASC) VISIBLE,
+  INDEX `fk_Budgets_Users1_idx` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `budgets_ibfk_1`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `personal_finance_db`.`categories` (`category_id`)
+    ON DELETE CASCADE,
+  CONSTRAINT `fk_Budgets_Users1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `personal_finance_db`.`users` (`user_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `personal_finance_db`.`movements`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `personal_finance_db`.`movements` ;
+
+CREATE TABLE IF NOT EXISTS `personal_finance_db`.`movements` (
   `movement_id` INT NOT NULL AUTO_INCREMENT,
   `category_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `type` VARCHAR(20) NOT NULL,
   `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data della transazione',
   `amount` DECIMAL(10,2) NOT NULL COMMENT 'Importo della transazione',
-  `description` VARCHAR(255) NULL COMMENT 'Breve descrizione o nota',
-  `payment_method` VARCHAR(50) NULL COMMENT 'Metodo di pagamento (es. Carta di Credito, Contanti, Bonifico)',
+  `description` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Breve descrizione o nota',
+  `payment_method` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Metodo di pagamento (es. Carta di Credito, Contanti, Bonifico)',
   PRIMARY KEY (`movement_id`),
   INDEX `category_id` (`category_id` ASC) VISIBLE,
+  INDEX `fk_Moviments_Users1_idx` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Moviments_Users1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `personal_finance_db`.`users` (`user_id`),
   CONSTRAINT `movements_ibfk_1`
     FOREIGN KEY (`category_id`)
-    REFERENCES `personal_finance_db`.`Categories` (`category_id`)
+    REFERENCES `personal_finance_db`.`categories` (`category_id`)
     ON DELETE RESTRICT)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4

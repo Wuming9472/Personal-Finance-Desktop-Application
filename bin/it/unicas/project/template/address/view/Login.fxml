@@ -22,7 +22,10 @@
                         <StackPane>
                             <children>
                                 <!-- Cerchio Sfondo (Leggermente più chiaro dello sfondo per contrasto) -->
-                                <Circle fill="#1e293b" radius="50.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                <Circle fill="#1e293b" radius="50.0" stroke="TRANSPARENT" strokeType="INSIDE">
+                           <StackPane.margin>
+                              <Insets top="-7.0" />
+                           </StackPane.margin></Circle>
 
                                 <!-- Grafico a Barre -->
                                 <HBox alignment="BOTTOM_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="6.0">
@@ -170,7 +173,7 @@
                                 </DropShadow>
                             </effect>
                         </Button>
-                            <Hyperlink text="Non hai un account? Registrati." textFill="#3b82f6" />
+                            <Hyperlink onAction="#handleRegister" text="Non hai un account? Registrati." textFill="#3b82f6" />
 
                         <Label fx:id="errorLabel" text="" textFill="#ef4444" visible="false" />
 
