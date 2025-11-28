@@ -5009,7 +5009,7 @@ Text {
 
 /* =========================================================================
    MODIFICHE GRAFICO DASHBOARD - STILE "WOW"
-   Incollare alla fine di primer-light.css
+   Sostituisci questo blocco alla fine di primer-light.css
    ========================================================================= */
 
 /* Rimuove il rumore visivo dal grafico */
@@ -5023,7 +5023,7 @@ Text {
 /* Personalizzazione degli Assi */
 .axis {
     -fx-tick-label-font-size: 0.9em;
-    -fx-tick-label-fill: -color-fg-muted; /* Usa variabile del tema */
+    -fx-tick-label-fill: -color-fg-muted;
 }
 .axis:bottom {
     -fx-border-color: transparent;
@@ -5039,14 +5039,14 @@ Text {
     -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.3), 10, 0, 0, 5);
 }
 .default-color0.chart-series-area-fill {
-    /* Gradiente sfumato verso il basso */
-    -fx-fill: linear-gradient(to bottom, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0.02) 100%) !important;
+    /* Opacità aumentata per essere ben visibile */
+    -fx-fill: linear-gradient(to bottom, rgba(16, 185, 129, 0.35) 0%, rgba(16, 185, 129, 0.1) 100%) !important;
 }
+/* Nascondi i pallini di default, li gestisce l'animazione */
 .default-color0.chart-area-symbol {
-    -fx-background-color: #10b981, white !important;
-    -fx-background-insets: 0, 2;
-    -fx-background-radius: 50%; /* Cerchio perfetto */
-    -fx-padding: 5px; /* Dimensione del pallino */
+    -fx-background-color: transparent, transparent !important;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
 }
 
 /* --- SERIE 1: USCITE (Rosso/Rosa) --- */
@@ -5056,13 +5056,12 @@ Text {
     -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.3), 10, 0, 0, 5);
 }
 .default-color1.chart-series-area-fill {
-    -fx-fill: linear-gradient(to bottom, rgba(239, 68, 68, 0.25) 0%, rgba(239, 68, 68, 0.02) 100%) !important;
+    -fx-fill: linear-gradient(to bottom, rgba(239, 68, 68, 0.35) 0%, rgba(239, 68, 68, 0.1) 100%) !important;
 }
 .default-color1.chart-area-symbol {
-    -fx-background-color: #ef4444, white !important;
-    -fx-background-insets: 0, 2;
-    -fx-background-radius: 50%;
-    -fx-padding: 5px;
+    -fx-background-color: transparent, transparent !important;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
 }
 
 /* --- TOOLTIP FLOTTANTI --- */
@@ -5084,7 +5083,8 @@ Text {
     -fx-padding: 15px;
 }
 .chart-legend-item-symbol {
-    -fx-background-radius: 50% !important; /* Pallini rotondi nella legenda */
+    -fx-background-radius: 50% !important;
+    -fx-padding: 4px !important; /* Pallini visibili solo nella legenda */
 }
 .chart-legend-item-label {
     -fx-text-fill: -color-fg-muted !important;

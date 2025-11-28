@@ -10,7 +10,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.chart.AreaChart;
+// IMPORTANTE: Usa SmoothAreaChart invece di AreaChart
+import it.unicas.project.template.address.view.SmoothAreaChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -36,10 +37,11 @@ public class DashboardController {
     @FXML private Label lblEntrate;
     @FXML private Label lblUscite;
     @FXML private Label lblPrevisione;
-    @FXML private AreaChart<String, Number> chartAndamento;
-    @FXML private ComboBox<String> cmbRange;
 
-    // Contenitore per la lista dinamica
+    // CAMBIO TIPO QUI:
+    @FXML private SmoothAreaChart<String, Number> chartAndamento;
+
+    @FXML private ComboBox<String> cmbRange;
     @FXML private VBox boxUltimiMovimenti;
 
     private MainApp mainApp;
@@ -71,7 +73,6 @@ public class DashboardController {
         MovimentiDAOMySQLImpl dao = new MovimentiDAOMySQLImpl();
 
         try {
-            // 1. Aggiorna KPI (Saldo, Entrate, Uscite)
             float totalEntrate = dao.getSumByMonth(userId, now.getMonthValue(), now.getYear(), "Entrata");
             float totalUscite = dao.getSumByMonth(userId, now.getMonthValue(), now.getYear(), "Uscita");
             float saldo = totalEntrate - totalUscite;
@@ -81,11 +82,9 @@ public class DashboardController {
             lblSaldo.setText(String.format("€ %.2f", saldo));
             lblSaldo.setStyle(saldo >= 0 ? "-fx-text-fill: #10b981;" : "-fx-text-fill: #ef4444;");
 
-            // 2. Aggiorna Lista Ultimi Movimenti
-            List<Movimenti> recent = dao.selectLastByUser(userId, 5); // Ultimi 5
+            List<Movimenti> recent = dao.selectLastByUser(userId, 5);
             populateRecentMovements(recent);
 
-            // 3. Popola il grafico con i dati e applica lo stile
             populateChart(dao, userId);
 
         } catch (Exception e) {
@@ -94,11 +93,8 @@ public class DashboardController {
         }
     }
 
-    /**
-     * Crea graficamente le righe della tabella movimenti.
-     */
     private void populateRecentMovements(List<Movimenti> list) {
-        boxUltimiMovimenti.getChildren().clear(); // Pulisce la lista vecchia
+        boxUltimiMovimenti.getChildren().clear();
 
         if (list.isEmpty()) {
             Label placeholder = new Label("Nessun movimento recente.");
@@ -113,24 +109,19 @@ public class DashboardController {
         }
     }
 
-    /**
-     * Helper per creare una riga grafica.
-     */
     private HBox createMovementRow(Movimenti m) {
         boolean isExpense = m.getType().equalsIgnoreCase("Uscita") || m.getType().equalsIgnoreCase("Expense");
-        Color color = isExpense ? Color.web("#fee2e2") : Color.web("#dcfce7"); // Sfondo pallino
-        Color iconColor = isExpense ? Color.web("#dc2626") : Color.web("#16a34a"); // Colore icona/testo
+        Color color = isExpense ? Color.web("#fee2e2") : Color.web("#dcfce7");
+        Color iconColor = isExpense ? Color.web("#dc2626") : Color.web("#16a34a");
         String symbol = isExpense ? "↓" : "↑";
         String sign = isExpense ? "- " : "+ ";
 
-        // 1. Icona (Cerchio con freccia)
         Circle circle = new Circle(18, color);
         Label arrow = new Label(symbol);
         arrow.setTextFill(iconColor);
         arrow.setFont(Font.font("System", FontWeight.BOLD, 16));
         StackPane icon = new StackPane(circle, arrow);
 
-        // 2. Testi (Descrizione e Data)
         Label desc = new Label(m.getTitle());
         desc.setTextFill(Color.web("#334155"));
         desc.setFont(Font.font("System", FontWeight.BOLD, 14));
@@ -147,16 +138,13 @@ public class DashboardController {
         VBox texts = new VBox(2, desc, date);
         texts.setAlignment(Pos.CENTER_LEFT);
 
-        // 3. Spaziatore
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // 4. Importo
         Label amount = new Label(sign + String.format("€ %.2f", m.getAmount()));
         amount.setTextFill(iconColor);
         amount.setFont(Font.font("System", FontWeight.BOLD, 14));
 
-        // Assemblaggio HBox
         HBox row = new HBox(15, icon, texts, spacer, amount);
         row.setAlignment(Pos.CENTER_LEFT);
         return row;
@@ -197,7 +185,6 @@ public class DashboardController {
     }
 
     private void populateChart(MovimentiDAOMySQLImpl dao, int userId) {
-        // Pulisce i dati vecchi e disabilita l'animazione durante il popolamento
         chartAndamento.setAnimated(false);
         chartAndamento.getData().clear();
 
@@ -225,7 +212,6 @@ public class DashboardController {
                 serieUscite.getData().add(expenseData);
             }
 
-            // Aggiunge le serie al grafico
             chartAndamento.getData().addAll(serieEntrate, serieUscite);
 
             // Riabilita l'animazione e applica lo stile ai nodi (punti)
@@ -248,24 +234,20 @@ public class DashboardController {
         });
     }
 
-    // Applica animazioni ai nodi (simboli) delle serie
     private void stylizeSeriesNodes(XYChart.Series<String, Number> series) {
         int index = 0;
         for (XYChart.Data<String, Number> item : series.getData()) {
             final int nodeIndex = index++;
             item.nodeProperty().addListener((obs, oldNode, newNode) -> {
                 if (newNode != null) {
-                    // Imposta lo stato iniziale per l'animazione
                     newNode.setOpacity(0);
                     newNode.setScaleX(0);
                     newNode.setScaleY(0);
 
-                    // Crea l'animazione di apparizione (fade + scale)
                     ParallelTransition appear = new ParallelTransition(
                             createFadeTransition(newNode),
                             createScaleTransition(newNode)
                     );
-                    // Aggiunge un ritardo sequenziale per un effetto "a cascata"
                     appear.setDelay(Duration.millis(100 * nodeIndex));
                     appear.play();
                 }
@@ -287,16 +269,14 @@ public class DashboardController {
         scale.setFromY(0);
         scale.setToX(1.0);
         scale.setToY(1.0);
-        // Effetto rimbalzo per un look più moderno
         scale.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
         return scale;
     }
 
-    // Classe interna per Tooltip personalizzati
     private static class CustomTooltip extends Tooltip {
         public CustomTooltip(String text) {
             super(text);
-            this.getStyleClass().add("chart-tooltip"); // Applica lo stile CSS
+            this.getStyleClass().add("chart-tooltip");
             this.setShowDelay(Duration.millis(50));
             this.setHideDelay(Duration.millis(50));
             this.setAutoHide(true);

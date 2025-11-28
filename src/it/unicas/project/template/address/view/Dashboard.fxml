@@ -19,6 +19,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
+<?import it.unicas.project.template.address.view.SmoothAreaChart?>
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #f8fafc;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.DashboardController">
     <children>
         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -201,11 +202,11 @@
                                 </AnchorPane>
                             </children>
                         </GridPane>
-
                         <!-- ========================================= -->
-                        <!-- SEZIONE NUOVA: GRAFICO CHART          -->
+                        <!-- SEZIONE GRAFICO: SmoothAreaChart      -->
                         <!-- ========================================= -->
-                        <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
+                        <!-- Ho aggiunto fx:id="chartContainer" all'AnchorPane -->
+                        <AnchorPane fx:id="chartContainer" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
                             <children>
                                 <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                                     <children>
@@ -220,15 +221,15 @@
                                                 <ComboBox fx:id="cmbRange" prefWidth="160.0" />
                                             </children>
                                         </HBox>
-                                        <!-- CHART: LineChart con punti e legenda -->
-                                        <AreaChart fx:id="chartAndamento" createSymbols="true" legendVisible="true" minHeight="250.0" prefHeight="300.0" style="-fx-background-color: transparent; -fx-stroke-line-cap: round; -fx-stroke-line-join: round;" verticalGridLinesVisible="false">
+
+                                        <SmoothAreaChart fx:id="chartAndamento" animated="true" createSymbols="false" legendVisible="true" minHeight="250.0" prefHeight="300.0" verticalGridLinesVisible="false">
                                             <xAxis>
-                                                <CategoryAxis side="BOTTOM" tickLabelFill="#64748b" />
+                                                <CategoryAxis side="BOTTOM" />
                                             </xAxis>
                                             <yAxis>
-                                                <NumberAxis side="LEFT" tickLabelFill="#64748b" />
+                                                <NumberAxis side="LEFT" />
                                             </yAxis>
-                                        </AreaChart>
+                                        </SmoothAreaChart>
                                     </children>
                                 </VBox>
                             </children>
