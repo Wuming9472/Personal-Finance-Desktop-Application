@@ -215,13 +215,16 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
 
         String selectClause;
         String groupByClause;
+        String orderByClause;
 
         if (groupByDay) {
-            selectClause = "DATE(date) as periodo";
-            groupByClause = "DATE(date)";
+            selectClause = "DATE(date) as periodo_date";
+            groupByClause = "periodo_date";
+            orderByClause = "periodo_date ASC";
         } else {
-            selectClause = "CONCAT(YEAR(date), '-', LPAD(MONTH(date), 2, '0')) as periodo";
-            groupByClause = "YEAR(date), MONTH(date)";
+            selectClause = "YEAR(date) as periodo_year, MONTH(date) as periodo_month";
+            groupByClause = "periodo_year, periodo_month";
+            orderByClause = "periodo_year ASC, periodo_month ASC";
         }
 
         String query = "SELECT " + selectClause + ", " +
@@ -230,7 +233,7 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
                 "FROM movements " +
                 "WHERE user_id = ? AND date >= ? AND date <= ? " +
                 "GROUP BY " + groupByClause + " " +
-                "ORDER BY periodo ASC";
+                "ORDER BY " + orderByClause;
 
         List<javafx.util.Pair<String, javafx.util.Pair<Float, Float>>> data = new ArrayList<>();
 
@@ -243,16 +246,17 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    String periodoKey = rs.getString("periodo");
                     float entrate = rs.getFloat("entrate");
                     float uscite = rs.getFloat("uscite");
 
                     String label;
                     if (groupByDay) {
-                        LocalDate day = LocalDate.parse(periodoKey);
+                        LocalDate day = rs.getDate("periodo_date").toLocalDate();
                         label = day.format(DateTimeFormatter.ofPattern("dd MMM", Locale.ITALIAN));
                     } else {
-                        YearMonth ym = YearMonth.parse(periodoKey);
+                        int year = rs.getInt("periodo_year");
+                        int month = rs.getInt("periodo_month");
+                        YearMonth ym = YearMonth.of(year, month);
                         label = ym.getMonth().getDisplayName(TextStyle.SHORT, Locale.ITALIAN) + " " + ym.getYear();
                     }
 
