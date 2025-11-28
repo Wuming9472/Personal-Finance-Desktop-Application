@@ -28,18 +28,20 @@ public class BudgetDAOMySQLImpl {
         String sql = "SELECT " +
                 "   b.budget_id, " +
                 "   b.category_id, " +
-                "   c.name as cat_name, " +
-                "   b.amount as limit_amount, " +
+                "   c.name AS cat_name, " +
+                "   b.amount AS limit_amount, " +
                 "   COALESCE((SELECT SUM(m.amount) " +
                 "             FROM movements m " +
                 "             WHERE m.category_id = b.category_id " +
                 "               AND m.user_id = b.user_id " +
                 "               AND MONTH(m.date) = b.month " +
                 "               AND YEAR(m.date) = b.year " +
-                "               AND (m.type = 'Uscita' OR m.type = 'Entrata')), 0) as spent_amount " +
+                "               AND m.type = 'Uscita'" +
+                "            ), 0) AS spent_amount " +
                 "FROM budgets b " +
                 "JOIN categories c ON b.category_id = c.category_id " +
                 "WHERE b.user_id = ? AND b.month = ? AND b.year = ?";
+
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
