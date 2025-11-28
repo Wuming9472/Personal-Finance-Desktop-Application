@@ -222,14 +222,7 @@
                                             </children>
                                         </HBox>
 
-                                        <SmoothAreaChart fx:id="chartAndamento" animated="true" createSymbols="false" legendVisible="true" minHeight="250.0" prefHeight="300.0" verticalGridLinesVisible="false">
-                                            <xAxis>
-                                                <CategoryAxis side="BOTTOM" />
-                                            </xAxis>
-                                            <yAxis>
-                                                <NumberAxis side="LEFT" />
-                                            </yAxis>
-                                        </SmoothAreaChart>
+                                        <SmoothAreaChart fx:id="chartAndamento" animated="true" createSymbols="false" legendVisible="true" minHeight="250.0" prefHeight="300.0" verticalGridLinesVisible="false" />
                                     </children>
                                 </VBox>
                             </children>
