@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.AreaChart?>
+<?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
@@ -208,24 +209,26 @@
                             <children>
                                 <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                                     <children>
-                                        <HBox alignment="CENTER_LEFT">
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
                                             <children>
                                                 <Label text="Andamento Finanziario" textFill="#1e293b">
                                                     <font>
                                                         <Font name="System Bold" size="18.0" />
                                                     </font>
                                                 </Label>
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <ComboBox fx:id="cmbRange" prefWidth="160.0" />
                                             </children>
                                         </HBox>
-                                        <!-- CHART: AreaChart per riempimento colore -->
-                                        <AreaChart fx:id="chartAndamento" createSymbols="true" legendVisible="false" minHeight="250.0" prefHeight="300.0" style="-fx-background-color: transparent;" verticalGridLinesVisible="false">
+                                        <!-- CHART: LineChart con punti e legenda -->
+                                        <LineChart fx:id="chartAndamento" createSymbols="true" legendVisible="true" minHeight="250.0" prefHeight="300.0" style="-fx-background-color: transparent;" verticalGridLinesVisible="false">
                                             <xAxis>
                                                 <CategoryAxis side="BOTTOM" tickLabelFill="#64748b" />
                                             </xAxis>
                                             <yAxis>
                                                 <NumberAxis side="LEFT" tickLabelFill="#64748b" />
                                             </yAxis>
-                                        </AreaChart>
+                                        </LineChart>
                                     </children>
                                 </VBox>
                             </children>
