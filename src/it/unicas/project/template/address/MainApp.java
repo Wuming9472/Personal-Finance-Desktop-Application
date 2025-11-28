@@ -185,6 +185,25 @@ public class MainApp extends Application {
         }
     }
 
+    public void showAccountPage() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/Account.fxml"));
+            AnchorPane view = loader.load();
+
+            rootLayout.setCenter(view);
+
+            AccountController controller = loader.getController();
+            controller.setMainApp(this);
+
+            if (rootController != null) {
+                rootController.setPageTitle("Account");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * Apre il dialog per le statistiche compleanni (funzionalità legacy/extra).
      */
@@ -261,6 +280,7 @@ public class MainApp extends Application {
     public User getLoggedUser() {
         return loggedUser;
     }
+
 
 
 

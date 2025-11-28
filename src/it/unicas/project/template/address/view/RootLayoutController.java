@@ -82,6 +82,13 @@ public class RootLayoutController {
     }
 
     @FXML
+    private void handleShowAccount() {
+        if (mainApp != null) {
+            mainApp.showAccountPage();
+        }
+    }
+
+    @FXML
     private void handleAbout() {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("BalanceSuite");

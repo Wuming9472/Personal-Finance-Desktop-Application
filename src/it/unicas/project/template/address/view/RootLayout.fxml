@@ -144,7 +144,7 @@
                </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" layoutX="10.0" layoutY="216.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSettings" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Account" textAlignment="CENTER" textFill="#475569">
+                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" layoutX="10.0" layoutY="216.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowAccount" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Account" textAlignment="CENTER" textFill="#475569">
                     <font>
                         <Font size="20.0" />
                     </font>

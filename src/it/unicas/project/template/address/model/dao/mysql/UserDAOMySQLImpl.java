@@ -42,4 +42,44 @@ public class UserDAOMySQLImpl implements UserDAO {
             return affectedRows > 0;
         }
     }
+
+    public boolean updatePassword(int userId, String oldPwd, String newPwd) throws SQLException {
+
+        String url = getConnectionUrl();
+        String sql = "UPDATE user SET password = ? WHERE user_id = ? AND password = ?";
+
+        try (Connection conn = DriverManager.getConnection(url);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, newPwd);
+            ps.setInt(2, userId);
+            ps.setString(3, oldPwd);
+
+            int rows = ps.executeUpdate();
+            return rows == 1; // true se password cambiata
+        }
+    }
+
+    public boolean deleteUser(int userId) throws SQLException {
+
+        String url = getConnectionUrl();
+        String sql = "DELETE FROM user WHERE user_id = ?";
+
+        try (Connection conn = DriverManager.getConnection(url);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            int rows = ps.executeUpdate();
+
+            return rows == 1; // true se utente eliminato
+        }
+    }
+
+    /** Metodo di utilità se già esiste, altrimenti aggiungilo */
+    private String getConnectionUrl() {
+        DAOMySQLSettings settings = DAOMySQLSettings.getCurrentDAOMySQLSettings();
+        return "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
+                + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
+    }
+
 }

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="700" prefWidth="1000"
+            style="-fx-background-color: #f8fafc;"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="it.unicas.project.template.address.view.AccountController">
+
+    <children>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color:transparent;"
+                    AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                    AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+
+            <content>
+                <VBox spacing="30">
+                    <padding>
+                        <Insets top="30" left="30" right="30" bottom="30"/>
+                    </padding>
+
+                    <!-- TITOLO -->
+                    <Label text="Account" textFill="#1e293b">
+                        <font>
+                            <Font name="System Bold" size="28"/>
+                        </font>
+                    </Label>
+
+                    <!-- CARD PROFILO -->
+                    <AnchorPane style="-fx-background-color:white;
+                                        -fx-background-radius:12;
+                                        -fx-effect:dropshadow(three-pass-box, rgba(0,0,0,0.05),10,0,0,5);">
+                        <children>
+                            <VBox spacing="20"
+                                  AnchorPane.topAnchor="25"
+                                  AnchorPane.bottomAnchor="25"
+                                  AnchorPane.leftAnchor="25"
+                                  AnchorPane.rightAnchor="25">
+
+                                <children>
+
+                                    <!-- Avatar + Username -->
+                                    <HBox spacing="20" alignment="CENTER_LEFT">
+                                        <children>
+                                            <StackPane>
+                                                <Circle radius="30" fill="#eff6ff"
+                                                        stroke="#3b82f6" strokeType="INSIDE"/>
+                                                <Label fx:id="lblInitials" text="?" textFill="#3b82f6">
+                                                    <font><Font name="System Bold" size="20"/></font>
+                                                </Label>
+                                            </StackPane>
+
+                                            <VBox>
+                                                <Label fx:id="lblUsername"
+                                                       text="Username"
+                                                       textFill="#334155">
+                                                    <font><Font name="System Bold" size="20"/></font>
+                                                </Label>
+                                                <Label fx:id="lblEmail"
+                                                       text="email@example.com"
+                                                       textFill="#64748b"/>
+                                            </VBox>
+                                        </children>
+                                    </HBox>
+
+                                    <Separator/>
+
+                                    <!-- CAMBIO PASSWORD -->
+                                    <VBox spacing="12">
+                                        <children>
+                                            <Label text="Cambia password" textFill="#334155">
+                                                <font><Font name="System Bold" size="16"/></font>
+                                            </Label>
+
+                                            <PasswordField fx:id="txtOldPwd"
+                                                           promptText="Password attuale"
+                                                           style="-fx-background-radius:8;"/>
+
+                                            <PasswordField fx:id="txtNewPwd"
+                                                           promptText="Nuova password"
+                                                           style="-fx-background-radius:8;"/>
+
+                                            <PasswordField fx:id="txtRepeatPwd"
+                                                           promptText="Ripeti nuova password"
+                                                           style="-fx-background-radius:8;"/>
+
+                                            <Button text="Salva modifiche"
+                                                    onAction="#handleSaveChanges"
+                                                    style="-fx-background-color:#3b82f6;
+                                                           -fx-text-fill:white;
+                                                           -fx-font-weight:bold;
+                                                           -fx-background-radius:8;"
+                                                    prefWidth="180"/>
+                                        </children>
+                                    </VBox>
+
+                                    <Separator/>
+
+                                    <!-- ELIMINA ACCOUNT -->
+                                    <VBox spacing="10">
+                                        <children>
+                                            <Label text="Operazioni avanzate"
+                                                   textFill="#ef4444">
+                                                <font><Font name="System Bold" size="16"/></font>
+                                            </Label>
+
+                                            <Button text="Elimina account"
+                                                    onAction="#handleDeleteAccount"
+                                                    style="-fx-background-color:#ef4444;
+                                                           -fx-text-fill:white;
+                                                           -fx-font-weight:bold;
+                                                           -fx-background-radius:8;"
+                                                    prefWidth="160"/>
+                                        </children>
+                                    </VBox>
+
+                                </children>
+                            </VBox>
+                        </children>
+                    </AnchorPane>
+
+                </VBox>
+            </content>
+        </ScrollPane>
+    </children>
+</AnchorPane>
