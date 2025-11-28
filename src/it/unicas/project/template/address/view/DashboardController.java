@@ -155,14 +155,20 @@ public class DashboardController {
         chartAndamento.getData().clear(); // Pulisci dati vecchi
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Saldo Mensile");
+        series.setName("Saldo giornaliero");
 
         try {
-            // Recupera i dati dal DAO
-            List<Pair<String, Float>> trendData = dao.getMonthlyTrend(userId);
+            LocalDate now = LocalDate.now();
 
-            for (Pair<String, Float> data : trendData) {
-                series.getData().add(new XYChart.Data<>(data.getKey(), data.getValue()));
+            // Recupera saldo giornaliero del mese corrente
+            List<Pair<Integer, Float>> dailyTrend = dao.getDailyTrend(userId, now.getMonthValue(), now.getYear());
+
+            if (dailyTrend.isEmpty()) {
+                return; // Nessun dato: evitiamo di mostrare un grafico vuoto
+            }
+
+            for (Pair<Integer, Float> data : dailyTrend) {
+                series.getData().add(new XYChart.Data<>(String.valueOf(data.getKey()), data.getValue()));
             }
 
             chartAndamento.getData().add(series);
