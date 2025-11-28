@@ -22,7 +22,13 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
     public SmoothAreaChart() {
         // Creiamo degli assi di default per permettere l'inizializzazione da FXML
         // Il casting (Axis<X>) è necessario per soddisfare i generici
-        super((Axis<X>) new CategoryAxis(), (Axis<Y>) new NumberAxis());
+        NumberAxis defaultYAxis = new NumberAxis();
+        defaultYAxis.setAutoRanging(false);
+        defaultYAxis.setLowerBound(0);
+        defaultYAxis.setUpperBound(100);
+        defaultYAxis.setTickUnit(10);
+
+        super((Axis<X>) new CategoryAxis(), (Axis<Y>) defaultYAxis);
     }
     // -------------------------------------
 
