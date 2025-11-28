@@ -22,13 +22,12 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
     public SmoothAreaChart() {
         // Creiamo degli assi di default per permettere l'inizializzazione da FXML
         // Il casting (Axis<X>) è necessario per soddisfare i generici
-        NumberAxis defaultYAxis = new NumberAxis();
-        defaultYAxis.setAutoRanging(false);
-        defaultYAxis.setLowerBound(0);
-        defaultYAxis.setUpperBound(100);
-        defaultYAxis.setTickUnit(10);
+        super((Axis<X>) new CategoryAxis(), (Axis<Y>) new NumberAxis());
 
-        super((Axis<X>) new CategoryAxis(), (Axis<Y>) defaultYAxis);
+        // Forza l'inclusione dello zero e blocca il grafico sopra l'asse X
+        NumberAxis yAxis = (NumberAxis) getYAxis();
+        yAxis.setForceZeroInRange(true);
+        yAxis.setAutoRanging(true);
     }
     // -------------------------------------
 
@@ -76,6 +75,8 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
 
         smoothElements.add(new MoveTo(points.get(0).x, clampToBaseline(points.get(0).y, baselineY)));
 
+        double yZero = getZeroDisplayPosition();
+
         for (int i = 0; i < points.size() - 1; i++) {
             Point2D p0 = (i > 0) ? points.get(i - 1) : points.get(i);
             Point2D p1 = points.get(i);
@@ -85,7 +86,15 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
             Point2D cp1 = clampToBaseline(getControlPoint(p0, p1, p2, false), baselineY);
             Point2D cp2 = clampToBaseline(getControlPoint(p1, p2, p3, true), baselineY);
 
-            smoothElements.add(new CubicCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p2.x, clampToBaseline(p2.y, baselineY)));
+            double endY = clampToBaseline(p2.y, yZero);
+            smoothElements.add(new CubicCurveTo(
+                    cp1.x,
+                    clampToBaseline(cp1.y, yZero),
+                    cp2.x,
+                    clampToBaseline(cp2.y, yZero),
+                    p2.x,
+                    endY
+            ));
         }
 
         // Applica al percorso della linea
@@ -95,8 +104,7 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
         if (fill != null) {
             List<PathElement> fillElements = new ArrayList<>(smoothElements);
             // Chiudi il percorso di riempimento verso l'asse X
-            double yZero = ((Axis) getYAxis()).getDisplayPosition(0);
-            if (Double.isNaN(yZero)) yZero = baselineY; // Fallback se l'asse non è pronto
+            if (Double.isNaN(yZero)) yZero = getHeight(); // Fallback se l'asse non è pronto
 
             fillElements.add(new LineTo(points.get(points.size() - 1).x, yZero));
             fillElements.add(new LineTo(points.get(0).x, yZero));
@@ -104,6 +112,18 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
 
             fill.getElements().setAll(fillElements);
         }
+    }
+
+    private double clampToBaseline(double yValue, double baseline) {
+        return Math.min(yValue, baseline);
+    }
+
+    private double getZeroDisplayPosition() {
+        double yZero = ((Axis) getYAxis()).getDisplayPosition(0);
+        if (Double.isNaN(yZero)) {
+            yZero = getHeight();
+        }
+        return yZero;
     }
 
     // Calcola i punti di controllo per la curva di Catmull-Rom spline convertita in Bezier

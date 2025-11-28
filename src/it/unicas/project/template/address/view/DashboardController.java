@@ -187,6 +187,7 @@ public class DashboardController {
 
     private void populateChart(MovimentiDAOMySQLImpl dao, int userId) {
         chartAndamento.setAnimated(false);
+        chartAndamento.setCreateSymbols(true);
         chartAndamento.getData().clear();
 
         XYChart.Series<String, Number> serieEntrate = new XYChart.Series<>();
@@ -198,16 +199,31 @@ public class DashboardController {
             int monthsBack = resolveMonthsBack();
             List<Pair<String, Pair<Float, Float>>> trendData = dao.getIncomeExpenseTrend(userId, monthsBack);
 
+            if (!trendData.isEmpty()) {
+                String firstLabel = trendData.get(0).getKey();
+                String abbreviated = abbreviateLabel(firstLabel);
+
+                XYChart.Data<String, Number> incomeBaseline = new XYChart.Data<>(firstLabel, 0);
+                XYChart.Data<String, Number> expenseBaseline = new XYChart.Data<>(firstLabel, 0);
+
+                attachTooltip(incomeBaseline, "Entrate", abbreviated, 0f);
+                attachTooltip(expenseBaseline, "Uscite", abbreviated, 0f);
+
+                serieEntrate.getData().add(incomeBaseline);
+                serieUscite.getData().add(expenseBaseline);
+            }
+
             for (Pair<String, Pair<Float, Float>> point : trendData) {
                 String label = point.getKey();
+                String abbreviated = abbreviateLabel(label);
                 Float entrata = point.getValue().getKey();
                 Float uscita = point.getValue().getValue();
 
                 XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, entrata);
                 XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, uscita);
 
-                attachTooltip(incomeData, "Entrate", label, entrata);
-                attachTooltip(expenseData, "Uscite", label, uscita);
+                attachTooltip(incomeData, "Entrate", abbreviated, entrata);
+                attachTooltip(expenseData, "Uscite", abbreviated, uscita);
 
                 serieEntrate.getData().add(incomeData);
                 serieUscite.getData().add(expenseData);
@@ -287,6 +303,14 @@ public class DashboardController {
         scale.setToY(1.0);
         scale.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
         return scale;
+    }
+
+    private String abbreviateLabel(String label) {
+        if (label == null) {
+            return "";
+        }
+        String trimmed = label.trim();
+        return trimmed.length() > 3 ? trimmed.substring(0, 3) : trimmed;
     }
 
     private static class CustomTooltip extends Tooltip {
