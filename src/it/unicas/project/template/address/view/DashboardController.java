@@ -5,8 +5,9 @@ import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -17,6 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 import java.time.LocalDate;
@@ -28,7 +30,8 @@ public class DashboardController {
     @FXML private Label lblEntrate;
     @FXML private Label lblUscite;
     @FXML private Label lblPrevisione;
-    @FXML private AreaChart<String, Number> chartAndamento;
+    @FXML private LineChart<String, Number> chartAndamento;
+    @FXML private ComboBox<String> cmbRange;
 
     // Contenitore per la lista dinamica
     @FXML private VBox boxUltimiMovimenti;
@@ -42,6 +45,7 @@ public class DashboardController {
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
+        initRangeSelector();
         refreshDashboardData();
     }
 
@@ -151,32 +155,99 @@ public class DashboardController {
         if(lblUscite!=null) lblUscite.setText(text);
     }
 
+    private void initRangeSelector() {
+        cmbRange.getItems().setAll(
+                "Ultimo mese",
+                "Ultimi 3 mesi",
+                "Ultimi 6 mesi",
+                "Ultimo anno"
+        );
+        cmbRange.setValue("Ultimo mese");
+        cmbRange.setOnAction(event -> refreshDashboardData());
+    }
+
+    private int resolveMonthsBack() {
+        String selected = cmbRange.getValue();
+        if (selected == null) {
+            return 1;
+        }
+        switch (selected) {
+            case "Ultimi 3 mesi":
+                return 3;
+            case "Ultimi 6 mesi":
+                return 6;
+            case "Ultimo anno":
+                return 12;
+            default:
+                return 1;
+        }
+    }
+
     private void populateChart(MovimentiDAOMySQLImpl dao, int userId) {
         chartAndamento.getData().clear(); // Pulisci dati vecchi
 
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Saldo giornaliero");
+        XYChart.Series<String, Number> serieEntrate = new XYChart.Series<>();
+        serieEntrate.setName("Entrate");
+        XYChart.Series<String, Number> serieUscite = new XYChart.Series<>();
+        serieUscite.setName("Uscite");
 
         try {
-            LocalDate now = LocalDate.now();
+            int monthsBack = resolveMonthsBack();
+            List<Pair<String, Pair<Float, Float>>> trendData = dao.getIncomeExpenseTrend(userId, monthsBack);
 
-            // Recupera saldo giornaliero del mese corrente
-            List<Pair<Integer, Float>> dailyTrend = dao.getDailyTrend(userId, now.getMonthValue(), now.getYear());
+            for (Pair<String, Pair<Float, Float>> point : trendData) {
+                String label = point.getKey();
+                Float entrata = point.getValue().getKey();
+                Float uscita = point.getValue().getValue();
 
-            if (dailyTrend.isEmpty()) {
-                return; // Nessun dato: evitiamo di mostrare un grafico vuoto
+                XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, entrata);
+                XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, uscita);
+
+                attachTooltip(incomeData, "Entrate", label, entrata);
+                attachTooltip(expenseData, "Uscite", label, uscita);
+
+                serieEntrate.getData().add(incomeData);
+                serieUscite.getData().add(expenseData);
             }
 
-            for (Pair<Integer, Float> data : dailyTrend) {
-                series.getData().add(new XYChart.Data<>(String.valueOf(data.getKey()), data.getValue()));
-            }
-
-            chartAndamento.getData().add(series);
-            chartAndamento.setAnimated(false);
+            chartAndamento.getData().addAll(serieEntrate, serieUscite);
+            chartAndamento.setAnimated(true);
+            stylizeSeries(serieEntrate, "#16a34a");
+            stylizeSeries(serieUscite, "#dc2626");
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Errore caricamento grafico: " + e.getMessage());
+        }
+    }
+
+    private void attachTooltip(XYChart.Data<String, Number> data, String label, String period, Float value) {
+        javafx.scene.control.Tooltip tooltip = new javafx.scene.control.Tooltip(
+                String.format("%s\n%s: € %.2f", label, period, value)
+        );
+        tooltip.setShowDelay(Duration.millis(100));
+        data.nodeProperty().addListener((obs, oldNode, newNode) -> {
+            if (newNode != null) {
+                javafx.scene.control.Tooltip.install(newNode, tooltip);
+            }
+        });
+    }
+
+    private void stylizeSeries(XYChart.Series<String, Number> series, String colorHex) {
+        series.nodeProperty().addListener((obs, oldNode, newNode) -> {
+            if (newNode != null) {
+                newNode.setStyle(String.format("-fx-stroke: %s; -fx-stroke-width: 2px;", colorHex));
+            }
+        });
+
+        for (XYChart.Data<String, Number> item : series.getData()) {
+            item.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                if (newNode != null) {
+                    newNode.setStyle(String.format("-fx-background-color: white, %s;", colorHex));
+                    newNode.setScaleX(1.2);
+                    newNode.setScaleY(1.2);
+                }
+            });
         }
     }
 
