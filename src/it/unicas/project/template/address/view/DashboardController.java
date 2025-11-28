@@ -7,13 +7,14 @@ import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
-import javafx.scene.Node;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -46,6 +47,11 @@ public class DashboardController {
     @FXML
     private void initialize() {
         resetLabels("...");
+        // Animazione di ingresso per il grafico
+        FadeTransition fade = new FadeTransition(Duration.millis(1000), chartAndamento);
+        fade.setFromValue(0);
+        fade.setToValue(1);
+        fade.play();
     }
 
     public void setMainApp(MainApp mainApp) {
@@ -78,6 +84,8 @@ public class DashboardController {
             // 2. Aggiorna Lista Ultimi Movimenti
             List<Movimenti> recent = dao.selectLastByUser(userId, 5); // Ultimi 5
             populateRecentMovements(recent);
+
+            // 3. Popola il grafico con i dati e applica lo stile
             populateChart(dao, userId);
 
         } catch (Exception e) {
@@ -189,7 +197,9 @@ public class DashboardController {
     }
 
     private void populateChart(MovimentiDAOMySQLImpl dao, int userId) {
-        chartAndamento.getData().clear(); // Pulisci dati vecchi
+        // Pulisce i dati vecchi e disabilita l'animazione durante il popolamento
+        chartAndamento.setAnimated(false);
+        chartAndamento.getData().clear();
 
         XYChart.Series<String, Number> serieEntrate = new XYChart.Series<>();
         serieEntrate.setName("Entrate");
@@ -215,10 +225,13 @@ public class DashboardController {
                 serieUscite.getData().add(expenseData);
             }
 
+            // Aggiunge le serie al grafico
             chartAndamento.getData().addAll(serieEntrate, serieUscite);
-            chartAndamento.setAnimated(false);
-            stylizeSeries(serieEntrate, "#16a34a");
-            stylizeSeries(serieUscite, "#dc2626");
+
+            // Riabilita l'animazione e applica lo stile ai nodi (punti)
+            chartAndamento.setAnimated(true);
+            stylizeSeriesNodes(serieEntrate);
+            stylizeSeriesNodes(serieUscite);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -226,91 +239,67 @@ public class DashboardController {
         }
     }
 
-    private void attachTooltip(XYChart.Data<String, Number> data, String label, String period, Float value) {
-        javafx.scene.control.Tooltip tooltip = new javafx.scene.control.Tooltip(
-                String.format("%s\n%s: € %.2f", label, period, value)
-        );
-        tooltip.setShowDelay(Duration.millis(100));
+    private void attachTooltip(XYChart.Data<String, Number> data, String seriesName, String label, Float value) {
+        Tooltip tooltip = new CustomTooltip(String.format("%s\n%s: € %.2f", label, seriesName, value));
         data.nodeProperty().addListener((obs, oldNode, newNode) -> {
             if (newNode != null) {
-                javafx.scene.control.Tooltip.install(newNode, tooltip);
+                Tooltip.install(newNode, tooltip);
             }
         });
     }
 
-    private void stylizeSeries(XYChart.Series<String, Number> series, String colorHex) {
-        series.nodeProperty().addListener((obs, oldNode, newNode) -> {
-            if (newNode != null) {
-                applySeriesStroke(newNode, colorHex);
-                newNode.sceneProperty().addListener((sceneObs, oldScene, newScene) -> {
-                    if (newScene != null) {
-                        Platform.runLater(() -> applySeriesStroke(newNode, colorHex));
-                    }
-                });
-            }
-        });
-
+    // Applica animazioni ai nodi (simboli) delle serie
+    private void stylizeSeriesNodes(XYChart.Series<String, Number> series) {
         int index = 0;
         for (XYChart.Data<String, Number> item : series.getData()) {
             final int nodeIndex = index++;
             item.nodeProperty().addListener((obs, oldNode, newNode) -> {
                 if (newNode != null) {
-                    newNode.setStyle(String.format("-fx-background-color: white, %s; -fx-background-radius: 50%%, 50%%; -fx-padding: 6px;",
-                            toRgba(colorHex, 0.35)));
+                    // Imposta lo stato iniziale per l'animazione
                     newNode.setOpacity(0);
-                    newNode.setScaleX(0.6);
-                    newNode.setScaleY(0.6);
+                    newNode.setScaleX(0);
+                    newNode.setScaleY(0);
 
+                    // Crea l'animazione di apparizione (fade + scale)
                     ParallelTransition appear = new ParallelTransition(
                             createFadeTransition(newNode),
                             createScaleTransition(newNode)
                     );
-                    appear.setDelay(Duration.millis(120L * nodeIndex));
+                    // Aggiunge un ritardo sequenziale per un effetto "a cascata"
+                    appear.setDelay(Duration.millis(100 * nodeIndex));
                     appear.play();
                 }
             });
         }
     }
 
-    private void applySeriesStroke(Node seriesNode, String colorHex) {
-        seriesNode.setStyle(String.format("-fx-stroke: %s; -fx-stroke-width: 2px; -fx-stroke-line-cap: round; -fx-stroke-line-join: round;", colorHex));
-
-        Node fillRegion = seriesNode.lookup(".chart-series-area-fill");
-        if (fillRegion != null) {
-            fillRegion.setStyle(String.format("-fx-fill: linear-gradient(to bottom, %s 0%%, %s 100%%);",
-                    toRgba(colorHex, 0.35), toRgba(colorHex, 0.05)));
-        }
-
-        Node line = seriesNode.lookup(".chart-series-area-line");
-        if (line != null) {
-            line.setStyle(String.format("-fx-stroke: %s; -fx-stroke-width: 2px; -fx-stroke-line-cap: round; -fx-stroke-line-join: round;", colorHex));
-        }
-    }
-
     private FadeTransition createFadeTransition(Node node) {
-        FadeTransition fade = new FadeTransition(Duration.millis(450), node);
+        FadeTransition fade = new FadeTransition(Duration.millis(600), node);
         fade.setFromValue(0);
         fade.setToValue(1);
-        fade.setInterpolator(javafx.animation.Interpolator.EASE_BOTH);
+        fade.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
         return fade;
     }
 
     private ScaleTransition createScaleTransition(Node node) {
-        ScaleTransition scale = new ScaleTransition(Duration.millis(450), node);
-        scale.setFromX(0.6);
-        scale.setFromY(0.6);
+        ScaleTransition scale = new ScaleTransition(Duration.millis(600), node);
+        scale.setFromX(0);
+        scale.setFromY(0);
         scale.setToX(1.0);
         scale.setToY(1.0);
+        // Effetto rimbalzo per un look più moderno
         scale.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
         return scale;
     }
 
-    private String toRgba(String hexColor, double opacity) {
-        Color color = Color.web(hexColor);
-        int r = (int) Math.round(color.getRed() * 255);
-        int g = (int) Math.round(color.getGreen() * 255);
-        int b = (int) Math.round(color.getBlue() * 255);
-        return String.format("rgba(%d,%d,%d,%.2f)", r, g, b, opacity);
+    // Classe interna per Tooltip personalizzati
+    private static class CustomTooltip extends Tooltip {
+        public CustomTooltip(String text) {
+            super(text);
+            this.getStyleClass().add("chart-tooltip"); // Applica lo stile CSS
+            this.setShowDelay(Duration.millis(50));
+            this.setHideDelay(Duration.millis(50));
+            this.setAutoHide(true);
+        }
     }
-
 }

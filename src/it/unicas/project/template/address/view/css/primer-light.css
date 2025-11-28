@@ -5006,3 +5006,87 @@ Text {
        usa quello che l'utente ha messo nel FXML (Scene Builder)" */
     -fx-text-fill: inherit !important;
 }
+
+/* =========================================================================
+   MODIFICHE GRAFICO DASHBOARD - STILE "WOW"
+   Incollare alla fine di primer-light.css
+   ========================================================================= */
+
+/* Rimuove il rumore visivo dal grafico */
+.chart-vertical-grid-lines, .chart-horizontal-grid-lines {
+    -fx-stroke: transparent !important;
+}
+.chart-plot-background {
+    -fx-background-color: transparent !important;
+}
+
+/* Personalizzazione degli Assi */
+.axis {
+    -fx-tick-label-font-size: 0.9em;
+    -fx-tick-label-fill: -color-fg-muted; /* Usa variabile del tema */
+}
+.axis:bottom {
+    -fx-border-color: transparent;
+}
+.axis:left {
+    -fx-border-color: transparent;
+}
+
+/* --- SERIE 0: ENTRATE (Verde Smeraldo) --- */
+.default-color0.chart-series-area-line {
+    -fx-stroke: #10b981 !important;
+    -fx-stroke-width: 3px !important;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.3), 10, 0, 0, 5);
+}
+.default-color0.chart-series-area-fill {
+    /* Gradiente sfumato verso il basso */
+    -fx-fill: linear-gradient(to bottom, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0.02) 100%) !important;
+}
+.default-color0.chart-area-symbol {
+    -fx-background-color: #10b981, white !important;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 50%; /* Cerchio perfetto */
+    -fx-padding: 5px; /* Dimensione del pallino */
+}
+
+/* --- SERIE 1: USCITE (Rosso/Rosa) --- */
+.default-color1.chart-series-area-line {
+    -fx-stroke: #ef4444 !important;
+    -fx-stroke-width: 3px !important;
+    -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.3), 10, 0, 0, 5);
+}
+.default-color1.chart-series-area-fill {
+    -fx-fill: linear-gradient(to bottom, rgba(239, 68, 68, 0.25) 0%, rgba(239, 68, 68, 0.02) 100%) !important;
+}
+.default-color1.chart-area-symbol {
+    -fx-background-color: #ef4444, white !important;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 50%;
+    -fx-padding: 5px;
+}
+
+/* --- TOOLTIP FLOTTANTI --- */
+.chart-tooltip {
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 8px;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1px;
+    -fx-padding: 8px 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0, 0, 4);
+    -fx-text-fill: -color-fg-default;
+    -fx-font-weight: bold;
+    -fx-font-size: 0.9em;
+}
+
+/* --- LEGENDA --- */
+.chart-legend {
+    -fx-background-color: transparent !important;
+    -fx-padding: 15px;
+}
+.chart-legend-item-symbol {
+    -fx-background-radius: 50% !important; /* Pallini rotondi nella legenda */
+}
+.chart-legend-item-label {
+    -fx-text-fill: -color-fg-muted !important;
+    -fx-font-weight: bold;
+}
