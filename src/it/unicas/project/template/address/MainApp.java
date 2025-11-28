@@ -24,6 +24,7 @@ public class MainApp extends Application {
 
     private User loggedUser;
 
+    private BudgetController budgetController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -172,6 +173,9 @@ public class MainApp extends Application {
             BudgetController controller = loader.getController();
             controller.setMainApp(this);
 
+            // *** Salvo il riferimento al controller del budget
+            this.budgetController = controller;
+
             if (rootController != null) {
                 rootController.setPageTitle("Pianificazione Budget");
             }
@@ -257,5 +261,7 @@ public class MainApp extends Application {
     public User getLoggedUser() {
         return loggedUser;
     }
+
+
 
 }
