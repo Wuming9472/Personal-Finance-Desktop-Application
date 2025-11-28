@@ -172,6 +172,7 @@ public class DashboardController {
             }
 
             chartAndamento.getData().add(series);
+            chartAndamento.setAnimated(false);
 
         } catch (Exception e) {
             e.printStackTrace();
