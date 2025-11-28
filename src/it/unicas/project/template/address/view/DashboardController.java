@@ -159,13 +159,14 @@ public class DashboardController {
 
         try {
             // Recupera i dati dal DAO
-            List<Pair<String, Float>> trendData = dao.getMonthlyTrend(userId);
+            List<Pair<String, Float>> trendData = dao.getMonthlyTrend(userId, LocalDate.now().getMonthValue(), LocalDate.now().getYear());
 
             for (Pair<String, Float> data : trendData) {
                 series.getData().add(new XYChart.Data<>(data.getKey(), data.getValue()));
             }
 
             chartAndamento.getData().add(series);
+            chartAndamento.setAnimated(false);
 
         } catch (Exception e) {
             e.printStackTrace();

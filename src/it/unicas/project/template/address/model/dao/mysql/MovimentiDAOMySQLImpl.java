@@ -4,6 +4,7 @@ import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.DAO;
 import it.unicas.project.template.address.model.dao.DAOException;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import  javafx.util.Pair;
@@ -153,29 +154,46 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
         return total;
     }
 
-    public List<javafx.util.Pair<String, Float>> getMonthlyTrend(int userId) throws SQLException {
+    public List<javafx.util.Pair<String, Float>> getMonthlyTrend(int userId, int month, int year) throws SQLException {
         List<javafx.util.Pair<String, Float>> data = new ArrayList<>();
 
-        // QUERY CORRETTA E ROBUSTA
-        // 1. Raggruppa per anno-mese formattato
-        // 2. Gestisce sia italiano (entrata) che inglese (income) e maiuscole/minuscole
-        String query = "SELECT DATE_FORMAT(date, '%Y-%m') as mese, " +
+        String query = "SELECT DATE(date) as giorno, " +
                 "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE -amount END) as saldo " +
                 "FROM movements " +
-                "WHERE user_id = ? " +
-                "GROUP BY DATE_FORMAT(date, '%Y-%m') " +
-                "ORDER BY mese ASC LIMIT 12";
+                "WHERE user_id = ? AND MONTH(date) = ? AND YEAR(date) = ? " +
+                "GROUP BY DATE(date) " +
+                "ORDER BY giorno ASC";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setInt(1, userId);
+            pstmt.setInt(2, month);
+            pstmt.setInt(3, year);
 
             try (ResultSet rs = pstmt.executeQuery()) {
+                float runningBalance = 0f;
+                boolean firstPointAdded = false;
+
                 while (rs.next()) {
-                    String mese = rs.getString("mese");
+                    LocalDate giorno = rs.getDate("giorno").toLocalDate();
                     float saldo = rs.getFloat("saldo");
-                    data.add(new javafx.util.Pair<>(mese, saldo));
+
+                    if (!firstPointAdded) {
+                        // Punto iniziale per dare ancoraggio al grafico
+                        LocalDate firstDay = LocalDate.of(year, month, 1);
+                        data.add(new javafx.util.Pair<>(firstDay.getDayOfMonth() + "", 0f));
+                        firstPointAdded = true;
+                    }
+
+                    runningBalance += saldo;
+                    data.add(new javafx.util.Pair<>(giorno.getDayOfMonth() + "", runningBalance));
+                }
+
+                // Se non ci sono movimenti, restituiamo un punto base per evitare grafici vuoti
+                if (!firstPointAdded) {
+                    LocalDate firstDay = LocalDate.of(year, month, 1);
+                    data.add(new javafx.util.Pair<>(firstDay.getDayOfMonth() + "", 0f));
                 }
             }
         }
