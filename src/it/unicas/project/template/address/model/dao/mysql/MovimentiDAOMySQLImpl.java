@@ -5,10 +5,6 @@ import it.unicas.project.template.address.model.dao.DAO;
 import it.unicas.project.template.address.model.dao.DAOException;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 import  javafx.util.Pair;
@@ -158,7 +154,39 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
         return total;
     }
 
-    public List<javafx.util.Pair<String, Float>> getMonthlyTrend(int userId, int month, int year) throws SQLException {
+    /**
+     * Restituisce l'andamento giornaliero (saldo netto) per un determinato mese.
+     * Ogni elemento contiene il giorno del mese e il saldo (entrate - uscite) di quel giorno.
+     */
+    public List<javafx.util.Pair<Integer, Float>> getDailyTrend(int userId, int month, int year) throws SQLException {
+        List<javafx.util.Pair<Integer, Float>> data = new ArrayList<>();
+
+        String query = "SELECT DAY(date) as giorno, " +
+                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE -amount END) as saldo " +
+                "FROM movements " +
+                "WHERE user_id = ? AND MONTH(date) = ? AND YEAR(date) = ? " +
+                "GROUP BY DAY(date) " +
+                "ORDER BY giorno ASC";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, month);
+            pstmt.setInt(3, year);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int giorno = rs.getInt("giorno");
+                    float saldo = rs.getFloat("saldo");
+                    data.add(new javafx.util.Pair<>(giorno, saldo));
+                }
+            }
+        }
+        return data;
+    }
+
+    public List<javafx.util.Pair<String, Float>> getMonthlyTrend(int userId) throws SQLException {
         List<javafx.util.Pair<String, Float>> data = new ArrayList<>();
 
         String query = "SELECT DATE(date) as giorno, " +
@@ -201,66 +229,6 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
                 }
             }
         }
-        return data;
-    }
-
-    public List<javafx.util.Pair<String, javafx.util.Pair<Float, Float>>> getIncomeExpenseTrend(int userId, int monthsBack) throws SQLException {
-        if (monthsBack <= 0) {
-            throw new IllegalArgumentException("monthsBack must be positive");
-        }
-
-        LocalDate startDate = LocalDate.now().minusMonths(monthsBack).withDayOfMonth(1);
-        LocalDate today = LocalDate.now();
-        boolean groupByDay = monthsBack == 1;
-
-        String selectClause;
-        String groupByClause;
-
-        if (groupByDay) {
-            selectClause = "DATE(date) as periodo";
-            groupByClause = "DATE(date)";
-        } else {
-            selectClause = "CONCAT(YEAR(date), '-', LPAD(MONTH(date), 2, '0')) as periodo";
-            groupByClause = "YEAR(date), MONTH(date)";
-        }
-
-        String query = "SELECT " + selectClause + ", " +
-                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as entrate, " +
-                "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as uscite " +
-                "FROM movements " +
-                "WHERE user_id = ? AND date >= ? AND date <= ? " +
-                "GROUP BY " + groupByClause + " " +
-                "ORDER BY periodo ASC";
-
-        List<javafx.util.Pair<String, javafx.util.Pair<Float, Float>>> data = new ArrayList<>();
-
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setInt(1, userId);
-            pstmt.setDate(2, Date.valueOf(startDate));
-            pstmt.setDate(3, Date.valueOf(today));
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    String periodoKey = rs.getString("periodo");
-                    float entrate = rs.getFloat("entrate");
-                    float uscite = rs.getFloat("uscite");
-
-                    String label;
-                    if (groupByDay) {
-                        LocalDate day = LocalDate.parse(periodoKey);
-                        label = day.format(DateTimeFormatter.ofPattern("dd MMM", Locale.ITALIAN));
-                    } else {
-                        YearMonth ym = YearMonth.parse(periodoKey);
-                        label = ym.getMonth().getDisplayName(TextStyle.SHORT, Locale.ITALIAN) + " " + ym.getYear();
-                    }
-
-                    data.add(new javafx.util.Pair<>(label, new javafx.util.Pair<>(entrate, uscite)));
-                }
-            }
-        }
-
         return data;
     }
 
