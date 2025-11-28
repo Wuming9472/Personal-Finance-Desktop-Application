@@ -67,7 +67,13 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
 
         // Genera i segmenti curvi
         List<PathElement> smoothElements = new ArrayList<>();
-        smoothElements.add(new MoveTo(points.get(0).x, points.get(0).y));
+
+        double yZero = ((Axis) getYAxis()).getDisplayPosition(0);
+        double baselineY = Double.isNaN(yZero)
+                ? points.stream().mapToDouble(p -> p.y).max().orElse(getHeight())
+                : yZero;
+
+        smoothElements.add(new MoveTo(points.get(0).x, clampToBaseline(points.get(0).y, baselineY)));
 
         double yZero = getZeroDisplayPosition();
 
@@ -77,8 +83,8 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
             Point2D p2 = points.get(i + 1);
             Point2D p3 = (i < points.size() - 2) ? points.get(i + 2) : points.get(i + 1);
 
-            Point2D cp1 = getControlPoint(p0, p1, p2, false);
-            Point2D cp2 = getControlPoint(p1, p2, p3, true);
+            Point2D cp1 = clampToBaseline(getControlPoint(p0, p1, p2, false), baselineY);
+            Point2D cp2 = clampToBaseline(getControlPoint(p1, p2, p3, true), baselineY);
 
             double endY = clampToBaseline(p2.y, yZero);
             smoothElements.add(new CubicCurveTo(
@@ -139,6 +145,14 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
                     p1.y + (tension * (p2.y - p0.y) * d1) / (d1 + d2)
             );
         }
+    }
+
+    private double clampToBaseline(double value, double baseline) {
+        return Math.min(value, baseline);
+    }
+
+    private Point2D clampToBaseline(Point2D point, double baseline) {
+        return new Point2D(point.x, clampToBaseline(point.y, baseline));
     }
 
     private static class Point2D {
