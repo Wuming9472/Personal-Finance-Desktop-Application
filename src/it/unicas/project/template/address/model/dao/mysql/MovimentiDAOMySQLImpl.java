@@ -154,7 +154,39 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
         return total;
     }
 
-    public List<javafx.util.Pair<String, Float>> getMonthlyTrend(int userId, int month, int year) throws SQLException {
+    /**
+     * Restituisce l'andamento giornaliero (saldo netto) per un determinato mese.
+     * Ogni elemento contiene il giorno del mese e il saldo (entrate - uscite) di quel giorno.
+     */
+    public List<javafx.util.Pair<Integer, Float>> getDailyTrend(int userId, int month, int year) throws SQLException {
+        List<javafx.util.Pair<Integer, Float>> data = new ArrayList<>();
+
+        String query = "SELECT DAY(date) as giorno, " +
+                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE -amount END) as saldo " +
+                "FROM movements " +
+                "WHERE user_id = ? AND MONTH(date) = ? AND YEAR(date) = ? " +
+                "GROUP BY DAY(date) " +
+                "ORDER BY giorno ASC";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, month);
+            pstmt.setInt(3, year);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int giorno = rs.getInt("giorno");
+                    float saldo = rs.getFloat("saldo");
+                    data.add(new javafx.util.Pair<>(giorno, saldo));
+                }
+            }
+        }
+        return data;
+    }
+
+    public List<javafx.util.Pair<String, Float>> getMonthlyTrend(int userId) throws SQLException {
         List<javafx.util.Pair<String, Float>> data = new ArrayList<>();
 
         String query = "SELECT DATE(date) as giorno, " +

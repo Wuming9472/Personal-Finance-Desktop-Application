@@ -218,7 +218,7 @@
                                             </children>
                                         </HBox>
                                         <!-- CHART: AreaChart per riempimento colore -->
-                                        <AreaChart fx:id="chartAndamento" createSymbols="false" legendVisible="false" minHeight="250.0" prefHeight="300.0" style="-fx-background-color: transparent;" verticalGridLinesVisible="false">
+                                        <AreaChart fx:id="chartAndamento" createSymbols="true" legendVisible="false" minHeight="250.0" prefHeight="300.0" style="-fx-background-color: transparent;" verticalGridLinesVisible="false">
                                             <xAxis>
                                                 <CategoryAxis side="BOTTOM" tickLabelFill="#64748b" />
                                             </xAxis>
