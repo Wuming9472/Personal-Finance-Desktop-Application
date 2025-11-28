@@ -13,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 // IMPORTANTE: Usa SmoothAreaChart invece di AreaChart
 import it.unicas.project.template.address.view.SmoothAreaChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -59,6 +60,7 @@ public class DashboardController {
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
+        setupChartAppearance();
         initRangeSelector();
         refreshDashboardData();
     }
@@ -200,19 +202,22 @@ public class DashboardController {
             List<Pair<String, Pair<Float, Float>>> trendData = dao.getIncomeExpenseTrend(userId, monthsBack);
 
             if (!trendData.isEmpty()) {
-                String firstLabel = trendData.get(0).getKey();
-                String abbreviated = abbreviateLabel(firstLabel);
+                // Creo un'etichetta "origine" DISTINTA dalla prima data reale
+                // usando uno spazio Unicode invisibile per non mostrare testo sull'asse
+                String originLabel = "\u200B"; // Zero-width space - invisibile ma diverso da qualsiasi data
 
-                XYChart.Data<String, Number> incomeBaseline = new XYChart.Data<>(firstLabel, 0);
-                XYChart.Data<String, Number> expenseBaseline = new XYChart.Data<>(firstLabel, 0);
+                XYChart.Data<String, Number> incomeOrigin = new XYChart.Data<>(originLabel, 0);
+                XYChart.Data<String, Number> expenseOrigin = new XYChart.Data<>(originLabel, 0);
 
-                attachTooltip(incomeBaseline, "Entrate", abbreviated, 0f);
-                attachTooltip(expenseBaseline, "Uscite", abbreviated, 0f);
+                attachTooltip(incomeOrigin, "Entrate", "Inizio", 0f);
+                attachTooltip(expenseOrigin, "Uscite", "Inizio", 0f);
 
-                serieEntrate.getData().add(incomeBaseline);
-                serieUscite.getData().add(expenseBaseline);
+                // Aggiungo il punto origine come PRIMO punto di ogni serie
+                serieEntrate.getData().add(incomeOrigin);
+                serieUscite.getData().add(expenseOrigin);
             }
 
+            // Ora aggiungo i dati reali (senza duplicare il primo punto)
             for (Pair<String, Pair<Float, Float>> point : trendData) {
                 String label = point.getKey();
                 String abbreviated = abbreviateLabel(label);
@@ -244,6 +249,35 @@ public class DashboardController {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Errore caricamento grafico: " + e.getMessage());
+        }
+    }
+
+    // Aggiungi dopo il metodo populateChart()
+    private void setupChartAppearance() {
+        chartAndamento.setLegendVisible(true);
+        chartAndamento.setCreateSymbols(true);
+        chartAndamento.setAnimated(true);
+
+        // Rimuovi padding eccessivo
+        chartAndamento.setPadding(new javafx.geometry.Insets(0));
+
+        // Configura gli assi per un look pulito
+        if (chartAndamento.getXAxis() != null) {
+            chartAndamento.getXAxis().setTickLabelRotation(0);
+        }
+
+        if (chartAndamento.getYAxis() instanceof NumberAxis) {
+            NumberAxis yAxis = (NumberAxis) chartAndamento.getYAxis();
+            yAxis.setTickLabelFormatter(new javafx.util.StringConverter<Number>() {
+                @Override
+                public String toString(Number n) {
+                    return String.format("€%.0f", n.doubleValue());
+                }
+                @Override
+                public Number fromString(String s) {
+                    return null;
+                }
+            });
         }
     }
 
