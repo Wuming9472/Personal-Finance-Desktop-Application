@@ -1,5 +1,6 @@
 package it.unicas.project.template.address.view;
 
+import javafx.animation.PauseTransition;
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
@@ -214,14 +215,50 @@ public class DashboardController {
 
             chartAndamento.getData().addAll(serieEntrate, serieUscite);
 
-            // Riabilita l'animazione e applica lo stile ai nodi (punti)
-            chartAndamento.setAnimated(true);
-            stylizeSeriesNodes(serieEntrate);
-            stylizeSeriesNodes(serieUscite);
+            // Dopo che il grafico è renderizzato, anima i dati
+            Platform.runLater(() -> {
+                chartAndamento.setAnimated(true);
+
+                // Anima l'ingresso dei dati
+                for (XYChart.Series<String, Number> series : chartAndamento.getData()) {
+                    animateChartDataAppearance(series);
+                }
+            });
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Errore caricamento grafico: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Anima l'ingresso progressivo dei dati del grafico con delay scaglionato
+     */
+    private void animateChartDataAppearance(XYChart.Series<String, Number> series) {
+        int delay = 0;
+        for (XYChart.Data<String, Number> data : series.getData()) {
+            // Inizia con opacità 0 e scala piccola
+            if (data.getNode() != null) {
+                data.getNode().setOpacity(0);
+                data.getNode().setScaleX(0.8);
+                data.getNode().setScaleY(0.8);
+            }
+
+            // Crea transizione con delay progressivo
+            final int currentDelay = delay;
+            PauseTransition pause = new PauseTransition(Duration.millis(currentDelay));
+            pause.setOnFinished(event -> {
+                if (data.getNode() != null) {
+                    ParallelTransition transition = new ParallelTransition(
+                            createFadeTransition(data.getNode()),
+                            createScaleTransition(data.getNode())
+                    );
+                    transition.play();
+                }
+            });
+            pause.play();
+
+            delay += 50; // Incrementa il delay per ogni punto (50ms)
         }
     }
 
@@ -232,27 +269,6 @@ public class DashboardController {
                 Tooltip.install(newNode, tooltip);
             }
         });
-    }
-
-    private void stylizeSeriesNodes(XYChart.Series<String, Number> series) {
-        int index = 0;
-        for (XYChart.Data<String, Number> item : series.getData()) {
-            final int nodeIndex = index++;
-            item.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                if (newNode != null) {
-                    newNode.setOpacity(0);
-                    newNode.setScaleX(0);
-                    newNode.setScaleY(0);
-
-                    ParallelTransition appear = new ParallelTransition(
-                            createFadeTransition(newNode),
-                            createScaleTransition(newNode)
-                    );
-                    appear.setDelay(Duration.millis(100 * nodeIndex));
-                    appear.play();
-                }
-            });
-        }
     }
 
     private FadeTransition createFadeTransition(Node node) {
