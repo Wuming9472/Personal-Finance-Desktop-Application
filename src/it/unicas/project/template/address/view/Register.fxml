@@ -74,7 +74,7 @@
                                                 <SVGPath content="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z" fill="#94a3b8" scaleX="0.7" scaleY="0.7" />
                                             </children>
                                         </StackPane>
-                                        <PasswordField fx:id="passwordField" promptText="Almeno 6 caratteri" style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS" />
+                                        <PasswordField fx:id="passwordField" promptText="Almeno 4 caratteri" style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS" />
                                     </children>
                                 </HBox>
                             </children>

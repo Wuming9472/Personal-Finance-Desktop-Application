@@ -1,6 +1,7 @@
 package it.unicas.project.template.address.model.dao.mysql;
 
 import it.unicas.project.template.address.model.dao.UserDAO;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,21 +12,26 @@ public class UserDAOMySQLImpl implements UserDAO {
 
     private Connection getConnection() throws SQLException {
         DAOMySQLSettings settings = DAOMySQLSettings.getCurrentDAOMySQLSettings();
-        String connectionString = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
-                + "?user=" + settings.getUserName()
-                + "&password=" + settings.getPwd();
+        String connectionString =
+                "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
+                        + "?user=" + settings.getUserName()
+                        + "&password=" + settings.getPwd();
         return DriverManager.getConnection(connectionString);
     }
 
     @Override
     public boolean authenticate(String username, String password) throws SQLException {
-        String query = "SELECT count(*) FROM users WHERE username = ? AND password = ?";
+        String query = "SELECT COUNT(*) FROM users WHERE username = ? AND password = ?";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
+
             pstmt.setString(1, username);
             pstmt.setString(2, password);
+
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) return rs.getInt(1) > 0;
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
         }
         return false;
@@ -36,19 +42,23 @@ public class UserDAOMySQLImpl implements UserDAO {
         String query = "INSERT INTO users (username, password) VALUES (?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
+
             pstmt.setString(1, username);
             pstmt.setString(2, password);
+
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         }
     }
 
-    public boolean updatePassword(int userId, String oldPwd, String newPwd) throws SQLException {
+    /**
+     * Aggiorna la password sapendo user_id e vecchia password.
+     * Restituisce true se è stata aggiornata esattamente una riga.
+     */
+    public boolean updatePassword(int userId, String oldPwd, String newPwd) {
+        String sql = "UPDATE users SET password = ? WHERE user_id = ? AND password = ?";
 
-        String url = getConnectionUrl();
-        String sql = "UPDATE user SET password = ? WHERE user_id = ? AND password = ?";
-
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, newPwd);
@@ -56,30 +66,62 @@ public class UserDAOMySQLImpl implements UserDAO {
             ps.setString(3, oldPwd);
 
             int rows = ps.executeUpdate();
-            return rows == 1; // true se password cambiata
+            return rows == 1;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
-    public boolean deleteUser(int userId) throws SQLException {
+    /**
+     * Elimina l'utente con lo user_id indicato.
+     * Restituisce true se è stata eliminata esattamente una riga.
+     */
+    public boolean deleteUser(int userId) {
+        String[] tablesToDelete = {
+                "DELETE FROM movements WHERE user_id = ?",
+                "DELETE FROM budgets WHERE user_id = ?",
+                "DELETE FROM users WHERE user_id = ?"
+        };
 
-        String url = getConnectionUrl();
-        String sql = "DELETE FROM user WHERE user_id = ?";
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);  // inizio transazione
 
-        try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (String sql : tablesToDelete) {
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setInt(1, userId);
+                    ps.executeUpdate();
+                }
+            }
 
-            ps.setInt(1, userId);
-            int rows = ps.executeUpdate();
+            conn.commit();  // conferma transazione
+            return true;
 
-            return rows == 1; // true se utente eliminato
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();  // annulla transazione
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            return false;
+
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);  // ritorna al default
+                    conn.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
-    /** Metodo di utilità se già esiste, altrimenti aggiungilo */
-    private String getConnectionUrl() {
-        DAOMySQLSettings settings = DAOMySQLSettings.getCurrentDAOMySQLSettings();
-        return "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
-                + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
-    }
 
 }

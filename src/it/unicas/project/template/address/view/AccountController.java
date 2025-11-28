@@ -4,48 +4,71 @@ import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.dao.mysql.UserDAOMySQLImpl;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 
 public class AccountController {
 
-    @FXML private Label lblUserId;
-    @FXML private PasswordField oldPasswordField;
-    @FXML private PasswordField newPasswordField;
+    @FXML private Label lblInitials;
+    @FXML private Label lblUsername;
+
+    @FXML private PasswordField txtOldPwd;
+    @FXML private PasswordField txtNewPwd;
+    @FXML private PasswordField txtRepeatPwd;
 
     private MainApp mainApp;
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
 
-        // Mostro l'ID utente
-        int id = mainApp.getLoggedUser().getUser_id();
-        lblUserId.setText("Utente #" + id);
+        // Popola solo username e initials
+        var user = mainApp.getLoggedUser();
+        if (user != null) {
+            String username = user.getUsername();
+
+            lblUsername.setText(username != null ? username : "Username");
+
+            if (username != null && !username.isEmpty()) {
+                lblInitials.setText(username.substring(0, 1).toUpperCase());
+            } else {
+                lblInitials.setText("?");
+            }
+        }
     }
 
-    // 🔵 Questo è il metodo che mancava!
     @FXML
     private void handleSaveChanges() {
         try {
             int userId = mainApp.getLoggedUser().getUser_id();
-            String oldP = oldPasswordField.getText();
-            String newP = newPasswordField.getText();
+            String oldP = txtOldPwd.getText();
+            String newP = txtNewPwd.getText();
+            String repP = txtRepeatPwd.getText();
 
-            if (oldP.isEmpty() || newP.isEmpty()) {
+            if (oldP.isEmpty() || newP.isEmpty() || repP.isEmpty()) {
                 showError("Compila tutti i campi.");
                 return;
             }
 
-            UserDAOMySQLImpl dao = new UserDAOMySQLImpl();
+            if (newP.length() < 4) {
+                showError("La nuova password deve contenere almeno 4 caratteri.");
+                return;
+            }
 
+            if (!newP.equals(repP)) {
+                showError("Le nuove password non coincidono.");
+                return;
+            }
+
+            UserDAOMySQLImpl dao = new UserDAOMySQLImpl();
             boolean ok = dao.updatePassword(userId, oldP, newP);
 
             if (ok) {
                 showInfo("Password aggiornata correttamente!");
-                oldPasswordField.clear();
-                newPasswordField.clear();
+                txtOldPwd.clear();
+                txtNewPwd.clear();
+                txtRepeatPwd.clear();
             } else {
-                showError("La password attuale è errata.");
+                showError("La password attuale è errata o l'utente non esiste.");
             }
 
         } catch (Exception e) {
@@ -53,6 +76,7 @@ public class AccountController {
             showError("Errore interno: " + e.getMessage());
         }
     }
+
 
     @FXML
     private void handleDeleteAccount() {

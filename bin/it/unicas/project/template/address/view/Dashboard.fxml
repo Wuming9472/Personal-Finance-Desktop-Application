@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.AreaChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.ComboBox?>
@@ -221,14 +221,14 @@
                                             </children>
                                         </HBox>
                                         <!-- CHART: LineChart con punti e legenda -->
-                                        <LineChart fx:id="chartAndamento" createSymbols="true" legendVisible="true" minHeight="250.0" prefHeight="300.0" style="-fx-background-color: transparent;" verticalGridLinesVisible="false">
+                                        <AreaChart fx:id="chartAndamento" createSymbols="true" legendVisible="true" minHeight="250.0" prefHeight="300.0" style="-fx-background-color: transparent; -fx-stroke-line-cap: round; -fx-stroke-line-join: round;" verticalGridLinesVisible="false">
                                             <xAxis>
                                                 <CategoryAxis side="BOTTOM" tickLabelFill="#64748b" />
                                             </xAxis>
                                             <yAxis>
                                                 <NumberAxis side="LEFT" tickLabelFill="#64748b" />
                                             </yAxis>
-                                        </LineChart>
+                                        </AreaChart>
                                     </children>
                                 </VBox>
                             </children>
