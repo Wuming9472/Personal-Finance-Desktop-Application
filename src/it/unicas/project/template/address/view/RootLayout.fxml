@@ -86,8 +86,7 @@
                         <!-- Menu a tendina col nome -->
                         <MenuButton fx:id="btnUser" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Utente">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#handleSettings" text="Configurazione" />
-                                <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="Informazioni" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleSettings" text="Impostazioni" />
                                 <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Logout" />
                             </items>
                             <font>

@@ -17,7 +17,6 @@
 
             <children>
 
-                <!-- HEADER -->
                 <HBox alignment="CENTER_LEFT">
                     <children>
                         <VBox>
@@ -46,7 +45,6 @@
                     </children>
                 </HBox>
 
-                <!-- SCROLL PANE PER I BUDGET -->
                 <ScrollPane fitToWidth="true" onDragDetected="#handleEditBudget" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
                     <content>
                         <GridPane hgap="20.0" vgap="20.0">
@@ -57,10 +55,11 @@
                             <rowConstraints>
                                 <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
 
-                                <!-- CARD 1: ALIMENTARI -->
                                 <VBox spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
                                     <padding>
                                         <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
@@ -85,7 +84,7 @@
                                                                 <Font name="System Bold" size="18.0" />
                                                             </font>
                                                         </Label>
-                                                        <Label fx:id="foodRemainingLabel" text="Rimasti: € 279.50" textFill="#10b981">
+                                                        <Label fx:id="foodRemainingLabel" text="Rimasti: € 0.00" textFill="#10b981">
                                                             <font>
                                                                 <Font name="System Bold" size="13.0" />
                                                             </font>
@@ -93,7 +92,7 @@
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
-                                                <Label fx:id="foodPercentageLabel" text="30%" textFill="#94a3b8">
+                                                <Label fx:id="foodPercentageLabel" text="0%" textFill="#94a3b8">
                                                     <font>
                                                         <Font name="System Bold" size="18.0" />
                                                     </font>
@@ -104,18 +103,17 @@
                                             <children>
                                                 <HBox>
                                                     <children>
-                                                        <Label fx:id="foodSpentLabel" text="Spesi: € 120.50" textFill="#64748b" />
+                                                        <Label fx:id="foodSpentLabel" text="Spesi: € 0.00" textFill="#64748b" />
                                                         <Region HBox.hgrow="ALWAYS" />
-                                                        <Label fx:id="foodLimitLabel" text="Limite: € 400.00" textFill="#64748b" />
+                                                        <Label fx:id="foodLimitLabel" text="Limite: € 0.00" textFill="#64748b" />
                                                     </children>
                                                 </HBox>
-                                                <ProgressBar fx:id="foodProgressBar" maxWidth="1.7976931348623157E308" progress="0.3" style="-fx-accent: #10b981; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
+                                                <ProgressBar fx:id="foodProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #10b981; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
                                             </children>
                                         </VBox>
                                     </children>
                                 </VBox>
 
-                                <!-- CARD 2: TRASPORTI -->
                                 <VBox spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="1">
                                     <padding>
                                         <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
@@ -140,7 +138,7 @@
                                                                 <Font name="System Bold" size="18.0" />
                                                             </font>
                                                         </Label>
-                                                        <Label fx:id="transportRemainingLabel" text="Rimasti: € 100.00" textFill="#3b82f6">
+                                                        <Label fx:id="transportRemainingLabel" text="Rimasti: € 0.00" textFill="#3b82f6">
                                                             <font>
                                                                 <Font name="System Bold" size="13.0" />
                                                             </font>
@@ -148,7 +146,7 @@
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
-                                                <Label fx:id="transportPercentageLabel" text="33%" textFill="#94a3b8">
+                                                <Label fx:id="transportPercentageLabel" text="0%" textFill="#94a3b8">
                                                     <font>
                                                         <Font name="System Bold" size="18.0" />
                                                     </font>
@@ -159,18 +157,17 @@
                                             <children>
                                                 <HBox>
                                                     <children>
-                                                        <Label fx:id="transportSpentLabel" text="Spesi: € 50.00" textFill="#64748b" />
+                                                        <Label fx:id="transportSpentLabel" text="Spesi: € 0.00" textFill="#64748b" />
                                                         <Region HBox.hgrow="ALWAYS" />
-                                                        <Label fx:id="transportLimitLabel" text="Limite: € 150.00" textFill="#64748b" />
+                                                        <Label fx:id="transportLimitLabel" text="Limite: € 0.00" textFill="#64748b" />
                                                     </children>
                                                 </HBox>
-                                                <ProgressBar fx:id="transportProgressBar" maxWidth="1.7976931348623157E308" progress="0.33" style="-fx-accent: #3b82f6; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
+                                                <ProgressBar fx:id="transportProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #3b82f6; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
                                             </children>
                                         </VBox>
                                     </children>
                                 </VBox>
 
-                                <!-- CARD 3: SVAGO -->
                                 <VBox spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.rowIndex="1">
                                     <padding>
                                         <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
@@ -195,7 +192,7 @@
                                                                 <Font name="System Bold" size="18.0" />
                                                             </font>
                                                         </Label>
-                                                        <Label fx:id="leisureRemainingLabel" text="Attenzione: Quasi al limite" textFill="#f59e0b">
+                                                        <Label fx:id="leisureRemainingLabel" text="Rimasti: € 0.00" textFill="#f59e0b">
                                                             <font>
                                                                 <Font name="System Bold" size="13.0" />
                                                             </font>
@@ -203,7 +200,7 @@
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
-                                                <Label fx:id="leisurePercentageLabel" text="85%" textFill="#f59e0b">
+                                                <Label fx:id="leisurePercentageLabel" text="0%" textFill="#f59e0b">
                                                     <font>
                                                         <Font name="System Bold" size="18.0" />
                                                     </font>
@@ -214,18 +211,17 @@
                                             <children>
                                                 <HBox>
                                                     <children>
-                                                        <Label fx:id="leisureSpentLabel" text="Spesi: € 170.00" textFill="#64748b" />
+                                                        <Label fx:id="leisureSpentLabel" text="Spesi: € 0.00" textFill="#64748b" />
                                                         <Region HBox.hgrow="ALWAYS" />
-                                                        <Label fx:id="leisureLimitLabel" text="Limite: € 200.00" textFill="#64748b" />
+                                                        <Label fx:id="leisureLimitLabel" text="Limite: € 0.00" textFill="#64748b" />
                                                     </children>
                                                 </HBox>
-                                                <ProgressBar fx:id="leisureProgressBar" focusTraversable="false" maxWidth="1.7976931348623157E308" progress="0.85" style="-fx-accent: #f59e0b; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
+                                                <ProgressBar fx:id="leisureProgressBar" focusTraversable="false" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #f59e0b; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
                                             </children>
                                         </VBox>
                                     </children>
                                 </VBox>
 
-                                <!-- CARD 4: BOLLETTE -->
                                 <VBox spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                     <padding>
                                         <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
@@ -250,7 +246,7 @@
                                                                 <Font name="System Bold" size="18.0" />
                                                             </font>
                                                         </Label>
-                                                        <Label fx:id="billsRemainingLabel" text="Rimasti: € 189.80" textFill="#ef4444">
+                                                        <Label fx:id="billsRemainingLabel" text="Rimasti: € 0.00" textFill="#ef4444">
                                                             <font>
                                                                 <Font name="System Bold" size="13.0" />
                                                             </font>
@@ -258,7 +254,7 @@
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
-                                                <Label fx:id="billsPercentageLabel" text="36%" textFill="#94a3b8">
+                                                <Label fx:id="billsPercentageLabel" text="0%" textFill="#94a3b8">
                                                     <font>
                                                         <Font name="System Bold" size="18.0" />
                                                     </font>
@@ -269,12 +265,174 @@
                                             <children>
                                                 <HBox>
                                                     <children>
-                                                        <Label fx:id="billsSpentLabel" text="Spesi: € 110.20" textFill="#64748b" />
+                                                        <Label fx:id="billsSpentLabel" text="Spesi: € 0.00" textFill="#64748b" />
                                                         <Region HBox.hgrow="ALWAYS" />
-                                                        <Label fx:id="billsLimitLabel" text="Limite: € 300.00" textFill="#64748b" />
+                                                        <Label fx:id="billsLimitLabel" text="Limite: € 0.00" textFill="#64748b" />
                                                     </children>
                                                 </HBox>
-                                                <ProgressBar fx:id="billsProgressBar" maxWidth="1.7976931348623157E308" progress="0.36" style="-fx-accent: #ef4444; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
+                                                <ProgressBar fx:id="billsProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #ef4444; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                    <padding>
+                                        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                                    </padding>
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                                            <children>
+                                                <StackPane>
+                                                    <children>
+                                                        <Circle fill="#fce7f3" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                                        <Label text="🏥" textFill="#db2777">
+                                                            <font>
+                                                                <Font size="24.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </StackPane>
+                                                <VBox>
+                                                    <children>
+                                                        <Label fx:id="healthCategoryLabel" text="Salute" textFill="#1e293b">
+                                                            <font>
+                                                                <Font name="System Bold" size="18.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="healthRemainingLabel" text="Rimasti: € 0.00" textFill="#db2777">
+                                                            <font>
+                                                                <Font name="System Bold" size="13.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </VBox>
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="healthPercentageLabel" text="0%" textFill="#94a3b8">
+                                                    <font>
+                                                        <Font name="System Bold" size="18.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </HBox>
+                                        <VBox spacing="5.0">
+                                            <children>
+                                                <HBox>
+                                                    <children>
+                                                        <Label fx:id="healthSpentLabel" text="Spesi: € 0.00" textFill="#64748b" />
+                                                        <Region HBox.hgrow="ALWAYS" />
+                                                        <Label fx:id="healthLimitLabel" text="Limite: € 0.00" textFill="#64748b" />
+                                                    </children>
+                                                </HBox>
+                                                <ProgressBar fx:id="healthProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #db2777; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <padding>
+                                        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                                    </padding>
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                                            <children>
+                                                <StackPane>
+                                                    <children>
+                                                        <Circle fill="#ede9fe" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                                        <Label text="📈" textFill="#7c3aed">
+                                                            <font>
+                                                                <Font size="24.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </StackPane>
+                                                <VBox>
+                                                    <children>
+                                                        <Label fx:id="investCategoryLabel" text="Investimenti" textFill="#1e293b">
+                                                            <font>
+                                                                <Font name="System Bold" size="18.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="investRemainingLabel" text="Rimasti: € 0.00" textFill="#7c3aed">
+                                                            <font>
+                                                                <Font name="System Bold" size="13.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </VBox>
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="investPercentageLabel" text="0%" textFill="#94a3b8">
+                                                    <font>
+                                                        <Font name="System Bold" size="18.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </HBox>
+                                        <VBox spacing="5.0">
+                                            <children>
+                                                <HBox>
+                                                    <children>
+                                                        <Label fx:id="investSpentLabel" text="Spesi: € 0.00" textFill="#64748b" />
+                                                        <Region HBox.hgrow="ALWAYS" />
+                                                        <Label fx:id="investLimitLabel" text="Limite: € 0.00" textFill="#64748b" />
+                                                    </children>
+                                                </HBox>
+                                                <ProgressBar fx:id="investProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #7c3aed; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                                    <padding>
+                                        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                                    </padding>
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                                            <children>
+                                                <StackPane>
+                                                    <children>
+                                                        <Circle fill="#f1f5f9" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                                        <Label text="📦" textFill="#475569">
+                                                            <font>
+                                                                <Font size="24.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </StackPane>
+                                                <VBox>
+                                                    <children>
+                                                        <Label fx:id="otherCategoryLabel" text="Altro" textFill="#1e293b">
+                                                            <font>
+                                                                <Font name="System Bold" size="18.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="otherRemainingLabel" text="Rimasti: € 0.00" textFill="#64748b">
+                                                            <font>
+                                                                <Font name="System Bold" size="13.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </VBox>
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="otherPercentageLabel" text="0%" textFill="#94a3b8">
+                                                    <font>
+                                                        <Font name="System Bold" size="18.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </HBox>
+                                        <VBox spacing="5.0">
+                                            <children>
+                                                <HBox>
+                                                    <children>
+                                                        <Label fx:id="otherSpentLabel" text="Spesi: € 0.00" textFill="#64748b" />
+                                                        <Region HBox.hgrow="ALWAYS" />
+                                                        <Label fx:id="otherLimitLabel" text="Limite: € 0.00" textFill="#64748b" />
+                                                    </children>
+                                                </HBox>
+                                                <ProgressBar fx:id="otherProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" style="-fx-accent: #64748b; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
                                             </children>
                                         </VBox>
                                     </children>

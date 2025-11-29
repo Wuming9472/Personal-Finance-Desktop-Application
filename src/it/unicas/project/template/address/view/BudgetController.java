@@ -3,11 +3,10 @@ package it.unicas.project.template.address.view;
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
-import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.sql.*;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +21,7 @@ public class BudgetController {
     private int currentMonth;
     private int currentYear;
 
-    // ====== CARD ALIMENTARI ======
+    // ====== CARD ALIMENTARI (ID 1) ======
     @FXML private Label foodCategoryLabel;
     @FXML private Label foodRemainingLabel;
     @FXML private Label foodPercentageLabel;
@@ -30,7 +29,7 @@ public class BudgetController {
     @FXML private Label foodLimitLabel;
     @FXML private ProgressBar foodProgressBar;
 
-    // ====== CARD TRASPORTI ======
+    // ====== CARD TRASPORTI (ID 2) ======
     @FXML private Label transportCategoryLabel;
     @FXML private Label transportRemainingLabel;
     @FXML private Label transportPercentageLabel;
@@ -38,7 +37,7 @@ public class BudgetController {
     @FXML private Label transportLimitLabel;
     @FXML private ProgressBar transportProgressBar;
 
-    // ====== CARD SVAGO ======
+    // ====== CARD SVAGO (ID 4) ======
     @FXML private Label leisureCategoryLabel;
     @FXML private Label leisureRemainingLabel;
     @FXML private Label leisurePercentageLabel;
@@ -46,13 +45,37 @@ public class BudgetController {
     @FXML private Label leisureLimitLabel;
     @FXML private ProgressBar leisureProgressBar;
 
-    // ====== CARD BOLLETTE ======
+    // ====== CARD BOLLETTE (ID 3) ======
     @FXML private Label billsCategoryLabel;
     @FXML private Label billsRemainingLabel;
     @FXML private Label billsPercentageLabel;
     @FXML private Label billsSpentLabel;
     @FXML private Label billsLimitLabel;
     @FXML private ProgressBar billsProgressBar;
+
+    // ====== CARD SALUTE (ID 5) ======
+    @FXML private Label healthCategoryLabel;
+    @FXML private Label healthRemainingLabel;
+    @FXML private Label healthPercentageLabel;
+    @FXML private Label healthSpentLabel;
+    @FXML private Label healthLimitLabel;
+    @FXML private ProgressBar healthProgressBar;
+
+    // ====== CARD INVESTIMENTI (ID 7) ======
+    @FXML private Label investCategoryLabel;
+    @FXML private Label investRemainingLabel;
+    @FXML private Label investPercentageLabel;
+    @FXML private Label investSpentLabel;
+    @FXML private Label investLimitLabel;
+    @FXML private ProgressBar investProgressBar;
+
+    // ====== CARD ALTRO (ID 8) ======
+    @FXML private Label otherCategoryLabel;
+    @FXML private Label otherRemainingLabel;
+    @FXML private Label otherPercentageLabel;
+    @FXML private Label otherSpentLabel;
+    @FXML private Label otherLimitLabel;
+    @FXML private ProgressBar otherProgressBar;
 
     @FXML
     private void initialize() {
@@ -103,16 +126,15 @@ public class BudgetController {
         budgetDAO.setOrUpdateBudget(userId, 3, month, year, 300.0); // Bollette
         budgetDAO.setOrUpdateBudget(userId, 4, month, year, 200.0); // Svago
         budgetDAO.setOrUpdateBudget(userId, 5, month, year, 100.0); // Salute
-        budgetDAO.setOrUpdateBudget(userId, 6, month, year, 0.0);   // Stipendio (non serve limite ma lo creiamo)
+        budgetDAO.setOrUpdateBudget(userId, 6, month, year, 0.0);   // Stipendio (Ignorato)
         budgetDAO.setOrUpdateBudget(userId, 7, month, year, 200.0); // Investimenti
         budgetDAO.setOrUpdateBudget(userId, 8, month, year, 100.0); // Altro
-
     }
 
     /** Aggiorna le card grafiche */
     private void updateUIFromBudgets() {
 
-        // Reset iniziale
+        // Reset Card Standard
         resetCard(foodRemainingLabel, foodSpentLabel, foodLimitLabel,
                 foodPercentageLabel, foodProgressBar);
         resetCard(transportRemainingLabel, transportSpentLabel, transportLimitLabel,
@@ -121,6 +143,14 @@ public class BudgetController {
                 leisurePercentageLabel, leisureProgressBar);
         resetCard(billsRemainingLabel, billsSpentLabel, billsLimitLabel,
                 billsPercentageLabel, billsProgressBar);
+
+        // Reset Nuove Card
+        resetCard(healthRemainingLabel, healthSpentLabel, healthLimitLabel,
+                healthPercentageLabel, healthProgressBar);
+        resetCard(investRemainingLabel, investSpentLabel, investLimitLabel,
+                investPercentageLabel, investProgressBar);
+        resetCard(otherRemainingLabel, otherSpentLabel, otherLimitLabel,
+                otherPercentageLabel, otherProgressBar);
 
         if (currentBudgets == null) return;
 
@@ -146,8 +176,27 @@ public class BudgetController {
                     updateCardFromBudget(b, leisureRemainingLabel, leisureSpentLabel,
                             leisureLimitLabel, leisurePercentageLabel, leisureProgressBar);
                 }
-
-                default -> { /* altre categorie per ora non visualizzate */ }
+                case 5 -> { // Salute
+                    healthCategoryLabel.setText(b.getCategoryName());
+                    updateCardFromBudget(b, healthRemainingLabel, healthSpentLabel,
+                            healthLimitLabel, healthPercentageLabel, healthProgressBar);
+                    // Sovrascrivi colore (Rosa) se non è rosso
+                    if (b.getProgress() <= 1.0) healthProgressBar.setStyle("-fx-accent: #db2777;");
+                }
+                case 7 -> { // Investimenti
+                    investCategoryLabel.setText(b.getCategoryName());
+                    updateCardFromBudget(b, investRemainingLabel, investSpentLabel,
+                            investLimitLabel, investPercentageLabel, investProgressBar);
+                    // Sovrascrivi colore (Viola) se non è rosso
+                    if (b.getProgress() <= 1.0) investProgressBar.setStyle("-fx-accent: #7c3aed;");
+                }
+                case 8 -> { // Altro
+                    otherCategoryLabel.setText(b.getCategoryName());
+                    updateCardFromBudget(b, otherRemainingLabel, otherSpentLabel,
+                            otherLimitLabel, otherPercentageLabel, otherProgressBar);
+                    // Sovrascrivi colore (Grigio) se non è rosso
+                    if (b.getProgress() <= 1.0) otherProgressBar.setStyle("-fx-accent: #475569;");
+                }
             }
         }
     }
@@ -160,6 +209,7 @@ public class BudgetController {
         if (percentage != null) percentage.setText("0%");
         if (bar != null) {
             bar.setProgress(0);
+            // Colore di default (verde) per il reset
             bar.setStyle("-fx-accent: #10b981;");
         }
     }
@@ -176,18 +226,22 @@ public class BudgetController {
         double percentageValue = ratio * 100.0;
         double clamped = Math.max(0.0, Math.min(1.0, ratio));
 
-        spent.setText(String.format("Spesi: € %.2f", spentAmount));
-        limit.setText(String.format("Limite: € %.2f", budgetAmount));
-        remaining.setText(String.format("Rimasti: € %.2f", Math.max(0, remainingAmount)));
-        percentage.setText(String.format("%.0f%%", percentageValue));
-        bar.setProgress(clamped);
+        if (spent != null) spent.setText(String.format("Spesi: € %.2f", spentAmount));
+        if (limit != null) limit.setText(String.format("Limite: € %.2f", budgetAmount));
+        if (remaining != null) remaining.setText(String.format("Rimasti: € %.2f", Math.max(0, remainingAmount)));
+        if (percentage != null) percentage.setText(String.format("%.0f%%", percentageValue));
 
-        String color;
-        if (ratio < 0.75) color = "#10b981"; // verde
-        else if (ratio <= 1.0) color = "#f59e0b"; // giallo
-        else color = "#ef4444"; // rosso
+        if (bar != null) {
+            bar.setProgress(clamped);
 
-        bar.setStyle("-fx-accent: " + color + ";");
+            // Colore automatico: Verde -> Giallo -> Rosso
+            String color;
+            if (ratio < 0.75) color = "#10b981"; // verde
+            else if (ratio <= 1.0) color = "#f59e0b"; // giallo
+            else color = "#ef4444"; // rosso
+
+            bar.setStyle("-fx-accent: " + color + ";");
+        }
     }
 
     private void showError(String title, String msg) {
@@ -207,6 +261,9 @@ public class BudgetController {
         }
 
         for (Budget b : currentBudgets) {
+            // Ignora lo stipendio (ID 6) se presente, o altre categorie non desiderate
+            if(b.getCategoryId() == 6) continue;
+
             TextInputDialog dialog = new TextInputDialog(
                     String.format("%.2f", b.getBudgetAmount()));
             dialog.setTitle("Imposta limite budget");

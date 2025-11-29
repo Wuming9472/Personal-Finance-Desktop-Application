@@ -67,7 +67,7 @@ public class RootLayoutController {
         if (lblPageTitle != null) lblPageTitle.setText(title);
     }
 
-    // --- NAVIGAZIONE ---
+
     @FXML private void handleShowDashboard() { if (mainApp != null) mainApp.showDashboard(); }
     @FXML private void handleShowMovements() { if (mainApp != null) mainApp.showMovimenti(); }
     @FXML private void handleShowBudget() { if (mainApp != null) mainApp.showBudget(); }
@@ -75,11 +75,12 @@ public class RootLayoutController {
     // --- MENU UTENTE ---
     @FXML
     private void handleSettings() {
-        DAOMySQLSettings daoMySQLSettings = DAOMySQLSettings.getCurrentDAOMySQLSettings();
-        if (mainApp != null && mainApp.showSettingsEditDialog(daoMySQLSettings)){
-            DAOMySQLSettings.setCurrentDAOMySQLSettings(daoMySQLSettings);
+        //  porta alla pagina Account
+        if (mainApp != null) {
+            mainApp.showAccountPage();
         }
     }
+
 
     @FXML
     private void handleShowAccount() {
@@ -88,14 +89,8 @@ public class RootLayoutController {
         }
     }
 
-    @FXML
-    private void handleAbout() {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("BalanceSuite");
-        alert.setHeaderText("Informazioni");
-        alert.setContentText("BalanceSuite v1.0\nGestione Finanziaria Personale");
-        alert.showAndWait();
-    }
+
+
 
     @FXML
     private void handleExit() {

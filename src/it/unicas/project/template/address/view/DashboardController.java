@@ -13,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 // IMPORTANTE: Usa SmoothAreaChart invece di AreaChart
 import it.unicas.project.template.address.view.SmoothAreaChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
@@ -31,7 +32,13 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class DashboardController {
 
@@ -201,46 +208,93 @@ public class DashboardController {
             int monthsBack = resolveMonthsBack();
             List<Pair<String, Pair<Float, Float>>> trendData = dao.getIncomeExpenseTrend(userId, monthsBack);
 
-            if (!trendData.isEmpty()) {
-                // Creo un'etichetta "origine" DISTINTA dalla prima data reale
-                // usando uno spazio Unicode invisibile per non mostrare testo sull'asse
-                String originLabel = "\u200B"; // Zero-width space - invisibile ma diverso da qualsiasi data
-
-                XYChart.Data<String, Number> incomeOrigin = new XYChart.Data<>(originLabel, 0);
-                XYChart.Data<String, Number> expenseOrigin = new XYChart.Data<>(originLabel, 0);
-
-                attachTooltip(incomeOrigin, "Entrate", "Inizio", 0f);
-                attachTooltip(expenseOrigin, "Uscite", "Inizio", 0f);
-
-                // Aggiungo il punto origine come PRIMO punto di ogni serie
-                serieEntrate.getData().add(incomeOrigin);
-                serieUscite.getData().add(expenseOrigin);
+            if (trendData.isEmpty()) {
+                return;
             }
 
-            // Ora aggiungo i dati reali (senza duplicare il primo punto)
+            // Flag per tracciare quando ogni serie ha il suo primo valore reale
+            boolean entrataStarted = false;
+            boolean uscitaStarted = false;
+            boolean bothStarted = false;
+
+            // Calcolo valori CUMULATIVI
+            float cumulativeEntrate = 0f;
+            float cumulativeUscite = 0f;
+
             for (Pair<String, Pair<Float, Float>> point : trendData) {
                 String label = point.getKey();
                 String abbreviated = abbreviateLabel(label);
                 Float entrata = point.getValue().getKey();
                 Float uscita = point.getValue().getValue();
 
-                XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, entrata);
-                XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, uscita);
+                // Aggiorno i flag PRIMA di processare questo punto
+                if (entrata > 0) entrataStarted = true;
+                if (uscita > 0) uscitaStarted = true;
 
-                attachTooltip(incomeData, "Entrate", abbreviated, entrata);
-                attachTooltip(expenseData, "Uscite", abbreviated, uscita);
+                // Verifico se da questo momento entrambe le serie hanno dati
+                if (entrataStarted && uscitaStarted && !bothStarted) {
+                    bothStarted = true;
+                }
 
-                serieEntrate.getData().add(incomeData);
-                serieUscite.getData().add(expenseData);
+                // Aggiorno i cumulativi
+                cumulativeEntrate += entrata;
+                cumulativeUscite += uscita;
+
+                if (!bothStarted) {
+                    // === FASE 1: Solo una serie è attiva ===
+                    // L'altra serie ha punti a 0 per garantire continuità visiva
+
+                    if (entrataStarted) {
+                        // Ho entrate attive
+                        XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
+                        attachCumulativeTooltip(incomeData, "Entrate", abbreviated, entrata, cumulativeEntrate);
+                        serieEntrate.getData().add(incomeData);
+
+                        // Aggiungo punto uscita a 0 per continuità (la curva rossa partirà da qui)
+                        XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, cumulativeUscite);
+                        attachCumulativeTooltip(expenseData, "Uscite", abbreviated, uscita, cumulativeUscite);
+                        serieUscite.getData().add(expenseData);
+                    } else if (uscitaStarted) {
+                        // Ho uscite attive
+                        XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, cumulativeUscite);
+                        attachCumulativeTooltip(expenseData, "Uscite", abbreviated, uscita, cumulativeUscite);
+                        serieUscite.getData().add(expenseData);
+
+                        // Aggiungo punto entrata a 0 per continuità (la curva verde partirà da qui)
+                        XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
+                        attachCumulativeTooltip(incomeData, "Entrate", abbreviated, entrata, cumulativeEntrate);
+                        serieEntrate.getData().add(incomeData);
+                    }
+                } else {
+                    // === FASE 2: Entrambe le serie hanno almeno un movimento ===
+                    // Le serie sono COMPLETAMENTE INDIPENDENTI
+                    // Aggiungo punti SOLO dove ci sono movimenti reali
+
+                    if (entrata > 0) {
+                        XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
+                        attachCumulativeTooltip(incomeData, "Entrate", abbreviated, entrata, cumulativeEntrate);
+                        serieEntrate.getData().add(incomeData);
+                    }
+
+                    if (uscita > 0) {
+                        XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, cumulativeUscite);
+                        attachCumulativeTooltip(expenseData, "Uscite", abbreviated, uscita, cumulativeUscite);
+                        serieUscite.getData().add(expenseData);
+                    }
+                }
             }
 
-            chartAndamento.getData().addAll(serieEntrate, serieUscite);
+            // Aggiungo le serie solo se hanno almeno un punto
+            if (!serieEntrate.getData().isEmpty()) {
+                chartAndamento.getData().add(serieEntrate);
+            }
+            if (!serieUscite.getData().isEmpty()) {
+                chartAndamento.getData().add(serieUscite);
+            }
 
-            // Dopo che il grafico è renderizzato, anima i dati
+            // Animazione
             Platform.runLater(() -> {
                 chartAndamento.setAnimated(true);
-
-                // Anima l'ingresso dei dati
                 for (XYChart.Series<String, Number> series : chartAndamento.getData()) {
                     animateChartDataAppearance(series);
                 }
@@ -252,6 +306,21 @@ public class DashboardController {
         }
     }
 
+    /**
+     * Tooltip per grafico cumulativo - mostra valore giornaliero e totale
+     */
+    private void attachCumulativeTooltip(XYChart.Data<String, Number> data, String seriesName,
+                                         String label, Float dailyValue, Float cumulativeValue) {
+        String tooltipText = String.format("%s\n%s: € %.2f\nTotale: € %.2f",
+                label, seriesName, dailyValue, cumulativeValue);
+        Tooltip tooltip = new CustomTooltip(tooltipText);
+        data.nodeProperty().addListener((obs, oldNode, newNode) -> {
+            if (newNode != null) {
+                Tooltip.install(newNode, tooltip);
+            }
+        });
+    }
+
     // Aggiungi dopo il metodo populateChart()
     private void setupChartAppearance() {
         chartAndamento.setLegendVisible(true);
@@ -261,9 +330,13 @@ public class DashboardController {
         // Rimuovi padding eccessivo
         chartAndamento.setPadding(new javafx.geometry.Insets(0));
 
-        // Configura gli assi per un look pulito
-        if (chartAndamento.getXAxis() != null) {
-            chartAndamento.getXAxis().setTickLabelRotation(0);
+        // Configura l'asse X (CategoryAxis) per rimuovere il gap ai bordi
+        if (chartAndamento.getXAxis() instanceof CategoryAxis) {
+            CategoryAxis xAxis = (CategoryAxis) chartAndamento.getXAxis();
+            xAxis.setTickLabelRotation(0);
+            xAxis.setStartMargin(0);  // Rimuove lo spazio a sinistra
+            xAxis.setEndMargin(0);    // Rimuove lo spazio a destra
+            xAxis.setGapStartAndEnd(false);  // Disabilita il gap automatico ai bordi
         }
 
         if (chartAndamento.getYAxis() instanceof NumberAxis) {
