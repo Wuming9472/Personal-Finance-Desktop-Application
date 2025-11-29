@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import it.unicas.project.template.address.view.SmoothAreaChart?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.AreaChart?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -19,7 +16,6 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<?import it.unicas.project.template.address.view.SmoothAreaChart?>
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #f8fafc;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.DashboardController">
     <children>
         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -30,16 +26,12 @@
                     </padding>
                     <children>
 
-                        <!-- TITOLO -->
                         <Label text="Dashboard" textFill="#1e293b">
                             <font>
                                 <Font name="System Bold" size="28.0" />
                             </font>
                         </Label>
 
-                        <!-- ========================================= -->
-                        <!-- SEZIONE 1: LE 4 CARD (KPI) -->
-                        <!-- ========================================= -->
                         <GridPane hgap="20.0" vgap="20.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -52,7 +44,6 @@
                             </rowConstraints>
                             <children>
 
-                                <!-- CARD 1: SALDO -->
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
                                     <children>
                                         <VBox layoutX="14.0" layoutY="14.0" spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
@@ -87,7 +78,6 @@
                                     </children>
                                 </AnchorPane>
 
-                                <!-- CARD 2: ENTRATE -->
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="1">
                                     <children>
                                         <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
@@ -122,7 +112,6 @@
                                     </children>
                                 </AnchorPane>
 
-                                <!-- CARD 3: USCITE -->
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="2">
                                     <children>
                                         <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
@@ -157,7 +146,6 @@
                                     </children>
                                 </AnchorPane>
 
-                                <!-- CARD 4: PREVISIONE -->
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="3">
                                     <children>
                                         <VBox spacing="5.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
@@ -202,10 +190,7 @@
                                 </AnchorPane>
                             </children>
                         </GridPane>
-                        <!-- ========================================= -->
-                        <!-- SEZIONE GRAFICO: SmoothAreaChart      -->
-                        <!-- ========================================= -->
-                        <!-- Ho aggiunto fx:id="chartContainer" all'AnchorPane -->
+
                         <AnchorPane fx:id="chartContainer" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
                             <children>
                                 <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
@@ -228,9 +213,6 @@
                             </children>
                         </AnchorPane>
 
-                        <!-- ========================================= -->
-                        <!-- SEZIONE 2: BUDGET & MOVIMENTI -->
-                        <!-- ========================================= -->
                         <GridPane hgap="30.0" vgap="20.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="ALWAYS" percentWidth="60.0" />
@@ -241,7 +223,6 @@
                             </rowConstraints>
                             <children>
 
-                                <!-- LEFT COLUMN: STATO BUDGET -->
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
                                     <children>
                                         <VBox spacing="20.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
@@ -262,89 +243,13 @@
                                                     </children>
                                                 </HBox>
 
-                                                <!-- LISTA BUDGET -->
-                                                <VBox spacing="15.0">
-                                                    <children>
-                                                        <!-- ITEM 1: ALIMENTARI -->
-                                                        <VBox spacing="5.0">
-                                                            <children>
-                                                                <HBox>
-                                                                    <children>
-                                                                        <Label text="Alimentari" textFill="#334155">
-                                                                            <font>
-                                                                                <Font name="System Bold" size="14.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                        <Region HBox.hgrow="ALWAYS" />
-                                                                        <Label text="€ 120.50 / € 400.00" textFill="#64748b" />
-                                                                    </children>
-                                                                </HBox>
-                                                                <ProgressBar maxWidth="1.7976931348623157E308" progress="0.3" style="-fx-accent: #10b981; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
-                                                            </children>
-                                                        </VBox>
-
-                                                        <!-- ITEM 2: TRASPORTI -->
-                                                        <VBox spacing="5.0">
-                                                            <children>
-                                                                <HBox>
-                                                                    <children>
-                                                                        <Label text="Trasporti" textFill="#334155">
-                                                                            <font>
-                                                                                <Font name="System Bold" size="14.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                        <Region HBox.hgrow="ALWAYS" />
-                                                                        <Label text="€ 50.00 / € 150.00" textFill="#64748b" />
-                                                                    </children>
-                                                                </HBox>
-                                                                <ProgressBar maxWidth="1.7976931348623157E308" progress="0.33" style="-fx-accent: #10b981; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
-                                                            </children>
-                                                        </VBox>
-
-                                                        <!-- ITEM 3: SVAGO -->
-                                                        <VBox spacing="5.0">
-                                                            <children>
-                                                                <HBox>
-                                                                    <children>
-                                                                        <Label text="Svago" textFill="#334155">
-                                                                            <font>
-                                                                                <Font name="System Bold" size="14.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                        <Region HBox.hgrow="ALWAYS" />
-                                                                        <Label text="€ 97.99 / € 200.00" textFill="#64748b" />
-                                                                    </children>
-                                                                </HBox>
-                                                                <ProgressBar maxWidth="1.7976931348623157E308" progress="0.48" style="-fx-accent: #10b981; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
-                                                            </children>
-                                                        </VBox>
-
-                                                        <!-- ITEM 4: BOLLETTE -->
-                                                        <VBox spacing="5.0">
-                                                            <children>
-                                                                <HBox>
-                                                                    <children>
-                                                                        <Label text="Bollette" textFill="#334155">
-                                                                            <font>
-                                                                                <Font name="System Bold" size="14.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                        <Region HBox.hgrow="ALWAYS" />
-                                                                        <Label text="€ 110.20 / € 300.00" textFill="#64748b" />
-                                                                    </children>
-                                                                </HBox>
-                                                                <ProgressBar maxWidth="1.7976931348623157E308" progress="0.36" style="-fx-accent: #10b981; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;" />
-                                                            </children>
-                                                        </VBox>
-
-                                                    </children>
+                                                <VBox fx:id="boxBudgetList" spacing="15.0">
                                                 </VBox>
                                             </children>
                                         </VBox>
                                     </children>
                                 </AnchorPane>
 
-                                <!-- RIGHT COLUMN: ULTIMI MOVIMENTI -->
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="1">
                                     <children>
                                         <VBox spacing="15.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
@@ -355,7 +260,6 @@
                                                     </font>
                                                 </Label>
 
-                                                <!-- MOVIMENTI LIST -->
                                                 <VBox fx:id="boxUltimiMovimenti" spacing="15.0">
                                                 </VBox>
                                             </children>

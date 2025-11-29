@@ -2,6 +2,10 @@ package it.unicas.project.template.address.view;
 
 import javafx.animation.PauseTransition;
 import it.unicas.project.template.address.MainApp;
+// NUOVI IMPORT PER IL BUDGET
+import it.unicas.project.template.address.model.Budget;
+import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
+
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.animation.FadeTransition;
@@ -11,13 +15,13 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-// IMPORTANTE: Usa SmoothAreaChart invece di AreaChart
 import it.unicas.project.template.address.view.SmoothAreaChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar; // Serve per il budget
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -31,14 +35,9 @@ import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class DashboardController {
 
@@ -47,11 +46,13 @@ public class DashboardController {
     @FXML private Label lblUscite;
     @FXML private Label lblPrevisione;
 
-    // CAMBIO TIPO QUI:
     @FXML private SmoothAreaChart<String, Number> chartAndamento;
 
     @FXML private ComboBox<String> cmbRange;
     @FXML private VBox boxUltimiMovimenti;
+
+    // AGGIUNTA FXML PER IL BUDGET
+    @FXML private VBox boxBudgetList;
 
     private MainApp mainApp;
 
@@ -92,8 +93,14 @@ public class DashboardController {
             lblSaldo.setText(String.format("€ %.2f", saldo));
             lblSaldo.setStyle(saldo >= 0 ? "-fx-text-fill: #10b981;" : "-fx-text-fill: #ef4444;");
 
+            // Calcolo Previsione (Semplice)
+            calculateForecast(saldo, totalEntrate, totalUscite, now);
+
             List<Movimenti> recent = dao.selectLastByUser(userId, 5);
             populateRecentMovements(recent);
+
+            // AGGIUNTA CHIAMATA BUDGET
+            populateBudgetStatus(userId, now.getMonthValue(), now.getYear());
 
             populateChart(dao, userId);
 
@@ -102,6 +109,91 @@ public class DashboardController {
             lblSaldo.setText("Err DB");
         }
     }
+
+    // =================================================================================
+    // NUOVO METODO: LOGICA BUDGET (REAL DATA)
+    // =================================================================================
+    private void populateBudgetStatus(int userId, int month, int year) {
+        if (boxBudgetList == null) return; // Sicurezza
+        boxBudgetList.getChildren().clear();
+
+        BudgetDAOMySQLImpl budgetDao = new BudgetDAOMySQLImpl();
+        List<Budget> budgetList;
+
+        try {
+            // Recupera la lista dal DB
+            budgetList = budgetDao.getBudgetsForMonth(userId, month, year);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            boxBudgetList.getChildren().add(new Label("Errore caricamento budget"));
+            return;
+        }
+
+        if (budgetList.isEmpty()) {
+            Label lbl = new Label("Nessun budget impostato per questo mese.");
+            lbl.setTextFill(Color.GRAY);
+            lbl.setFont(Font.font("System", 12));
+            boxBudgetList.getChildren().add(lbl);
+            return;
+        }
+
+        for (Budget b : budgetList) {
+            VBox itemBox = new VBox(5);
+
+            // Intestazione
+            HBox headerBox = new HBox();
+            headerBox.setAlignment(Pos.CENTER_LEFT);
+
+            Label lblName = new Label(b.getCategoryName());
+            lblName.setTextFill(Color.web("#334155"));
+            lblName.setFont(Font.font("System", FontWeight.BOLD, 14));
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+            Label lblAmount = new Label(String.format("€ %.2f / € %.2f", b.getSpentAmount(), b.getBudgetAmount()));
+            lblAmount.setTextFill(Color.web("#64748b"));
+            lblAmount.setFont(Font.font("System", 12));
+
+            headerBox.getChildren().addAll(lblName, spacer, lblAmount);
+
+            // Progress Bar
+            ProgressBar progressBar = new ProgressBar();
+            progressBar.setMaxWidth(Double.MAX_VALUE);
+
+            double progress = b.getProgress();
+            progressBar.setProgress(progress > 1.0 ? 1.0 : progress);
+
+            // Colore Dinamico
+            String colorHex = "#10b981"; // Verde
+            if (progress >= 1.0) {
+                colorHex = "#ef4444"; // Rosso
+            } else if (progress > 0.85) {
+                colorHex = "#f59e0b"; // Arancione
+            }
+
+            progressBar.setStyle("-fx-accent: " + colorHex + "; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;");
+
+            itemBox.getChildren().addAll(headerBox, progressBar);
+            boxBudgetList.getChildren().add(itemBox);
+        }
+    }
+
+    // Metodo helper per la previsione (aggiunto per completezza della UI)
+    private void calculateForecast(float saldoAttuale, float entrate, float uscite, LocalDate now) {
+        if (lblPrevisione == null) return;
+        int daysInMonth = now.lengthOfMonth();
+        int currentDay = now.getDayOfMonth();
+        if (currentDay == 0) currentDay = 1;
+
+        float netto = entrate - uscite;
+        float proiezione = (netto / currentDay) * daysInMonth;
+        float previsioneFinale = saldoAttuale + (proiezione - netto);
+
+        lblPrevisione.setText(String.format("€ %.2f", previsioneFinale));
+    }
+
+    // --- FINE NUOVA LOGICA ---
 
     private void populateRecentMovements(List<Movimenti> list) {
         boxUltimiMovimenti.getChildren().clear();
