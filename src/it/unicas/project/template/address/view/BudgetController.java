@@ -3,6 +3,7 @@ package it.unicas.project.template.address.view;
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
+import it.unicas.project.template.address.util.BudgetNotificationHelper;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -199,6 +200,9 @@ public class BudgetController {
                 }
             }
         }
+
+        // Controlla e notifica se ci sono budget superati
+        BudgetNotificationHelper.checkAndNotifyBudgetExceeded(currentBudgets);
     }
 
     private void resetCard(Label remaining, Label spent, Label limit,

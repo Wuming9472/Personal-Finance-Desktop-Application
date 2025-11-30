@@ -1,9 +1,12 @@
 package it.unicas.project.template.address.view;
 
 import it.unicas.project.template.address.MainApp;
+import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.Movimenti;
+import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
+import it.unicas.project.template.address.util.BudgetNotificationHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -37,6 +40,7 @@ public class MovimentiController {
 
     private MainApp mainApp;
     private final ObservableList<Movimenti> movementData = FXCollections.observableArrayList();
+    private final BudgetDAOMySQLImpl budgetDAO = new BudgetDAOMySQLImpl();
 
     // Wrapper per ComboBox Categorie
     private static class CategoryItem {
@@ -177,6 +181,9 @@ public class MovimentiController {
 
             loadMovementsForCurrentUser();
 
+            // Controlla se il budget è stato superato dopo l'inserimento
+            checkBudgetAfterTransaction();
+
             // Reset Campi (lascio la data e il tipo perché comodi)
             amountField.clear();
             descArea.clear();
@@ -220,8 +227,33 @@ public class MovimentiController {
             // Ricarica i dati
             loadMovementsForCurrentUser();
 
+            // Controlla se il budget è stato superato dopo la cancellazione
+            checkBudgetAfterTransaction();
+
         } catch (Exception e) {
             showError("Errore cancellazione: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Controlla i budget del mese corrente e mostra una notifica se qualche budget è stato superato.
+     * Viene chiamato dopo l'inserimento o la cancellazione di un movimento.
+     */
+    private void checkBudgetAfterTransaction() {
+        if (mainApp == null || mainApp.getLoggedUser() == null) return;
+
+        try {
+            int userId = mainApp.getLoggedUser().getUser_id();
+            LocalDate now = LocalDate.now();
+            int currentMonth = now.getMonthValue();
+            int currentYear = now.getYear();
+
+            List<Budget> budgets = budgetDAO.getBudgetsForMonth(userId, currentMonth, currentYear);
+            BudgetNotificationHelper.checkAndNotifyBudgetExceeded(budgets);
+
+        } catch (SQLException e) {
+            // Silenzioso: non blocchiamo l'operazione se il controllo budget fallisce
+            System.err.println("Errore nel controllo budget: " + e.getMessage());
         }
     }
 
