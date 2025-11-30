@@ -6,11 +6,15 @@ import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.util.BudgetNotificationHelper;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.geometry.Insets;
+import javafx.scene.layout.GridPane;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BudgetController {
 
@@ -119,7 +123,7 @@ public class BudgetController {
         }
     }
 
-    /** Crea limiti di default per le categorie reali dell’utente */
+    /** Crea limiti di default per le categorie reali dell'utente */
     private void createDefaultBudgetsForUser(int userId, int month, int year) throws SQLException {
         // Imposta limiti predefiniti per le categorie note
         budgetDAO.setOrUpdateBudget(userId, 1, month, year, 400.0); // Alimentari
@@ -264,34 +268,80 @@ public class BudgetController {
             return;
         }
 
+        // Crea dialog personalizzato
+        Dialog<Map<Integer, Double>> dialog = new Dialog<>();
+        dialog.setTitle("Imposta limiti budget");
+        dialog.setHeaderText("Imposta i limiti per tutte le categorie");
+
+        // Aggiungi bottoni OK e Annulla
+        ButtonType okButtonType = new ButtonType("Salva", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+
+        // Crea GridPane per i campi
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        // Mappa per salvare i TextField
+        Map<Integer, TextField> textFields = new HashMap<>();
+
+        int row = 0;
         for (Budget b : currentBudgets) {
-            // Ignora lo stipendio (ID 6) se presente, o altre categorie non desiderate
-            if(b.getCategoryId() == 6) continue;
+            // Ignora lo stipendio (ID 6)
+            if (b.getCategoryId() == 6) continue;
 
-            TextInputDialog dialog = new TextInputDialog(
-                    String.format("%.2f", b.getBudgetAmount()));
-            dialog.setTitle("Imposta limite budget");
-            dialog.setHeaderText("Limite per categoria: " + b.getCategoryName());
-            dialog.setContentText("Nuovo importo (€):");
+            Label label = new Label(b.getCategoryName() + ":");
+            TextField textField = new TextField(String.format("%.2f", b.getBudgetAmount()));
+            textField.setPrefWidth(150);
 
-            Optional<String> res = dialog.showAndWait();
-            if (res.isEmpty()) continue;
+            grid.add(label, 0, row);
+            grid.add(textField, 1, row);
 
-            try {
-                double newLimit = Double.parseDouble(res.get().replace(",", "."));
+            textFields.put(b.getCategoryId(), textField);
+            row++;
+        }
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Converte il risultato quando viene premuto OK
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == okButtonType) {
+                Map<Integer, Double> results = new HashMap<>();
+                for (Map.Entry<Integer, TextField> entry : textFields.entrySet()) {
+                    try {
+                        double value = Double.parseDouble(entry.getValue().getText().replace(",", "."));
+                        results.put(entry.getKey(), value);
+                    } catch (NumberFormatException e) {
+                        // Valore non valido, ignora
+                    }
+                }
+                return results;
+            }
+            return null;
+        });
+
+        Optional<Map<Integer, Double>> result = dialog.showAndWait();
+
+        result.ifPresent(values -> {
+            for (Map.Entry<Integer, Double> entry : values.entrySet()) {
+                int categoryId = entry.getKey();
+                double newLimit = entry.getValue();
+
                 if (newLimit < 0) {
                     showError("Valore non valido", "Il limite deve essere positivo.");
                     continue;
                 }
 
-                budgetDAO.setOrUpdateBudget(currentUserId, b.getCategoryId(),
-                        currentMonth, currentYear, newLimit);
-
-            } catch (NumberFormatException | SQLException ex) {
-                showError("Errore", ex.getMessage());
+                try {
+                    budgetDAO.setOrUpdateBudget(currentUserId, categoryId,
+                            currentMonth, currentYear, newLimit);
+                } catch (SQLException ex) {
+                    showError("Errore", ex.getMessage());
+                }
             }
-        }
 
-        refreshBudgetsFromDb();
+            refreshBudgetsFromDb();
+        });
     }
 }
