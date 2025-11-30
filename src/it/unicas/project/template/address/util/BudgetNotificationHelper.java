@@ -124,7 +124,7 @@ public class BudgetNotificationHelper {
      */
     private static void showSingleBudgetExceededAlert(Budget budget) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("⚠️ ALLARME BUDGET SUPERATO");
+        alert.setTitle("ALLARME BUDGET SUPERATO");
         alert.setHeaderText(null);
         alert.initStyle(StageStyle.DECORATED);
 
@@ -136,15 +136,13 @@ public class BudgetNotificationHelper {
         // Titolo con icona
         HBox titleBox = new HBox(10);
         titleBox.setAlignment(Pos.CENTER);
-
-        Label warningIcon = new Label("⚠️");
-        warningIcon.setStyle("-fx-font-size: 36px;");
+        
 
         Label titleLabel = new Label("ATTENZIONE: Budget Superato!");
         titleLabel.setFont(Font.font("System", FontWeight.BOLD, 20));
         titleLabel.setStyle("-fx-text-fill: #dc2626;");
 
-        titleBox.getChildren().addAll(warningIcon, titleLabel);
+        titleBox.getChildren().addAll(titleLabel);
 
         // Messaggio principale
         Label messageLabel = new Label("Hai superato il budget mensile per la seguente categoria:");
