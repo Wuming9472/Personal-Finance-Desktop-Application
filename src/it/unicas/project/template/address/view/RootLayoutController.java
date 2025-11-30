@@ -89,7 +89,12 @@ public class RootLayoutController {
         }
     }
 
-
+    @FXML
+    private void handleShowReport() {
+        if (mainApp != null) {
+            mainApp.showReport();
+        }
+    }
 
 
     @FXML

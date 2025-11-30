@@ -8,9 +8,6 @@
 
 <BorderPane prefHeight="600.0" prefWidth="1024.0" stylesheets="@css/primer-light.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.RootLayoutController">
 
-    <!-- ============================================ -->
-    <!-- TOP BAR -->
-    <!-- ============================================ -->
     <top>
         <HBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="200.0" spacing="20.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">
             <padding>
@@ -18,7 +15,6 @@
             </padding>
             <children>
 
-                <!-- LOGO -->
                 <HBox alignment="CENTER_LEFT" spacing="12.0">
                     <children>
                         <StackPane>
@@ -58,7 +54,6 @@
 
                 <Region HBox.hgrow="ALWAYS" />
 
-                <!-- TITOLO PAGINA -->
                 <Label fx:id="lblPageTitle" text="Dashboard" textFill="#64748b">
                     <font>
                         <Font name="System Bold" size="28.0" />
@@ -67,14 +62,11 @@
 
                 <Rectangle fill="#e2e8f0" height="50.0" width="1.0" />
 
-                <!-- MENU UTENTE (DINAMICO) -->
                 <HBox alignment="CENTER" spacing="10.0">
                     <children>
-                        <!-- Avatar -->
                         <StackPane scaleX="1.2" scaleY="1.2">
                             <children>
                                 <Circle fill="#eff6ff" radius="18.0" scaleX="1.2" scaleY="1.2" stroke="#3b82f6" strokeType="INSIDE" />
-                                <!-- Qui mostreremo le iniziali (es. "MR" o "M") -->
                                 <Label fx:id="lblInitials" scaleX="1.2" scaleY="1.2" text="?" textFill="#3b82f6">
                                     <font>
                                         <Font name="System Bold" size="12.0" />
@@ -83,7 +75,6 @@
                             </children>
                         </StackPane>
 
-                        <!-- Menu a tendina col nome -->
                         <MenuButton fx:id="btnUser" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Utente">
                             <items>
                                 <MenuItem mnemonicParsing="false" onAction="#handleSettings" text="Impostazioni" />
@@ -100,9 +91,6 @@
         </HBox>
     </top>
 
-    <!-- ============================================ -->
-    <!-- SIDEBAR -->
-    <!-- ============================================ -->
     <left>
         <VBox prefHeight="520.0" prefWidth="220.0" spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #e2e8f0; -fx-border-width: 0 1 0 0;" BorderPane.alignment="CENTER">
             <children>
@@ -114,9 +102,9 @@
                     <padding>
                         <Insets left="20.0" />
                     </padding>
-               <VBox.margin>
-                  <Insets top="35.0" />
-               </VBox.margin>
+                    <VBox.margin>
+                        <Insets top="35.0" />
+                    </VBox.margin>
                 </Button>
 
                 <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowMovements" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Movimenti" textAlignment="CENTER" textFill="#475569">
@@ -126,9 +114,9 @@
                     <padding>
                         <Insets left="20.0" />
                     </padding>
-               <VBox.margin>
-                  <Insets top="35.0" />
-               </VBox.margin>
+                    <VBox.margin>
+                        <Insets top="35.0" />
+                    </VBox.margin>
                 </Button>
 
                 <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowBudget" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Budget" textAlignment="CENTER" textFill="#475569">
@@ -138,9 +126,21 @@
                     <padding>
                         <Insets left="20.0" />
                     </padding>
-               <VBox.margin>
-                  <Insets top="35.0" />
-               </VBox.margin>
+                    <VBox.margin>
+                        <Insets top="35.0" />
+                    </VBox.margin>
+                </Button>
+
+                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowReport" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Report" textAlignment="CENTER" textFill="#475569">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                    <VBox.margin>
+                        <Insets top="35.0" />
+                    </VBox.margin>
                 </Button>
 
                 <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" layoutX="10.0" layoutY="216.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowAccount" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Account" textAlignment="CENTER" textFill="#475569">
@@ -163,9 +163,9 @@
 
     <center>
         <StackPane style="-fx-background-color: #f8fafc;" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin></StackPane>
+            <BorderPane.margin>
+                <Insets />
+            </BorderPane.margin></StackPane>
     </center>
 
 </BorderPane>

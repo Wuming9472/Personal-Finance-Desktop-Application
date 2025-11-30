@@ -81,6 +81,30 @@ public class MainApp extends Application {
     }
 
     /**
+     * Mostra la pagina Report (Grafici).
+     */
+    public void showReport() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/Report.fxml"));
+
+            // CORREZIONE: Ora il root di Report.fxml è un AnchorPane
+            AnchorPane view = (AnchorPane) loader.load();
+
+            rootLayout.setCenter(view);
+
+            ReportController controller = loader.getController();
+            controller.setMainApp(this);
+
+            if (rootController != null) {
+                rootController.setPageTitle("Report");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
      * Inizializza il layout principale (Menu laterale + Barra superiore).
      * Questo metodo viene chiamato DAL LOGIN CONTROLLER dopo che l'accesso è riuscito.
      */

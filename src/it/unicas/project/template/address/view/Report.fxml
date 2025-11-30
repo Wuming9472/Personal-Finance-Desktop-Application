@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane minHeight="600.0" minWidth="900.0" style="-fx-background-color: #f8fafc;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.ReportController">
+    <children>
+        <VBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+            <children>
+
+                <!-- TITOLO -->
+                <Label text="Report" textFill="#1e293b">
+                    <font>
+                        <Font name="System Bold" size="28.0" />
+                    </font>
+                </Label>
+
+                <!-- CONTENUTO PRINCIPALE - GridPane che si espande -->
+                <GridPane hgap="25.0" vgap="25.0" VBox.vgrow="ALWAYS">
+                    <columnConstraints>
+                        <!-- Colonna sinistra: 55% -->
+                        <ColumnConstraints hgrow="ALWAYS" percentWidth="55.0" />
+                        <!-- Colonna destra: 45% -->
+                        <ColumnConstraints hgrow="ALWAYS" percentWidth="45.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <!-- Unica riga che si espande -->
+                        <RowConstraints vgrow="ALWAYS" />
+                    </rowConstraints>
+                    <children>
+
+                        <!-- COLONNA SINISTRA: PIE CHART -->
+                        <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                            <children>
+                                <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+                                    <children>
+                                        <Label text="Distribuzione Spese" textFill="#1e293b">
+                                            <font>
+                                                <Font name="System Bold" size="18.0" />
+                                            </font>
+                                        </Label>
+                                        <PieChart fx:id="pieChart" legendSide="BOTTOM" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </AnchorPane>
+
+                        <!-- COLONNA DESTRA: BAR CHART + ANALISI -->
+                        <VBox spacing="25.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                            <children>
+
+                                <!-- BAR CHART -->
+                                <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" VBox.vgrow="ALWAYS">
+                                    <children>
+                                        <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+                                            <children>
+                                                <Label text="Confronto Mensile" textFill="#1e293b">
+                                                    <font>
+                                                        <Font name="System Bold" size="18.0" />
+                                                    </font>
+                                                </Label>
+                                                <BarChart fx:id="barChart" legendVisible="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                                                    <xAxis>
+                                                        <CategoryAxis side="BOTTOM" />
+                                                    </xAxis>
+                                                    <yAxis>
+                                                        <NumberAxis side="LEFT" />
+                                                    </yAxis>
+                                                </BarChart>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </AnchorPane>
+
+                            </children>
+                        </VBox>
+
+                    </children>
+                </GridPane>
+
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
