@@ -57,7 +57,7 @@ public class ReportController {
             // 2. BarChart - Confronto mensile ultimi 6 mesi
             loadBarChartData();
 
-          
+
 
         } catch (SQLException e) {
             e.printStackTrace();
