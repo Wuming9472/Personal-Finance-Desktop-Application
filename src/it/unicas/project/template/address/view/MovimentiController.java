@@ -8,9 +8,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.paint.Color;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MovimentiController {
 
@@ -88,6 +91,9 @@ public class MovimentiController {
                 charCountLabel.setText(newVal.length() + "/100");
             }
         });
+
+        // 4. ABILITA SELEZIONE MULTIPLA
+        transactionTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         transactionTable.setItems(movementData);
         loadCategories();
@@ -186,17 +192,36 @@ public class MovimentiController {
 
     @FXML
     private void handleDeleteTransaction() {
-        int index = transactionTable.getSelectionModel().getSelectedIndex();
-        if (index >= 0) {
-            Movimenti selected = transactionTable.getItems().get(index);
-            try {
-                MovimentiDAOMySQLImpl.delete(selected.getMovement_id());
-                transactionTable.getItems().remove(index);
-            } catch (Exception e) {
-                showError("Errore cancellazione: " + e.getMessage());
+        ObservableList<Movimenti> selectedItems = transactionTable.getSelectionModel().getSelectedItems();
+
+        if (selectedItems.isEmpty()) {
+            showError("Seleziona almeno una riga da eliminare.");
+            return;
+        }
+
+        // Chiedi conferma se ci sono più elementi selezionati
+        if (selectedItems.size() > 1) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setHeaderText(null);
+            alert.setContentText("Sei sicuro di voler eliminare " + selectedItems.size() + " transazioni?");
+            if (alert.showAndWait().get() != ButtonType.OK) {
+                return;
             }
-        } else {
-            showError("Seleziona una riga da eliminare.");
+        }
+
+        try {
+            // Creo una lista temporanea per evitare ConcurrentModificationException
+            List<Movimenti> toDelete = new ArrayList<>(selectedItems);
+
+            for (Movimenti movement : toDelete) {
+                MovimentiDAOMySQLImpl.delete(movement.getMovement_id());
+            }
+
+            // Ricarica i dati
+            loadMovementsForCurrentUser();
+
+        } catch (Exception e) {
+            showError("Errore cancellazione: " + e.getMessage());
         }
     }
 
