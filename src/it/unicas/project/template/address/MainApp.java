@@ -25,6 +25,7 @@ public class MainApp extends Application {
     private User loggedUser;
 
     private BudgetController budgetController;
+    private ReportController reportController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -95,6 +96,9 @@ public class MainApp extends Application {
 
             ReportController controller = loader.getController();
             controller.setMainApp(this);
+
+            // *** Salvo il riferimento al controller del report
+            this.reportController = controller;
 
             if (rootController != null) {
                 rootController.setPageTitle("Report");
@@ -305,7 +309,12 @@ public class MainApp extends Application {
         return loggedUser;
     }
 
+    public BudgetController getBudgetController() {
+        return budgetController;
+    }
 
-
+    public ReportController getReportController() {
+        return reportController;
+    }
 
 }

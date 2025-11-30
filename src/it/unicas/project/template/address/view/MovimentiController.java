@@ -185,6 +185,9 @@ public class MovimentiController {
             // Controlla se il budget è stato superato per questa specifica categoria
             checkBudgetAfterTransaction(categoryId);
 
+            // Aggiorna i dati del report se è aperto
+            refreshReportData();
+
             // Reset Campi (lascio la data e il tipo perché comodi)
             amountField.clear();
             descArea.clear();
@@ -230,6 +233,9 @@ public class MovimentiController {
 
             // Aggiorna lo stato dei budget dopo la cancellazione
             checkBudgetAfterDeletion();
+
+            // Aggiorna i dati del report se è aperto
+            refreshReportData();
 
         } catch (Exception e) {
             showError("Errore cancellazione: " + e.getMessage());
@@ -290,6 +296,16 @@ public class MovimentiController {
 
         } catch (SQLException e) {
             System.err.println("Errore nel controllo budget dopo cancellazione: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Aggiorna i dati del report (inclusa la previsione) se il controller del report è disponibile.
+     * Questo metodo viene chiamato dopo ogni operazione sui movimenti (insert, delete).
+     */
+    private void refreshReportData() {
+        if (mainApp != null && mainApp.getReportController() != null) {
+            mainApp.getReportController().refreshReportData();
         }
     }
 
