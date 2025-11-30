@@ -225,26 +225,32 @@
 
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
                                     <children>
-                                        <VBox spacing="20.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
+                                        <VBox spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                                             <children>
                                                 <HBox alignment="CENTER_LEFT">
                                                     <children>
-                                                        <Label text="Stato Budget" textFill="#1e293b">
+                                                        <Label text="I tuoi Budget" textFill="#1e293b">
                                                             <font>
                                                                 <Font name="System Bold" size="18.0" />
                                                             </font>
                                                         </Label>
                                                         <Region HBox.hgrow="ALWAYS" />
-                                                        <Label style="-fx-cursor: hand;" text="Gestisci" textFill="#3b82f6">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
-                                                        </Label>
                                                     </children>
                                                 </HBox>
 
-                                                <VBox fx:id="boxBudgetList" spacing="15.0">
-                                                </VBox>
+                                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="300.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0;" vbarPolicy="AS_NEEDED">
+                                                    <content>
+                                                        <GridPane fx:id="gridBudgetList" hgap="15.0" vgap="15.0">
+                                                            <columnConstraints>
+                                                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+                                                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+                                                            </columnConstraints>
+                                                            <rowConstraints>
+                                                                <RowConstraints vgrow="SOMETIMES" />
+                                                            </rowConstraints>
+                                                        </GridPane>
+                                                    </content>
+                                                </ScrollPane>
                                             </children>
                                         </VBox>
                                     </children>

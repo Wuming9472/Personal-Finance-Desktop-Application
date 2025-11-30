@@ -1,28 +1,27 @@
 package it.unicas.project.template.address.view;
 
-import javafx.animation.PauseTransition;
 import it.unicas.project.template.address.MainApp;
-// NUOVI IMPORT PER IL BUDGET
 import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
-
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
+import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import it.unicas.project.template.address.view.SmoothAreaChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar; // Serve per il budget
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.GridPane; // Importante per la griglia
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -51,8 +50,8 @@ public class DashboardController {
     @FXML private ComboBox<String> cmbRange;
     @FXML private VBox boxUltimiMovimenti;
 
-    // AGGIUNTA FXML PER IL BUDGET
-    @FXML private VBox boxBudgetList;
+    // --- MODIFICA: Ora usiamo GridPane invece di VBox per i budget ---
+    @FXML private GridPane gridBudgetList;
 
     private MainApp mainApp;
 
@@ -99,7 +98,7 @@ public class DashboardController {
             List<Movimenti> recent = dao.selectLastByUser(userId, 5);
             populateRecentMovements(recent);
 
-            // AGGIUNTA CHIAMATA BUDGET
+            // Popola Budget (Metodo Aggiornato per Card View)
             populateBudgetStatus(userId, now.getMonthValue(), now.getYear());
 
             populateChart(dao, userId);
@@ -111,75 +110,134 @@ public class DashboardController {
     }
 
     // =================================================================================
-    // NUOVO METODO: LOGICA BUDGET (REAL DATA)
+    // LOGICA BUDGET: CARD VIEW (GRIGLIA COLORATA)
     // =================================================================================
     private void populateBudgetStatus(int userId, int month, int year) {
-        if (boxBudgetList == null) return; // Sicurezza
-        boxBudgetList.getChildren().clear();
+        if (gridBudgetList == null) return;
+        gridBudgetList.getChildren().clear();
 
         BudgetDAOMySQLImpl budgetDao = new BudgetDAOMySQLImpl();
         List<Budget> budgetList;
 
         try {
-            // Recupera la lista dal DB
             budgetList = budgetDao.getBudgetsForMonth(userId, month, year);
         } catch (SQLException e) {
             e.printStackTrace();
-            boxBudgetList.getChildren().add(new Label("Errore caricamento budget"));
+            gridBudgetList.add(new Label("Errore DB"), 0, 0);
             return;
         }
 
         if (budgetList.isEmpty()) {
-            Label lbl = new Label("Nessun budget impostato per questo mese.");
+            Label lbl = new Label("Nessun budget impostato.");
             lbl.setTextFill(Color.GRAY);
             lbl.setFont(Font.font("System", 12));
-            boxBudgetList.getChildren().add(lbl);
+            gridBudgetList.add(lbl, 0, 0);
             return;
         }
 
-        for (Budget b : budgetList) {
-            VBox itemBox = new VBox(5);
+        int column = 0;
+        int row = 0;
 
-            // Intestazione
-            HBox headerBox = new HBox();
-            headerBox.setAlignment(Pos.CENTER_LEFT);
+        for (Budget b : budgetList) {
+            // --- 1. Calcoli ---
+            double progress = b.getProgress();
+            double remaining = b.getBudgetAmount() - b.getSpentAmount();
+            boolean isOver = remaining < 0;
+
+            // --- 2. Definizione Colori (Stile Card "Pastello" come foto) ---
+            String bgColor, accentColor, textColor;
+
+            if (progress >= 1.0) {
+                // ROSSO (Sforato/Critico)
+                bgColor = "#fff1f2"; // Rosa chiarissimo
+                accentColor = "#e11d48"; // Rosso acceso
+                textColor = "#be123c";
+            } else if (progress > 0.80) {
+                // GIALLO (Attenzione)
+                bgColor = "#fffbeb"; // Giallo chiarissimo
+                accentColor = "#d97706"; // Ambra
+                textColor = "#b45309";
+            } else {
+                // VERDE (Safe)
+                bgColor = "#ecfdf5"; // Verde chiarissimo
+                accentColor = "#059669"; // Smeraldo
+                textColor = "#047857";
+            }
+
+            // --- 3. Creazione CARD (VBox) ---
+            VBox card = new VBox(10);
+            card.setPadding(new Insets(15));
+            // Stile CSS Inline per il riquadro arrotondato
+            card.setStyle("-fx-background-color: " + bgColor + "; " +
+                    "-fx-background-radius: 15; " +
+                    "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);");
+
+            // -- RIGA A: Titolo Categoria --
+            HBox topRow = new HBox();
+            topRow.setAlignment(Pos.CENTER_LEFT);
 
             Label lblName = new Label(b.getCategoryName());
-            lblName.setTextFill(Color.web("#334155"));
-            lblName.setFont(Font.font("System", FontWeight.BOLD, 14));
+            lblName.setFont(Font.font("System", FontWeight.BOLD, 15));
+            lblName.setTextFill(Color.web("#1e293b")); // Grigio scuro
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
-            Label lblAmount = new Label(String.format("€ %.2f / € %.2f", b.getSpentAmount(), b.getBudgetAmount()));
-            lblAmount.setTextFill(Color.web("#64748b"));
-            lblAmount.setFont(Font.font("System", 12));
+            topRow.getChildren().addAll(lblName, spacer);
 
-            headerBox.getChildren().addAll(lblName, spacer, lblAmount);
-
-            // Progress Bar
-            ProgressBar progressBar = new ProgressBar();
-            progressBar.setMaxWidth(Double.MAX_VALUE);
-
-            double progress = b.getProgress();
-            progressBar.setProgress(progress > 1.0 ? 1.0 : progress);
-
-            // Colore Dinamico
-            String colorHex = "#10b981"; // Verde
-            if (progress >= 1.0) {
-                colorHex = "#ef4444"; // Rosso
-            } else if (progress > 0.85) {
-                colorHex = "#f59e0b"; // Arancione
+            // Se sforato, icona di warning
+            if (isOver || progress > 0.9) {
+                Label icon = new Label("!");
+                icon.setFont(Font.font("System", FontWeight.BOLD, 14));
+                icon.setTextFill(Color.web(accentColor));
+                icon.setStyle("-fx-border-color: " + accentColor + "; -fx-border-radius: 10; -fx-padding: 0 5 0 5;");
+                topRow.getChildren().add(icon);
             }
 
-            progressBar.setStyle("-fx-accent: " + colorHex + "; -fx-control-inner-background: #e2e8f0; -fx-text-box-border: transparent;");
+            // -- RIGA B: Dettagli Spesi / Rimanenti --
+            HBox detailsRow = new HBox(10);
+            detailsRow.setAlignment(Pos.CENTER_LEFT);
 
-            itemBox.getChildren().addAll(headerBox, progressBar);
-            boxBudgetList.getChildren().add(itemBox);
+            Label lblSpesi = new Label("Spesi: €" + String.format("%.0f", b.getSpentAmount()));
+            lblSpesi.setTextFill(Color.web("#64748b")); // Grigio medio
+            lblSpesi.setFont(Font.font("System", 12));
+
+            // Logica per testo "Left" o "Over"
+            String leftText = isOver ? "Over: €" + String.format("%.0f", Math.abs(remaining)) : "Left: €" + String.format("%.0f", remaining);
+            Label lblLeft = new Label(leftText);
+            lblLeft.setTextFill(Color.web(accentColor)); // Colore dinamico
+            lblLeft.setFont(Font.font("System", FontWeight.BOLD, 12));
+
+            detailsRow.getChildren().addAll(lblSpesi, lblLeft);
+
+            // -- RIGA C: Progress Bar Sottile --
+            ProgressBar pb = new ProgressBar(progress > 1.0 ? 1.0 : progress);
+            pb.setMaxWidth(Double.MAX_VALUE);
+            pb.setPrefHeight(6); // Molto sottile
+            // Colora la barra interna e nasconde il bordo
+            pb.setStyle("-fx-accent: " + accentColor + "; " +
+                    "-fx-control-inner-background: rgba(0,0,0,0.05); " +
+                    "-fx-text-box-border: transparent; -fx-background-insets: 0;");
+
+            // Assemblaggio Card
+            card.getChildren().addAll(topRow, detailsRow, pb);
+
+            // Aggiunta alla Griglia
+            gridBudgetList.add(card, column, row);
+
+            // Gestione colonne (Max 2 per riga)
+            column++;
+            if (column == 2) {
+                column = 0;
+                row++;
+            }
         }
     }
 
-    // Metodo helper per la previsione (aggiunto per completezza della UI)
+    // =================================================================================
+    // ALTRE FUNZIONI (Chart, Forecast, Movimenti) - INVARIATE
+    // =================================================================================
+
     private void calculateForecast(float saldoAttuale, float entrate, float uscite, LocalDate now) {
         if (lblPrevisione == null) return;
         int daysInMonth = now.lengthOfMonth();
@@ -192,8 +250,6 @@ public class DashboardController {
 
         lblPrevisione.setText(String.format("€ %.2f", previsioneFinale));
     }
-
-    // --- FINE NUOVA LOGICA ---
 
     private void populateRecentMovements(List<Movimenti> list) {
         boxUltimiMovimenti.getChildren().clear();
@@ -304,12 +360,10 @@ public class DashboardController {
                 return;
             }
 
-            // Flag per tracciare quando ogni serie ha il suo primo valore reale
             boolean entrataStarted = false;
             boolean uscitaStarted = false;
             boolean bothStarted = false;
 
-            // Calcolo valori CUMULATIVI
             float cumulativeEntrate = 0f;
             float cumulativeUscite = 0f;
 
@@ -319,49 +373,35 @@ public class DashboardController {
                 Float entrata = point.getValue().getKey();
                 Float uscita = point.getValue().getValue();
 
-                // Aggiorno i flag PRIMA di processare questo punto
                 if (entrata > 0) entrataStarted = true;
                 if (uscita > 0) uscitaStarted = true;
 
-                // Verifico se da questo momento entrambe le serie hanno dati
                 if (entrataStarted && uscitaStarted && !bothStarted) {
                     bothStarted = true;
                 }
 
-                // Aggiorno i cumulativi
                 cumulativeEntrate += entrata;
                 cumulativeUscite += uscita;
 
                 if (!bothStarted) {
-                    // === FASE 1: Solo una serie è attiva ===
-                    // L'altra serie ha punti a 0 per garantire continuità visiva
-
                     if (entrataStarted) {
-                        // Ho entrate attive
                         XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
                         attachCumulativeTooltip(incomeData, "Entrate", abbreviated, entrata, cumulativeEntrate);
                         serieEntrate.getData().add(incomeData);
 
-                        // Aggiungo punto uscita a 0 per continuità (la curva rossa partirà da qui)
                         XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, cumulativeUscite);
                         attachCumulativeTooltip(expenseData, "Uscite", abbreviated, uscita, cumulativeUscite);
                         serieUscite.getData().add(expenseData);
                     } else if (uscitaStarted) {
-                        // Ho uscite attive
                         XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, cumulativeUscite);
                         attachCumulativeTooltip(expenseData, "Uscite", abbreviated, uscita, cumulativeUscite);
                         serieUscite.getData().add(expenseData);
 
-                        // Aggiungo punto entrata a 0 per continuità (la curva verde partirà da qui)
                         XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
                         attachCumulativeTooltip(incomeData, "Entrate", abbreviated, entrata, cumulativeEntrate);
                         serieEntrate.getData().add(incomeData);
                     }
                 } else {
-                    // === FASE 2: Entrambe le serie hanno almeno un movimento ===
-                    // Le serie sono COMPLETAMENTE INDIPENDENTI
-                    // Aggiungo punti SOLO dove ci sono movimenti reali
-
                     if (entrata > 0) {
                         XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
                         attachCumulativeTooltip(incomeData, "Entrate", abbreviated, entrata, cumulativeEntrate);
@@ -376,7 +416,6 @@ public class DashboardController {
                 }
             }
 
-            // Aggiungo le serie solo se hanno almeno un punto
             if (!serieEntrate.getData().isEmpty()) {
                 chartAndamento.getData().add(serieEntrate);
             }
@@ -384,7 +423,6 @@ public class DashboardController {
                 chartAndamento.getData().add(serieUscite);
             }
 
-            // Animazione
             Platform.runLater(() -> {
                 chartAndamento.setAnimated(true);
                 for (XYChart.Series<String, Number> series : chartAndamento.getData()) {
@@ -398,9 +436,6 @@ public class DashboardController {
         }
     }
 
-    /**
-     * Tooltip per grafico cumulativo - mostra valore giornaliero e totale
-     */
     private void attachCumulativeTooltip(XYChart.Data<String, Number> data, String seriesName,
                                          String label, Float dailyValue, Float cumulativeValue) {
         String tooltipText = String.format("%s\n%s: € %.2f\nTotale: € %.2f",
@@ -413,22 +448,18 @@ public class DashboardController {
         });
     }
 
-    // Aggiungi dopo il metodo populateChart()
     private void setupChartAppearance() {
         chartAndamento.setLegendVisible(true);
         chartAndamento.setCreateSymbols(true);
         chartAndamento.setAnimated(true);
-
-        // Rimuovi padding eccessivo
         chartAndamento.setPadding(new javafx.geometry.Insets(0));
 
-        // Configura l'asse X (CategoryAxis) per rimuovere il gap ai bordi
         if (chartAndamento.getXAxis() instanceof CategoryAxis) {
             CategoryAxis xAxis = (CategoryAxis) chartAndamento.getXAxis();
             xAxis.setTickLabelRotation(0);
-            xAxis.setStartMargin(0);  // Rimuove lo spazio a sinistra
-            xAxis.setEndMargin(0);    // Rimuove lo spazio a destra
-            xAxis.setGapStartAndEnd(false);  // Disabilita il gap automatico ai bordi
+            xAxis.setStartMargin(0);
+            xAxis.setEndMargin(0);
+            xAxis.setGapStartAndEnd(false);
         }
 
         if (chartAndamento.getYAxis() instanceof NumberAxis) {
@@ -446,20 +477,15 @@ public class DashboardController {
         }
     }
 
-    /**
-     * Anima l'ingresso progressivo dei dati del grafico con delay scaglionato
-     */
     private void animateChartDataAppearance(XYChart.Series<String, Number> series) {
         int delay = 0;
         for (XYChart.Data<String, Number> data : series.getData()) {
-            // Inizia con opacità 0 e scala piccola
             if (data.getNode() != null) {
                 data.getNode().setOpacity(0);
                 data.getNode().setScaleX(0.8);
                 data.getNode().setScaleY(0.8);
             }
 
-            // Crea transizione con delay progressivo
             final int currentDelay = delay;
             PauseTransition pause = new PauseTransition(Duration.millis(currentDelay));
             pause.setOnFinished(event -> {
@@ -472,8 +498,7 @@ public class DashboardController {
                 }
             });
             pause.play();
-
-            delay += 50; // Incrementa il delay per ogni punto (50ms)
+            delay += 50;
         }
     }
 
