@@ -7,6 +7,7 @@ import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import it.unicas.project.template.address.util.BudgetNotificationHelper;
+import it.unicas.project.template.address.util.BudgetNotificationPreferences;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -181,8 +182,8 @@ public class MovimentiController {
 
             loadMovementsForCurrentUser();
 
-            // Controlla se il budget è stato superato dopo l'inserimento
-            checkBudgetAfterTransaction();
+            // Controlla se il budget è stato superato per questa specifica categoria
+            checkBudgetAfterTransaction(categoryId);
 
             // Reset Campi (lascio la data e il tipo perché comodi)
             amountField.clear();
@@ -227,8 +228,8 @@ public class MovimentiController {
             // Ricarica i dati
             loadMovementsForCurrentUser();
 
-            // Controlla se il budget è stato superato dopo la cancellazione
-            checkBudgetAfterTransaction();
+            // Aggiorna lo stato dei budget dopo la cancellazione
+            checkBudgetAfterDeletion();
 
         } catch (Exception e) {
             showError("Errore cancellazione: " + e.getMessage());
@@ -236,10 +237,12 @@ public class MovimentiController {
     }
 
     /**
-     * Controlla i budget del mese corrente e mostra una notifica se qualche budget è stato superato.
-     * Viene chiamato dopo l'inserimento o la cancellazione di un movimento.
+     * Controlla il budget del mese corrente per una specifica categoria e mostra una notifica se è stato superato.
+     * Viene chiamato dopo l'inserimento di un movimento.
+     *
+     * @param categoryId ID della categoria del movimento appena inserito
      */
-    private void checkBudgetAfterTransaction() {
+    private void checkBudgetAfterTransaction(int categoryId) {
         if (mainApp == null || mainApp.getLoggedUser() == null) return;
 
         try {
@@ -249,11 +252,44 @@ public class MovimentiController {
             int currentYear = now.getYear();
 
             List<Budget> budgets = budgetDAO.getBudgetsForMonth(userId, currentMonth, currentYear);
-            BudgetNotificationHelper.checkAndNotifyBudgetExceeded(budgets);
+            BudgetNotificationHelper.checkAndNotifyForCategory(budgets, categoryId);
 
         } catch (SQLException e) {
             // Silenzioso: non blocchiamo l'operazione se il controllo budget fallisce
             System.err.println("Errore nel controllo budget: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Controlla i budget del mese corrente dopo una cancellazione.
+     * Non mostra notifiche, ma aggiorna lo stato delle categorie che non sono più superate.
+     */
+    private void checkBudgetAfterDeletion() {
+        if (mainApp == null || mainApp.getLoggedUser() == null) return;
+
+        try {
+            int userId = mainApp.getLoggedUser().getUser_id();
+            LocalDate now = LocalDate.now();
+            int currentMonth = now.getMonthValue();
+            int currentYear = now.getYear();
+
+            List<Budget> budgets = budgetDAO.getBudgetsForMonth(userId, currentMonth, currentYear);
+
+            // Controlla tutte le categorie per vedere se alcune non sono più superate
+            for (Budget budget : budgets) {
+                if (budget.getCategoryId() == 6) continue; // Ignora Stipendio
+
+                boolean isExceeded = budget.getSpentAmount() > budget.getBudgetAmount()
+                    && budget.getBudgetAmount() > 0;
+
+                if (!isExceeded) {
+                    // La categoria non è più superata, rimuovi la marcatura
+                    BudgetNotificationPreferences.getInstance().unmarkAsNotified(budget.getCategoryId());
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Errore nel controllo budget dopo cancellazione: " + e.getMessage());
         }
     }
 

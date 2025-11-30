@@ -201,8 +201,8 @@ public class BudgetController {
             }
         }
 
-        // Controlla e notifica se ci sono budget superati
-        BudgetNotificationHelper.checkAndNotifyBudgetExceeded(currentBudgets);
+        // Le notifiche di budget superato vengono mostrate solo quando si inserisce un movimento,
+        // non quando si visualizza semplicemente la dashboard dei budget.
     }
 
     private void resetCard(Label remaining, Label spent, Label limit,
