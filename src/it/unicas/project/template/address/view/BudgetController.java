@@ -3,18 +3,13 @@ package it.unicas.project.template.address.view;
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
-import it.unicas.project.template.address.util.BudgetNotificationHelper;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.geometry.Insets;
-import javafx.scene.layout.GridPane;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BudgetController {
 
@@ -94,7 +89,6 @@ public class BudgetController {
         loadBudgetsForCurrentUser();
     }
 
-    /** Ricarica i budget dal DB */
     private void loadBudgetsForCurrentUser() {
         if (mainApp == null || mainApp.getLoggedUser() == null) return;
 
@@ -102,7 +96,6 @@ public class BudgetController {
         refreshBudgetsFromDb();
     }
 
-    /** Ricarica i budget e aggiorna le card */
     private void refreshBudgetsFromDb() {
         if (currentUserId <= 0) return;
 
@@ -123,109 +116,77 @@ public class BudgetController {
         }
     }
 
-    /** Crea limiti di default per le categorie reali dell'utente */
     private void createDefaultBudgetsForUser(int userId, int month, int year) throws SQLException {
-        // Imposta limiti predefiniti per le categorie note
-        budgetDAO.setOrUpdateBudget(userId, 1, month, year, 400.0); // Alimentari
-        budgetDAO.setOrUpdateBudget(userId, 2, month, year, 150.0); // Trasporti
-        budgetDAO.setOrUpdateBudget(userId, 3, month, year, 300.0); // Bollette
-        budgetDAO.setOrUpdateBudget(userId, 4, month, year, 200.0); // Svago
-        budgetDAO.setOrUpdateBudget(userId, 5, month, year, 100.0); // Salute
-        budgetDAO.setOrUpdateBudget(userId, 6, month, year, 0.0);   // Stipendio (Ignorato)
-        budgetDAO.setOrUpdateBudget(userId, 7, month, year, 200.0); // Investimenti
-        budgetDAO.setOrUpdateBudget(userId, 8, month, year, 100.0); // Altro
+        budgetDAO.setOrUpdateBudget(userId, 1, month, year, 400.0);
+        budgetDAO.setOrUpdateBudget(userId, 2, month, year, 150.0);
+        budgetDAO.setOrUpdateBudget(userId, 3, month, year, 300.0);
+        budgetDAO.setOrUpdateBudget(userId, 4, month, year, 200.0);
+        budgetDAO.setOrUpdateBudget(userId, 5, month, year, 100.0);
+        budgetDAO.setOrUpdateBudget(userId, 6, month, year, 0.0);
+        budgetDAO.setOrUpdateBudget(userId, 7, month, year, 200.0);
+        budgetDAO.setOrUpdateBudget(userId, 8, month, year, 100.0);
     }
 
-    /** Aggiorna le card grafiche */
     private void updateUIFromBudgets() {
-
-        // Reset Card Standard
-        resetCard(foodRemainingLabel, foodSpentLabel, foodLimitLabel,
-                foodPercentageLabel, foodProgressBar);
-        resetCard(transportRemainingLabel, transportSpentLabel, transportLimitLabel,
-                transportPercentageLabel, transportProgressBar);
-        resetCard(leisureRemainingLabel, leisureSpentLabel, leisureLimitLabel,
-                leisurePercentageLabel, leisureProgressBar);
-        resetCard(billsRemainingLabel, billsSpentLabel, billsLimitLabel,
-                billsPercentageLabel, billsProgressBar);
-
-        // Reset Nuove Card
-        resetCard(healthRemainingLabel, healthSpentLabel, healthLimitLabel,
-                healthPercentageLabel, healthProgressBar);
-        resetCard(investRemainingLabel, investSpentLabel, investLimitLabel,
-                investPercentageLabel, investProgressBar);
-        resetCard(otherRemainingLabel, otherSpentLabel, otherLimitLabel,
-                otherPercentageLabel, otherProgressBar);
+        resetCard(foodRemainingLabel, foodSpentLabel, foodLimitLabel, foodPercentageLabel, foodProgressBar);
+        resetCard(transportRemainingLabel, transportSpentLabel, transportLimitLabel, transportPercentageLabel, transportProgressBar);
+        resetCard(leisureRemainingLabel, leisureSpentLabel, leisureLimitLabel, leisurePercentageLabel, leisureProgressBar);
+        resetCard(billsRemainingLabel, billsSpentLabel, billsLimitLabel, billsPercentageLabel, billsProgressBar);
+        resetCard(healthRemainingLabel, healthSpentLabel, healthLimitLabel, healthPercentageLabel, healthProgressBar);
+        resetCard(investRemainingLabel, investSpentLabel, investLimitLabel, investPercentageLabel, investProgressBar);
+        resetCard(otherRemainingLabel, otherSpentLabel, otherLimitLabel, otherPercentageLabel, otherProgressBar);
 
         if (currentBudgets == null) return;
 
         for (Budget b : currentBudgets) {
             switch (b.getCategoryId()) {
-                case 1 -> { // Alimentari
+                case 1 -> {
                     foodCategoryLabel.setText(b.getCategoryName());
-                    updateCardFromBudget(b, foodRemainingLabel, foodSpentLabel,
-                            foodLimitLabel, foodPercentageLabel, foodProgressBar);
+                    updateCardFromBudget(b, foodRemainingLabel, foodSpentLabel, foodLimitLabel, foodPercentageLabel, foodProgressBar);
                 }
-                case 2 -> { // Trasporti
+                case 2 -> {
                     transportCategoryLabel.setText(b.getCategoryName());
-                    updateCardFromBudget(b, transportRemainingLabel, transportSpentLabel,
-                            transportLimitLabel, transportPercentageLabel, transportProgressBar);
+                    updateCardFromBudget(b, transportRemainingLabel, transportSpentLabel, transportLimitLabel, transportPercentageLabel, transportProgressBar);
                 }
-                case 3 -> { // Bollette
+                case 3 -> {
                     billsCategoryLabel.setText(b.getCategoryName());
-                    updateCardFromBudget(b, billsRemainingLabel, billsSpentLabel,
-                            billsLimitLabel, billsPercentageLabel, billsProgressBar);
+                    updateCardFromBudget(b, billsRemainingLabel, billsSpentLabel, billsLimitLabel, billsPercentageLabel, billsProgressBar);
                 }
-                case 4 -> { // Svago
+                case 4 -> {
                     leisureCategoryLabel.setText(b.getCategoryName());
-                    updateCardFromBudget(b, leisureRemainingLabel, leisureSpentLabel,
-                            leisureLimitLabel, leisurePercentageLabel, leisureProgressBar);
+                    updateCardFromBudget(b, leisureRemainingLabel, leisureSpentLabel, leisureLimitLabel, leisurePercentageLabel, leisureProgressBar);
                 }
-                case 5 -> { // Salute
+                case 5 -> {
                     healthCategoryLabel.setText(b.getCategoryName());
-                    updateCardFromBudget(b, healthRemainingLabel, healthSpentLabel,
-                            healthLimitLabel, healthPercentageLabel, healthProgressBar);
-                    // Sovrascrivi colore (Rosa) se non è rosso
+                    updateCardFromBudget(b, healthRemainingLabel, healthSpentLabel, healthLimitLabel, healthPercentageLabel, healthProgressBar);
                     if (b.getProgress() <= 1.0) healthProgressBar.setStyle("-fx-accent: #db2777;");
                 }
-                case 7 -> { // Investimenti
+                case 7 -> {
                     investCategoryLabel.setText(b.getCategoryName());
-                    updateCardFromBudget(b, investRemainingLabel, investSpentLabel,
-                            investLimitLabel, investPercentageLabel, investProgressBar);
-                    // Sovrascrivi colore (Viola) se non è rosso
+                    updateCardFromBudget(b, investRemainingLabel, investSpentLabel, investLimitLabel, investPercentageLabel, investProgressBar);
                     if (b.getProgress() <= 1.0) investProgressBar.setStyle("-fx-accent: #7c3aed;");
                 }
-                case 8 -> { // Altro
+                case 8 -> {
                     otherCategoryLabel.setText(b.getCategoryName());
-                    updateCardFromBudget(b, otherRemainingLabel, otherSpentLabel,
-                            otherLimitLabel, otherPercentageLabel, otherProgressBar);
-                    // Sovrascrivi colore (Grigio) se non è rosso
+                    updateCardFromBudget(b, otherRemainingLabel, otherSpentLabel, otherLimitLabel, otherPercentageLabel, otherProgressBar);
                     if (b.getProgress() <= 1.0) otherProgressBar.setStyle("-fx-accent: #475569;");
                 }
             }
         }
-
-        // Le notifiche di budget superato vengono mostrate solo quando si inserisce un movimento,
-        // non quando si visualizza semplicemente la dashboard dei budget.
     }
 
-    private void resetCard(Label remaining, Label spent, Label limit,
-                           Label percentage, ProgressBar bar) {
+    private void resetCard(Label remaining, Label spent, Label limit, Label percentage, ProgressBar bar) {
         if (remaining != null) remaining.setText("Rimasti: € 0.00");
         if (spent != null) spent.setText("Spesi: € 0.00");
         if (limit != null) limit.setText("Limite: € 0.00");
         if (percentage != null) percentage.setText("0%");
         if (bar != null) {
             bar.setProgress(0);
-            // Colore di default (verde) per il reset
             bar.setStyle("-fx-accent: #10b981;");
         }
     }
 
-    private void updateCardFromBudget(Budget b,
-                                      Label remaining, Label spent, Label limit,
-                                      Label percentage, ProgressBar bar) {
-
+    private void updateCardFromBudget(Budget b, Label remaining, Label spent, Label limit, Label percentage, ProgressBar bar) {
         double budgetAmount = b.getBudgetAmount();
         double spentAmount = b.getSpentAmount();
         double remainingAmount = b.getRemaining();
@@ -241,15 +202,58 @@ public class BudgetController {
 
         if (bar != null) {
             bar.setProgress(clamped);
-
-            // Colore automatico: Verde -> Giallo -> Rosso
             String color;
-            if (ratio < 0.75) color = "#10b981"; // verde
-            else if (ratio <= 1.0) color = "#f59e0b"; // giallo
-            else color = "#ef4444"; // rosso
-
+            if (ratio < 0.75) color = "#10b981";
+            else if (ratio <= 1.0) color = "#f59e0b";
+            else color = "#ef4444";
             bar.setStyle("-fx-accent: " + color + ";");
         }
+    }
+
+    // ====== MODIFICA SINGOLA CATEGORIA (ICONA MATITA) ======
+
+    @FXML private void handleEditFood() { editSingleBudget(1, "Alimentari"); }
+    @FXML private void handleEditTransport() { editSingleBudget(2, "Trasporti"); }
+    @FXML private void handleEditBills() { editSingleBudget(3, "Bollette"); }
+    @FXML private void handleEditLeisure() { editSingleBudget(4, "Svago"); }
+    @FXML private void handleEditHealth() { editSingleBudget(5, "Salute"); }
+    @FXML private void handleEditInvest() { editSingleBudget(7, "Investimenti"); }
+    @FXML private void handleEditOther() { editSingleBudget(8, "Altro"); }
+
+    private void editSingleBudget(int categoryId, String categoryName) {
+        double currentLimit = 0;
+        for (Budget b : currentBudgets) {
+            if (b.getCategoryId() == categoryId) {
+                currentLimit = b.getBudgetAmount();
+                break;
+            }
+        }
+
+        TextInputDialog dialog = new TextInputDialog(String.format("%.2f", currentLimit));
+        dialog.setTitle("Modifica Budget");
+        dialog.setHeaderText("Imposta limite per " + categoryName);
+        dialog.setContentText("Nuovo limite (€):");
+
+        Optional<String> result = dialog.showAndWait();
+
+        result.ifPresent(value -> {
+            try {
+                double newLimit = Double.parseDouble(value.replace(",", "."));
+
+                if (newLimit < 0) {
+                    showError("Valore non valido", "Il limite deve essere positivo.");
+                    return;
+                }
+
+                budgetDAO.setOrUpdateBudget(currentUserId, categoryId, currentMonth, currentYear, newLimit);
+                refreshBudgetsFromDb();
+
+            } catch (NumberFormatException e) {
+                showError("Valore non valido", "Inserisci un numero valido.");
+            } catch (SQLException e) {
+                showError("Errore database", e.getMessage());
+            }
+        });
     }
 
     private void showError(String title, String msg) {
@@ -258,90 +262,5 @@ public class BudgetController {
         a.setHeaderText(title);
         a.setContentText(msg);
         a.showAndWait();
-    }
-
-    @FXML
-    private void handleEditBudget() {
-        if (currentBudgets == null || currentBudgets.isEmpty()) {
-            showError("Nessun budget trovato",
-                    "Non ci sono budget definiti per questo mese.");
-            return;
-        }
-
-        // Crea dialog personalizzato
-        Dialog<Map<Integer, Double>> dialog = new Dialog<>();
-        dialog.setTitle("Imposta limiti budget");
-        dialog.setHeaderText("Imposta i limiti per tutte le categorie");
-
-        // Aggiungi bottoni OK e Annulla
-        ButtonType okButtonType = new ButtonType("Salva", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
-
-        // Crea GridPane per i campi
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
-        // Mappa per salvare i TextField
-        Map<Integer, TextField> textFields = new HashMap<>();
-
-        int row = 0;
-        for (Budget b : currentBudgets) {
-            // Ignora lo stipendio (ID 6)
-            if (b.getCategoryId() == 6) continue;
-
-            Label label = new Label(b.getCategoryName() + ":");
-            TextField textField = new TextField(String.format("%.2f", b.getBudgetAmount()));
-            textField.setPrefWidth(150);
-
-            grid.add(label, 0, row);
-            grid.add(textField, 1, row);
-
-            textFields.put(b.getCategoryId(), textField);
-            row++;
-        }
-
-        dialog.getDialogPane().setContent(grid);
-
-        // Converte il risultato quando viene premuto OK
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == okButtonType) {
-                Map<Integer, Double> results = new HashMap<>();
-                for (Map.Entry<Integer, TextField> entry : textFields.entrySet()) {
-                    try {
-                        double value = Double.parseDouble(entry.getValue().getText().replace(",", "."));
-                        results.put(entry.getKey(), value);
-                    } catch (NumberFormatException e) {
-                        // Valore non valido, ignora
-                    }
-                }
-                return results;
-            }
-            return null;
-        });
-
-        Optional<Map<Integer, Double>> result = dialog.showAndWait();
-
-        result.ifPresent(values -> {
-            for (Map.Entry<Integer, Double> entry : values.entrySet()) {
-                int categoryId = entry.getKey();
-                double newLimit = entry.getValue();
-
-                if (newLimit < 0) {
-                    showError("Valore non valido", "Il limite deve essere positivo.");
-                    continue;
-                }
-
-                try {
-                    budgetDAO.setOrUpdateBudget(currentUserId, categoryId,
-                            currentMonth, currentYear, newLimit);
-                } catch (SQLException ex) {
-                    showError("Errore", ex.getMessage());
-                }
-            }
-
-            refreshBudgetsFromDb();
-        });
     }
 }

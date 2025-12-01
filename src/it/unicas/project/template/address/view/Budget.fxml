@@ -33,19 +33,10 @@
                                 </Label>
                             </children>
                         </VBox>
-                        <Region HBox.hgrow="ALWAYS" />
-                        <Button mnemonicParsing="false" onAction="#handleEditBudget" style="-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-cursor: hand;" text="⚙ Imposta Limiti">
-                            <padding>
-                                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                            </padding>
-                            <font>
-                                <Font name="System Bold" size="14.0" />
-                            </font>
-                        </Button>
                     </children>
                 </HBox>
 
-                <ScrollPane fitToWidth="true" onDragDetected="#handleEditBudget" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
                     <content>
                         <GridPane hgap="20.0" vgap="20.0">
                             <columnConstraints>
@@ -71,32 +62,30 @@
                                                     <children>
                                                         <Circle fill="#dcfce7" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
                                                         <Label text="🥕" textFill="#16a34a">
-                                                            <font>
-                                                                <Font size="24.0" />
-                                                            </font>
+                                                            <font><Font size="24.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </StackPane>
                                                 <VBox>
                                                     <children>
                                                         <Label fx:id="foodCategoryLabel" text="Alimentari" textFill="#1e293b">
-                                                            <font>
-                                                                <Font name="System Bold" size="18.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="18.0" /></font>
                                                         </Label>
                                                         <Label fx:id="foodRemainingLabel" text="Rimasti: € 0.00" textFill="#10b981">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="13.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
                                                 <Label fx:id="foodPercentageLabel" text="0%" textFill="#94a3b8">
-                                                    <font>
-                                                        <Font name="System Bold" size="18.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="18.0" /></font>
                                                 </Label>
+                                                <Button onAction="#handleEditFood" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-cursor: hand;" mnemonicParsing="false">
+                                                    <graphic>
+                                                        <SVGPath content="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" fill="TRANSPARENT" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="1.5" scaleX="0.8" scaleY="0.8" />
+                                                    </graphic>
+                                                    <padding><Insets bottom="8.0" left="8.0" right="8.0" top="8.0" /></padding>
+                                                </Button>
                                             </children>
                                         </HBox>
                                         <VBox spacing="5.0">
@@ -125,32 +114,30 @@
                                                     <children>
                                                         <Circle fill="#dbeafe" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
                                                         <Label text="🚗" textFill="#2563eb">
-                                                            <font>
-                                                                <Font size="24.0" />
-                                                            </font>
+                                                            <font><Font size="24.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </StackPane>
                                                 <VBox>
                                                     <children>
                                                         <Label fx:id="transportCategoryLabel" text="Trasporti" textFill="#1e293b">
-                                                            <font>
-                                                                <Font name="System Bold" size="18.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="18.0" /></font>
                                                         </Label>
                                                         <Label fx:id="transportRemainingLabel" text="Rimasti: € 0.00" textFill="#3b82f6">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="13.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
                                                 <Label fx:id="transportPercentageLabel" text="0%" textFill="#94a3b8">
-                                                    <font>
-                                                        <Font name="System Bold" size="18.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="18.0" /></font>
                                                 </Label>
+                                                <Button onAction="#handleEditTransport" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-cursor: hand;" mnemonicParsing="false">
+                                                    <graphic>
+                                                        <SVGPath content="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" fill="TRANSPARENT" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="1.5" scaleX="0.8" scaleY="0.8" />
+                                                    </graphic>
+                                                    <padding><Insets bottom="8.0" left="8.0" right="8.0" top="8.0" /></padding>
+                                                </Button>
                                             </children>
                                         </HBox>
                                         <VBox spacing="5.0">
@@ -179,32 +166,30 @@
                                                     <children>
                                                         <Circle fill="#ffedd5" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
                                                         <Label text="🍿" textFill="#ea580c">
-                                                            <font>
-                                                                <Font size="24.0" />
-                                                            </font>
+                                                            <font><Font size="24.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </StackPane>
                                                 <VBox>
                                                     <children>
                                                         <Label fx:id="leisureCategoryLabel" text="Svago" textFill="#1e293b">
-                                                            <font>
-                                                                <Font name="System Bold" size="18.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="18.0" /></font>
                                                         </Label>
                                                         <Label fx:id="leisureRemainingLabel" text="Rimasti: € 0.00" textFill="#f59e0b">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="13.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
                                                 <Label fx:id="leisurePercentageLabel" text="0%" textFill="#f59e0b">
-                                                    <font>
-                                                        <Font name="System Bold" size="18.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="18.0" /></font>
                                                 </Label>
+                                                <Button onAction="#handleEditLeisure" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-cursor: hand;" mnemonicParsing="false">
+                                                    <graphic>
+                                                        <SVGPath content="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" fill="TRANSPARENT" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="1.5" scaleX="0.8" scaleY="0.8" />
+                                                    </graphic>
+                                                    <padding><Insets bottom="8.0" left="8.0" right="8.0" top="8.0" /></padding>
+                                                </Button>
                                             </children>
                                         </HBox>
                                         <VBox spacing="5.0">
@@ -233,32 +218,30 @@
                                                     <children>
                                                         <Circle fill="#fee2e2" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
                                                         <Label text="💡" textFill="#dc2626">
-                                                            <font>
-                                                                <Font size="24.0" />
-                                                            </font>
+                                                            <font><Font size="24.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </StackPane>
                                                 <VBox>
                                                     <children>
                                                         <Label fx:id="billsCategoryLabel" text="Bollette" textFill="#1e293b">
-                                                            <font>
-                                                                <Font name="System Bold" size="18.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="18.0" /></font>
                                                         </Label>
                                                         <Label fx:id="billsRemainingLabel" text="Rimasti: € 0.00" textFill="#ef4444">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="13.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
                                                 <Label fx:id="billsPercentageLabel" text="0%" textFill="#94a3b8">
-                                                    <font>
-                                                        <Font name="System Bold" size="18.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="18.0" /></font>
                                                 </Label>
+                                                <Button onAction="#handleEditBills" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-cursor: hand;" mnemonicParsing="false">
+                                                    <graphic>
+                                                        <SVGPath content="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" fill="TRANSPARENT" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="1.5" scaleX="0.8" scaleY="0.8" />
+                                                    </graphic>
+                                                    <padding><Insets bottom="8.0" left="8.0" right="8.0" top="8.0" /></padding>
+                                                </Button>
                                             </children>
                                         </HBox>
                                         <VBox spacing="5.0">
@@ -287,32 +270,30 @@
                                                     <children>
                                                         <Circle fill="#fce7f3" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
                                                         <Label text="🏥" textFill="#db2777">
-                                                            <font>
-                                                                <Font size="24.0" />
-                                                            </font>
+                                                            <font><Font size="24.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </StackPane>
                                                 <VBox>
                                                     <children>
                                                         <Label fx:id="healthCategoryLabel" text="Salute" textFill="#1e293b">
-                                                            <font>
-                                                                <Font name="System Bold" size="18.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="18.0" /></font>
                                                         </Label>
                                                         <Label fx:id="healthRemainingLabel" text="Rimasti: € 0.00" textFill="#db2777">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="13.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
                                                 <Label fx:id="healthPercentageLabel" text="0%" textFill="#94a3b8">
-                                                    <font>
-                                                        <Font name="System Bold" size="18.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="18.0" /></font>
                                                 </Label>
+                                                <Button onAction="#handleEditHealth" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-cursor: hand;" mnemonicParsing="false">
+                                                    <graphic>
+                                                        <SVGPath content="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" fill="TRANSPARENT" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="1.5" scaleX="0.8" scaleY="0.8" />
+                                                    </graphic>
+                                                    <padding><Insets bottom="8.0" left="8.0" right="8.0" top="8.0" /></padding>
+                                                </Button>
                                             </children>
                                         </HBox>
                                         <VBox spacing="5.0">
@@ -341,32 +322,30 @@
                                                     <children>
                                                         <Circle fill="#ede9fe" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
                                                         <Label text="📈" textFill="#7c3aed">
-                                                            <font>
-                                                                <Font size="24.0" />
-                                                            </font>
+                                                            <font><Font size="24.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </StackPane>
                                                 <VBox>
                                                     <children>
                                                         <Label fx:id="investCategoryLabel" text="Investimenti" textFill="#1e293b">
-                                                            <font>
-                                                                <Font name="System Bold" size="18.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="18.0" /></font>
                                                         </Label>
                                                         <Label fx:id="investRemainingLabel" text="Rimasti: € 0.00" textFill="#7c3aed">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="13.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
                                                 <Label fx:id="investPercentageLabel" text="0%" textFill="#94a3b8">
-                                                    <font>
-                                                        <Font name="System Bold" size="18.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="18.0" /></font>
                                                 </Label>
+                                                <Button onAction="#handleEditInvest" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-cursor: hand;" mnemonicParsing="false">
+                                                    <graphic>
+                                                        <SVGPath content="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" fill="TRANSPARENT" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="1.5" scaleX="0.8" scaleY="0.8" />
+                                                    </graphic>
+                                                    <padding><Insets bottom="8.0" left="8.0" right="8.0" top="8.0" /></padding>
+                                                </Button>
                                             </children>
                                         </HBox>
                                         <VBox spacing="5.0">
@@ -395,32 +374,30 @@
                                                     <children>
                                                         <Circle fill="#f1f5f9" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
                                                         <Label text="📦" textFill="#475569">
-                                                            <font>
-                                                                <Font size="24.0" />
-                                                            </font>
+                                                            <font><Font size="24.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </StackPane>
                                                 <VBox>
                                                     <children>
                                                         <Label fx:id="otherCategoryLabel" text="Altro" textFill="#1e293b">
-                                                            <font>
-                                                                <Font name="System Bold" size="18.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="18.0" /></font>
                                                         </Label>
                                                         <Label fx:id="otherRemainingLabel" text="Rimasti: € 0.00" textFill="#64748b">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="13.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
                                                 <Label fx:id="otherPercentageLabel" text="0%" textFill="#94a3b8">
-                                                    <font>
-                                                        <Font name="System Bold" size="18.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="18.0" /></font>
                                                 </Label>
+                                                <Button onAction="#handleEditOther" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-cursor: hand;" mnemonicParsing="false">
+                                                    <graphic>
+                                                        <SVGPath content="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" fill="TRANSPARENT" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="1.5" scaleX="0.8" scaleY="0.8" />
+                                                    </graphic>
+                                                    <padding><Insets bottom="8.0" left="8.0" right="8.0" top="8.0" /></padding>
+                                                </Button>
                                             </children>
                                         </HBox>
                                         <VBox spacing="5.0">

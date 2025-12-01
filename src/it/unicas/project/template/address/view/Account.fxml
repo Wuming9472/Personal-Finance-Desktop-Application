@@ -6,10 +6,19 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="700" prefWidth="1000" style="-fx-background-color: #f8fafc;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.AccountController">
+<AnchorPane prefHeight="700" prefWidth="1000"
+            style="-fx-background-color: #f8fafc;"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="it.unicas.project.template.address.view.AccountController">
 
     <children>
-        <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color:transparent;"
+                    AnchorPane.bottomAnchor="0"
+                    AnchorPane.leftAnchor="0"
+                    AnchorPane.rightAnchor="0"
+                    AnchorPane.topAnchor="0">
 
             <content>
                 <VBox spacing="30">
@@ -25,9 +34,15 @@
                     </Label>
 
                     <!-- CARD PROFILO -->
-                    <AnchorPane style="-fx-background-color:white;                                         -fx-background-radius:12;                                         -fx-effect:dropshadow(three-pass-box, rgba(0,0,0,0.05),10,0,0,5);">
+                    <AnchorPane style="-fx-background-color:white;
+                                       -fx-background-radius:12;
+                                       -fx-effect:dropshadow(three-pass-box, rgba(0,0,0,0.05),10,0,0,5);">
                         <children>
-                            <VBox spacing="20" AnchorPane.bottomAnchor="25" AnchorPane.leftAnchor="25" AnchorPane.rightAnchor="25" AnchorPane.topAnchor="25">
+                            <VBox spacing="20"
+                                  AnchorPane.bottomAnchor="25"
+                                  AnchorPane.leftAnchor="25"
+                                  AnchorPane.rightAnchor="25"
+                                  AnchorPane.topAnchor="25">
 
                                 <children>
 
@@ -42,7 +57,11 @@
                                             </StackPane>
 
                                             <VBox prefHeight="0.0" prefWidth="95.0">
-                                                <Label fx:id="lblUsername" prefHeight="65.0" prefWidth="95.0" text="Username" textFill="#334155">
+                                                <Label fx:id="lblUsername"
+                                                       prefHeight="65.0"
+                                                       prefWidth="95.0"
+                                                       text="Username"
+                                                       textFill="#334155">
                                                     <font><Font name="System Bold" size="20" /></font>
                                                 </Label>
                                             </VBox>
@@ -58,13 +77,86 @@
                                                 <font><Font name="System Bold" size="16" /></font>
                                             </Label>
 
-                                            <PasswordField fx:id="txtOldPwd" promptText="Password attuale" style="-fx-background-radius:8;" />
+                                            <PasswordField fx:id="txtOldPwd"
+                                                           promptText="Password attuale"
+                                                           style="-fx-background-radius:8;" />
 
-                                            <PasswordField fx:id="txtNewPwd" promptText="Nuova password" style="-fx-background-radius:8;" />
+                                            <PasswordField fx:id="txtNewPwd"
+                                                           promptText="Nuova password"
+                                                           style="-fx-background-radius:8;" />
 
-                                            <PasswordField fx:id="txtRepeatPwd" promptText="Ripeti nuova password" style="-fx-background-radius:8;" />
+                                            <PasswordField fx:id="txtRepeatPwd"
+                                                           promptText="Ripeti nuova password"
+                                                           style="-fx-background-radius:8;" />
 
-                                            <Button onAction="#handleSaveChanges" prefWidth="180" style="-fx-background-color:#3b82f6;                                                            -fx-text-fill:white;                                                            -fx-font-weight:bold;                                                            -fx-background-radius:8;" text="Salva modifiche" />
+                                            <Button onAction="#handleSaveChanges"
+                                                    prefWidth="180"
+                                                    style="-fx-background-color:#3b82f6;
+                                                           -fx-text-fill:white;
+                                                           -fx-font-weight:bold;
+                                                           -fx-background-radius:8;"
+                                                    text="Salva modifiche" />
+                                        </children>
+                                    </VBox>
+
+                                    <Separator />
+
+                                    <!-- DOMANDE DI SICUREZZA -->
+                                    <VBox spacing="12">
+                                        <children>
+                                            <Label text="Domande di sicurezza" textFill="#334155">
+                                                <font><Font name="System Bold" size="16" /></font>
+                                            </Label>
+
+                                            <Label text="Modifica le 3 domande e le relative risposte."
+                                                   textFill="#64748b" />
+
+                                            <!-- DOMANDA 1 -->
+                                            <VBox spacing="4">
+                                                <children>
+                                                    <Label text="Domanda 1" textFill="#64748b" />
+                                                    <ComboBox fx:id="question1Box"
+                                                              promptText="Seleziona una domanda"
+                                                              prefWidth="Infinity" />
+                                                    <PasswordField fx:id="answer1Field"
+                                                                   promptText="Nuova risposta"
+                                                                   style="-fx-background-radius:8;" />
+                                                </children>
+                                            </VBox>
+
+                                            <!-- DOMANDA 2 -->
+                                            <VBox spacing="4">
+                                                <children>
+                                                    <Label text="Domanda 2" textFill="#64748b" />
+                                                    <ComboBox fx:id="question2Box"
+                                                              promptText="Seleziona una domanda"
+                                                              prefWidth="Infinity" />
+                                                    <PasswordField fx:id="answer2Field"
+                                                                   promptText="Nuova risposta"
+                                                                   style="-fx-background-radius:8;" />
+                                                </children>
+                                            </VBox>
+
+                                            <!-- DOMANDA 3 -->
+                                            <VBox spacing="4">
+                                                <children>
+                                                    <Label text="Domanda 3" textFill="#64748b" />
+                                                    <ComboBox fx:id="question3Box"
+                                                              promptText="Seleziona una domanda"
+                                                              prefWidth="Infinity" />
+                                                    <PasswordField fx:id="answer3Field"
+                                                                   promptText="Nuova risposta"
+                                                                   style="-fx-background-radius:8;" />
+                                                </children>
+                                            </VBox>
+
+                                            <Button onAction="#handleSaveSecurityQuestions"
+                                                    prefWidth="220"
+                                                    style="-fx-background-color:#0ea5e9;
+                                                           -fx-text-fill:white;
+                                                           -fx-font-weight:bold;
+                                                           -fx-background-radius:8;"
+                                                    text="Salva domande di sicurezza" />
                                         </children>
                                     </VBox>
 
@@ -73,9 +165,15 @@
                                     <!-- ELIMINA ACCOUNT -->
                                     <VBox spacing="10">
                                         <children>
-
-                                            <Button onAction="#handleDeleteAccount" prefWidth="160" style="-fx-background-color:#ef4444;                                                            -fx-text-fill:white;                                                            -fx-font-weight:bold;                                                            -fx-background-radius:8;" text="Elimina account" />
-                                            <Label textFill="#ef4444">
+                                            <Button onAction="#handleDeleteAccount"
+                                                    prefWidth="160"
+                                                    style="-fx-background-color:#ef4444;
+                                                           -fx-text-fill:white;
+                                                           -fx-font-weight:bold;
+                                                           -fx-background-radius:8;"
+                                                    text="Elimina account" />
+                                            <Label text="Questa azione è irreversibile."
+                                                   textFill="#ef4444">
                                                 <font><Font name="System Bold" size="16" /></font>
                                             </Label>
                                         </children>
