@@ -20,18 +20,15 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
     // --- COSTRUTTORE AGGIUNTO PER FXML ---
     public SmoothAreaChart() {
         this((Axis<X>) new CategoryAxis(), (Axis<Y>) new NumberAxis());
-        configureXAxis();
     }
 
     public SmoothAreaChart(Axis<X> xAxis, Axis<Y> yAxis) {
         super(xAxis, yAxis);
-        configureXAxis();
         configureYAxis();
     }
 
     public SmoothAreaChart(Axis<X> xAxis, Axis<Y> yAxis, ObservableList<Series<X, Y>> data) {
         super(xAxis, yAxis, data);
-        configureXAxis();
         configureYAxis();
     }
 
