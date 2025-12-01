@@ -185,8 +185,9 @@ public class MovimentiController {
             // Controlla se il budget è stato superato per questa specifica categoria
             checkBudgetAfterTransaction(categoryId);
 
-            // Aggiorna i dati del report se è aperto
+            // Aggiorna i dati del report e della dashboard se sono aperti
             refreshReportData();
+            refreshDashboardData();
 
             // Reset Campi (lascio la data e il tipo perché comodi)
             amountField.clear();
@@ -234,8 +235,9 @@ public class MovimentiController {
             // Aggiorna lo stato dei budget dopo la cancellazione
             checkBudgetAfterDeletion();
 
-            // Aggiorna i dati del report se è aperto
+            // Aggiorna i dati del report e della dashboard se sono aperti
             refreshReportData();
+            refreshDashboardData();
 
         } catch (Exception e) {
             showError("Errore cancellazione: " + e.getMessage());
@@ -306,6 +308,16 @@ public class MovimentiController {
     private void refreshReportData() {
         if (mainApp != null && mainApp.getReportController() != null) {
             mainApp.getReportController().refreshReportData();
+        }
+    }
+
+    /**
+     * Aggiorna i dati della dashboard se il controller della dashboard è disponibile.
+     * Questo metodo viene chiamato dopo ogni operazione sui movimenti (insert, delete).
+     */
+    private void refreshDashboardData() {
+        if (mainApp != null && mainApp.getDashboardController() != null) {
+            mainApp.getDashboardController().refreshDashboardData();
         }
     }
 

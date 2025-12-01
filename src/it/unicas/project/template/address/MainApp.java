@@ -26,6 +26,7 @@ public class MainApp extends Application {
 
     private BudgetController budgetController;
     private ReportController reportController;
+    private DashboardController dashboardController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -154,6 +155,9 @@ public class MainApp extends Application {
             // ECCO IL PUNTO FONDAMENTALE:
             DashboardController controller = loader.getController();
             controller.setMainApp(this); // <--- SENZA QUESTO RIMANE A "..."
+
+            // *** Salvo il riferimento al controller della dashboard
+            this.dashboardController = controller;
 
             if (rootController != null) {
                 rootController.setPageTitle("Dashboard");
@@ -315,6 +319,10 @@ public class MainApp extends Application {
 
     public ReportController getReportController() {
         return reportController;
+    }
+
+    public DashboardController getDashboardController() {
+        return dashboardController;
     }
 
 }
