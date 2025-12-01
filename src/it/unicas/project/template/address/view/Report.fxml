@@ -9,70 +9,256 @@
 
 <AnchorPane minHeight="600.0" minWidth="900.0" style="-fx-background-color: #f8fafc;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.ReportController">
     <children>
-        <VBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <padding>
-                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
-            </padding>
-            <children>
-
-                <!-- TITOLO -->
-                <Label text="Report" textFill="#1e293b">
-                    <font>
-                        <Font name="System Bold" size="28.0" />
-                    </font>
-                </Label>
-
-                <!-- CONTENUTO PRINCIPALE - GridPane che si espande -->
-                <GridPane hgap="25.0" vgap="25.0" VBox.vgrow="ALWAYS">
-                    <columnConstraints>
-                        <!-- Colonna sinistra: 50% -->
-                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
-                        <!-- Colonna destra: 50% -->
-                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <!-- Unica riga che si espande -->
-                        <RowConstraints vgrow="ALWAYS" minHeight="500.0" />
-                    </rowConstraints>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <content>
+                <VBox spacing="20.0">
+                    <padding>
+                        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                    </padding>
                     <children>
 
-                        <!-- COLONNA SINISTRA: PIE CHART -->
-                        <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-                            <children>
-                                <VBox spacing="10.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
-                                    <children>
-                                        <Label text="Distribuzione Spese" textFill="#1e293b">
-                                            <font>
-                                                <Font name="System Bold" size="18.0" />
-                                            </font>
-                                        </Label>
-                                        <PieChart fx:id="pieChart" legendSide="BOTTOM" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" minHeight="400.0" />
-                                    </children>
-                                </VBox>
-                            </children>
-                        </AnchorPane>
+                        <!-- TITOLO -->
+                        <Label text="Report" textFill="#1e293b">
+                            <font>
+                                <Font name="System Bold" size="28.0" />
+                            </font>
+                        </Label>
 
-                        <!-- COLONNA DESTRA: LINE CHART (Andamento Finanziario) -->
-                        <VBox spacing="25.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                        <!-- CONTENUTO PRINCIPALE - GridPane che si espande -->
+                        <GridPane hgap="25.0" vgap="25.0" VBox.vgrow="ALWAYS">
+                            <columnConstraints>
+                                <!-- Colonna sinistra: 50% -->
+                                <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+                                <!-- Colonna destra: 50% -->
+                                <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <!-- Unica riga che si espande -->
+                                <RowConstraints vgrow="ALWAYS" minHeight="500.0" />
+                            </rowConstraints>
                             <children>
 
-                                <!-- LINE CHART -->
-                                <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" VBox.vgrow="ALWAYS">
+                                <!-- COLONNA SINISTRA: PIE CHART -->
+                                <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                                     <children>
                                         <VBox spacing="10.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                             <children>
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                <Label text="Distribuzione Spese" textFill="#1e293b">
+                                                    <font>
+                                                        <Font name="System Bold" size="18.0" />
+                                                    </font>
+                                                </Label>
+                                                <PieChart fx:id="pieChart" legendSide="BOTTOM" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" minHeight="400.0" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </AnchorPane>
+
+                                <!-- COLONNA DESTRA: LINE CHART (Andamento Finanziario) -->
+                                <VBox spacing="25.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                                    <children>
+
+                                        <!-- LINE CHART -->
+                                        <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" VBox.vgrow="ALWAYS">
+                                            <children>
+                                                <VBox spacing="10.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                                     <children>
-                                                        <Label text="Andamento Finanziario" textFill="#1e293b">
-                                                            <font>
-                                                                <Font name="System Bold" size="18.0" />
-                                                            </font>
-                                                        </Label>
-                                                        <Region HBox.hgrow="ALWAYS" />
-                                                        <ComboBox fx:id="cmbRange" prefWidth="140.0" />
+                                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                            <children>
+                                                                <Label text="Andamento Finanziario" textFill="#1e293b">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="18.0" />
+                                                                    </font>
+                                                                </Label>
+                                                                <Region HBox.hgrow="ALWAYS" />
+                                                                <ComboBox fx:id="cmbRange" prefWidth="140.0" />
+                                                            </children>
+                                                        </HBox>
+                                                        <SmoothAreaChart fx:id="lineChartAndamento" animated="true" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" minHeight="400.0" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </AnchorPane>
+
+                                    </children>
+                                </VBox>
+
+                            </children>
+                        </GridPane>
+
+                        <!-- SEZIONE PREVISIONI & ANALISI -->
+                        <VBox spacing="15.0">
+                            <children>
+                                <!-- Titolo Sezione -->
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <Label text="📈" style="-fx-font-size: 24px;" />
+                                        <Label text="Previsioni &amp; Analisi" textFill="#1e293b">
+                                            <font>
+                                                <Font name="System Bold" size="24.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+
+                                <!-- Card Principale Previsione -->
+                                <AnchorPane style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 5);">
+                                    <children>
+                                        <VBox spacing="20.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
+                                            <children>
+
+                                                <!-- Header con Titolo e Saldo Stimato -->
+                                                <HBox alignment="CENTER_LEFT">
+                                                    <children>
+                                                        <!-- Titolo -->
+                                                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <Label text="Proiezione Fine Mese" textFill="#475569">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="16.0" />
+                                                                    </font>
+                                                                </Label>
+                                                                <Label fx:id="lblPeriodoCalcolo" text="Calcolata sui movimenti reali dal giorno 1 al 22" textFill="#94a3b8">
+                                                                    <font>
+                                                                        <Font size="13.0" />
+                                                                    </font>
+                                                                </Label>
+                                                            </children>
+                                                        </VBox>
+
+                                                        <!-- Saldo Stimato -->
+                                                        <VBox alignment="CENTER_RIGHT" spacing="3.0">
+                                                            <children>
+                                                                <Label text="SALDO STIMATO" textFill="#64748b">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="11.0" />
+                                                                    </font>
+                                                                </Label>
+                                                                <Label fx:id="lblSaldoStimato" text="€ 850.00" textFill="#10b981">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="32.0" />
+                                                                    </font>
+                                                                </Label>
+                                                            </children>
+                                                        </VBox>
                                                     </children>
                                                 </HBox>
-                                                <SmoothAreaChart fx:id="lineChartAndamento" animated="true" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" minHeight="400.0" />
+
+                                                <!-- Status Box -->
+                                                <AnchorPane fx:id="paneStatus" style="-fx-background-color: #d1fae5; -fx-background-radius: 12; -fx-border-color: #10b981; -fx-border-radius: 12; -fx-border-width: 2;">
+                                                    <children>
+                                                        <HBox alignment="CENTER_LEFT" spacing="15.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="15.0">
+                                                            <children>
+                                                                <Label fx:id="lblStatusIcon" text="📈" style="-fx-font-size: 28px;" />
+                                                                <VBox spacing="3.0" HBox.hgrow="ALWAYS">
+                                                                    <children>
+                                                                        <Label fx:id="lblStatusTitolo" text="Situazione Stabile" textFill="#065f46">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="18.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                        <Label fx:id="lblStatusMessaggio" text="Previsione positiva. Mantenendo questo trend, chiuderai il mese in attivo." textFill="#047857" wrapText="true">
+                                                                            <font>
+                                                                                <Font size="14.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+
+                                                <!-- Dettagli Calcolo -->
+                                                <GridPane hgap="30.0" vgap="15.0">
+                                                    <columnConstraints>
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="34.0" />
+                                                    </columnConstraints>
+                                                    <rowConstraints>
+                                                        <RowConstraints />
+                                                    </rowConstraints>
+                                                    <children>
+
+                                                        <!-- Giorni Rimanenti -->
+                                                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="0">
+                                                            <children>
+                                                                <Label text="📅" style="-fx-font-size: 20px;" />
+                                                                <VBox spacing="3.0">
+                                                                    <children>
+                                                                        <Label text="Giorni rimanenti" textFill="#64748b">
+                                                                            <font>
+                                                                                <Font size="13.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                        <Label fx:id="lblGiorniRimanenti" text="8 gg" textFill="#1e293b">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </HBox>
+
+                                                        <!-- Media Spese Giornaliera -->
+                                                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1">
+                                                            <children>
+                                                                <Label text="💰" style="-fx-font-size: 20px;" />
+                                                                <VBox spacing="3.0">
+                                                                    <children>
+                                                                        <Label text="Media spese giornaliera" textFill="#64748b">
+                                                                            <font>
+                                                                                <Font size="13.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                        <Label fx:id="lblMediaSpeseGiornaliera" text="€ 55.00" textFill="#1e293b">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </HBox>
+
+                                                        <!-- Spese Proiettate Totali -->
+                                                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="2">
+                                                            <children>
+                                                                <Label text="💸" style="-fx-font-size: 20px;" />
+                                                                <VBox spacing="3.0">
+                                                                    <children>
+                                                                        <Label text="Spese Proiettate Totali" textFill="#64748b">
+                                                                            <font>
+                                                                                <Font size="13.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                        <Label fx:id="lblSpeseProiettateTotali" text="€ 1650.00" textFill="#ef4444">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="20.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </HBox>
+
+                                                    </children>
+                                                </GridPane>
+
+                                                <!-- Disclaimer -->
+                                                <HBox alignment="CENTER_LEFT" spacing="8.0" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-padding: 12;">
+                                                    <children>
+                                                        <Label text="ℹ️" style="-fx-font-size: 14px;" />
+                                                        <Label fx:id="lblDisclaimer" text="Il calcolo si basa sulla media ponderata delle spese effettuate nel mese corrente. Non include spese ricorrenti future non ancora contabilizzate." textFill="#475569" wrapText="true">
+                                                            <font>
+                                                                <Font size="12.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </HBox>
+
                                             </children>
                                         </VBox>
                                     </children>
@@ -82,190 +268,8 @@
                         </VBox>
 
                     </children>
-                </GridPane>
-
-                <!-- SEZIONE PREVISIONI & ANALISI -->
-                <VBox spacing="15.0">
-                    <children>
-                        <!-- Titolo Sezione -->
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
-                            <children>
-                                <Label text="📈" style="-fx-font-size: 24px;" />
-                                <Label text="Previsioni &amp; Analisi" textFill="#1e293b">
-                                    <font>
-                                        <Font name="System Bold" size="24.0" />
-                                    </font>
-                                </Label>
-                            </children>
-                        </HBox>
-
-                        <!-- Card Principale Previsione -->
-                        <AnchorPane style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 5);">
-                            <children>
-                                <VBox spacing="20.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
-                                    <children>
-
-                                        <!-- Header con Titolo e Saldo Stimato -->
-                                        <HBox alignment="CENTER_LEFT">
-                                            <children>
-                                                <!-- Titolo -->
-                                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                                                    <children>
-                                                        <Label text="Proiezione Fine Mese" textFill="#475569">
-                                                            <font>
-                                                                <Font name="System Bold" size="16.0" />
-                                                            </font>
-                                                        </Label>
-                                                        <Label fx:id="lblPeriodoCalcolo" text="Calcolata sui movimenti reali dal giorno 1 al 22" textFill="#94a3b8">
-                                                            <font>
-                                                                <Font size="13.0" />
-                                                            </font>
-                                                        </Label>
-                                                    </children>
-                                                </VBox>
-
-                                                <!-- Saldo Stimato -->
-                                                <VBox alignment="CENTER_RIGHT" spacing="3.0">
-                                                    <children>
-                                                        <Label text="SALDO STIMATO" textFill="#64748b">
-                                                            <font>
-                                                                <Font name="System Bold" size="11.0" />
-                                                            </font>
-                                                        </Label>
-                                                        <Label fx:id="lblSaldoStimato" text="€ 850.00" textFill="#10b981">
-                                                            <font>
-                                                                <Font name="System Bold" size="32.0" />
-                                                            </font>
-                                                        </Label>
-                                                    </children>
-                                                </VBox>
-                                            </children>
-                                        </HBox>
-
-                                        <!-- Status Box -->
-                                        <AnchorPane fx:id="paneStatus" style="-fx-background-color: #d1fae5; -fx-background-radius: 12; -fx-border-color: #10b981; -fx-border-radius: 12; -fx-border-width: 2;">
-                                            <children>
-                                                <HBox alignment="CENTER_LEFT" spacing="15.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="15.0">
-                                                    <children>
-                                                        <Label fx:id="lblStatusIcon" text="📈" style="-fx-font-size: 28px;" />
-                                                        <VBox spacing="3.0" HBox.hgrow="ALWAYS">
-                                                            <children>
-                                                                <Label fx:id="lblStatusTitolo" text="Situazione Stabile" textFill="#065f46">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="18.0" />
-                                                                    </font>
-                                                                </Label>
-                                                                <Label fx:id="lblStatusMessaggio" text="Previsione positiva. Mantenendo questo trend, chiuderai il mese in attivo." textFill="#047857" wrapText="true">
-                                                                    <font>
-                                                                        <Font size="14.0" />
-                                                                    </font>
-                                                                </Label>
-                                                            </children>
-                                                        </VBox>
-                                                    </children>
-                                                </HBox>
-                                            </children>
-                                        </AnchorPane>
-
-                                        <!-- Dettagli Calcolo -->
-                                        <GridPane hgap="30.0" vgap="15.0">
-                                            <columnConstraints>
-                                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
-                                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
-                                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="34.0" />
-                                            </columnConstraints>
-                                            <rowConstraints>
-                                                <RowConstraints />
-                                            </rowConstraints>
-                                            <children>
-
-                                                <!-- Giorni Rimanenti -->
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="0">
-                                                    <children>
-                                                        <Label text="📅" style="-fx-font-size: 20px;" />
-                                                        <VBox spacing="3.0">
-                                                            <children>
-                                                                <Label text="Giorni rimanenti" textFill="#64748b">
-                                                                    <font>
-                                                                        <Font size="13.0" />
-                                                                    </font>
-                                                                </Label>
-                                                                <Label fx:id="lblGiorniRimanenti" text="8 gg" textFill="#1e293b">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0" />
-                                                                    </font>
-                                                                </Label>
-                                                            </children>
-                                                        </VBox>
-                                                    </children>
-                                                </HBox>
-
-                                                <!-- Media Spese Giornaliera -->
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1">
-                                                    <children>
-                                                        <Label text="💰" style="-fx-font-size: 20px;" />
-                                                        <VBox spacing="3.0">
-                                                            <children>
-                                                                <Label text="Media spese giornaliera" textFill="#64748b">
-                                                                    <font>
-                                                                        <Font size="13.0" />
-                                                                    </font>
-                                                                </Label>
-                                                                <Label fx:id="lblMediaSpeseGiornaliera" text="€ 55.00" textFill="#1e293b">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0" />
-                                                                    </font>
-                                                                </Label>
-                                                            </children>
-                                                        </VBox>
-                                                    </children>
-                                                </HBox>
-
-                                                <!-- Spese Proiettate Totali -->
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="2">
-                                                    <children>
-                                                        <Label text="💸" style="-fx-font-size: 20px;" />
-                                                        <VBox spacing="3.0">
-                                                            <children>
-                                                                <Label text="Spese Proiettate Totali" textFill="#64748b">
-                                                                    <font>
-                                                                        <Font size="13.0" />
-                                                                    </font>
-                                                                </Label>
-                                                                <Label fx:id="lblSpeseProiettateTotali" text="€ 1650.00" textFill="#ef4444">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="20.0" />
-                                                                    </font>
-                                                                </Label>
-                                                            </children>
-                                                        </VBox>
-                                                    </children>
-                                                </HBox>
-
-                                            </children>
-                                        </GridPane>
-
-                                        <!-- Disclaimer -->
-                                        <HBox alignment="CENTER_LEFT" spacing="8.0" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-padding: 12;">
-                                            <children>
-                                                <Label text="ℹ️" style="-fx-font-size: 14px;" />
-                                                <Label fx:id="lblDisclaimer" text="Il calcolo si basa sulla media ponderata delle spese effettuate nel mese corrente. Non include spese ricorrenti future non ancora contabilizzate." textFill="#475569" wrapText="true">
-                                                    <font>
-                                                        <Font size="12.0" />
-                                                    </font>
-                                                </Label>
-                                            </children>
-                                        </HBox>
-
-                                    </children>
-                                </VBox>
-                            </children>
-                        </AnchorPane>
-
-                    </children>
                 </VBox>
-
-            </children>
-        </VBox>
+            </content>
+        </ScrollPane>
     </children>
 </AnchorPane>
