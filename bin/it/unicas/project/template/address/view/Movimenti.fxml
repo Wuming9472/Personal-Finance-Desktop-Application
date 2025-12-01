@@ -123,7 +123,7 @@
                                     </font>
                                 </Label>
                                 <Region HBox.hgrow="ALWAYS" />
-                                <Button mnemonicParsing="false" onAction="#handleDeleteTransaction" style="-fx-background-color: white; -fx-border-color: #ef4444; -fx-text-fill: #ef4444; -fx-border-radius: 6; -fx-cursor: hand;" text="Elimina Selezionato" />
+                                <Button mnemonicParsing="false" onAction="#handleDeleteTransaction" style="-fx-background-color: white; -fx-border-color: #ef4444; -fx-text-fill: #ef4444; -fx-border-radius: 6; -fx-cursor: hand;" text="Elimina Selezionati" />
                             </children>
                         </HBox>
 
