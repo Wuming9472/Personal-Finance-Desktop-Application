@@ -10,10 +10,12 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -36,7 +38,9 @@ import javafx.util.Pair;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DashboardController {
 
@@ -46,6 +50,7 @@ public class DashboardController {
     @FXML private Label lblPrevisione;
 
     @FXML private SmoothAreaChart<String, Number> chartAndamento;
+    @FXML private BarChart<String, Number> chartThreeDay;
 
     @FXML private ComboBox<String> cmbRange;
     @FXML private VBox boxUltimiMovimenti;
@@ -102,6 +107,7 @@ public class DashboardController {
             populateBudgetStatus(userId, now.getMonthValue(), now.getYear());
 
             populateChart(dao, userId);
+            populateThreeDayBarChart(dao, userId);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -433,6 +439,76 @@ public class DashboardController {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Errore caricamento grafico: " + e.getMessage());
+        }
+    }
+
+    private void populateThreeDayBarChart(MovimentiDAOMySQLImpl dao, int userId) {
+        if (chartThreeDay == null) {
+            return;
+        }
+
+        chartThreeDay.setAnimated(false);
+        chartThreeDay.getData().clear();
+
+        LocalDate referenceMonth = LocalDate.now().withDayOfMonth(1);
+        int daysInMonth = referenceMonth.lengthOfMonth();
+        int bucketCount = Math.min(10, (int) Math.ceil(daysInMonth / 3.0));
+
+        Map<Integer, Pair<Float, Float>> bucketMap = new HashMap<>();
+
+        try {
+            List<Pair<Integer, Pair<Float, Float>>> rawBuckets = dao.getThreeDayBucketsForMonth(userId, referenceMonth);
+            for (Pair<Integer, Pair<Float, Float>> entry : rawBuckets) {
+                bucketMap.put(entry.getKey(), entry.getValue());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        XYChart.Series<String, Number> entrateSeries = new XYChart.Series<>();
+        entrateSeries.setName("Entrate");
+        XYChart.Series<String, Number> usciteSeries = new XYChart.Series<>();
+        usciteSeries.setName("Uscite");
+
+        List<String> categories = new java.util.ArrayList<>();
+
+        for (int i = 0; i < bucketCount; i++) {
+            int startDay = (i * 3) + 1;
+            int endDay = Math.min(startDay + 2, daysInMonth);
+            String label = startDay + "-" + endDay;
+            categories.add(label);
+
+            Pair<Float, Float> values = bucketMap.getOrDefault(i, new Pair<>(0f, 0f));
+            entrateSeries.getData().add(new XYChart.Data<>(label, values.getKey()));
+            usciteSeries.getData().add(new XYChart.Data<>(label, values.getValue()));
+        }
+
+        if (chartThreeDay.getXAxis() instanceof CategoryAxis) {
+            ((CategoryAxis) chartThreeDay.getXAxis()).setCategories(FXCollections.observableArrayList(categories));
+        }
+
+        chartThreeDay.getData().addAll(entrateSeries, usciteSeries);
+
+        Platform.runLater(this::applyBarColors);
+    }
+
+    private void applyBarColors() {
+        if (chartThreeDay == null) {
+            return;
+        }
+        for (XYChart.Series<String, Number> series : chartThreeDay.getData()) {
+            String color = series.getName().equalsIgnoreCase("Entrate") ? "#10b981" : "#ef4444";
+            for (XYChart.Data<String, Number> data : series.getData()) {
+                if (data.getNode() != null) {
+                    data.getNode().setStyle("-fx-bar-fill: " + color + ";");
+                } else {
+                    data.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                        if (newNode != null) {
+                            newNode.setStyle("-fx-bar-fill: " + color + ";");
+                        }
+                    });
+                }
+            }
         }
     }
 
