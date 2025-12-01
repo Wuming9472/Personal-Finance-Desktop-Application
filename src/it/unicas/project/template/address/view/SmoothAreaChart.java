@@ -38,7 +38,7 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
     private void configureXAxis() {
         if (getXAxis() instanceof CategoryAxis) {
             CategoryAxis xAxis = (CategoryAxis) getXAxis();
-            xAxis.setTickLabelRotation(0);
+            xAxis.setTickLabelRotation(-45);
         }
     }
 
