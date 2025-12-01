@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import it.unicas.project.template.address.view.SmoothAreaChart?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -206,15 +204,24 @@
                                                         <Font name="System Bold" size="18.0" />
                                                     </font>
                                                 </Label>
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <ComboBox fx:id="cmbRange" prefWidth="160.0" />
                                             </children>
                                         </HBox>
 
-                                        <BarChart fx:id="barChart" legendVisible="true" minHeight="250.0" prefHeight="300.0" style="-fx-background-color: transparent;" verticalGridLinesVisible="false">
+                                        <SmoothAreaChart fx:id="chartAndamento" animated="true" createSymbols="true" legendVisible="true" minHeight="250.0" prefHeight="300.0" verticalGridLinesVisible="false" />
+
+                                        <Label text="Entrate e uscite per intervalli di 3 giorni (mese corrente)" textFill="#1e293b">
+                                            <font>
+                                                <Font name="System Bold" size="16.0" />
+                                            </font>
+                                        </Label>
+                                        <BarChart fx:id="chartThreeDay" legendVisible="true" prefHeight="260.0" verticalGridLinesVisible="false">
                                             <xAxis>
-                                                <CategoryAxis fx:id="barChartCategoryAxis" side="BOTTOM" />
+                                                <CategoryAxis side="BOTTOM" />
                                             </xAxis>
                                             <yAxis>
-                                                <NumberAxis fx:id="barChartNumberAxis" side="LEFT" />
+                                                <NumberAxis side="LEFT" />
                                             </yAxis>
                                         </BarChart>
                                     </children>

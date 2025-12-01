@@ -2,29 +2,21 @@ package it.unicas.project.template.address.view;
 
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
-import it.unicas.project.template.address.view.SmoothAreaChart;
-import javafx.animation.FadeTransition;
-import javafx.animation.ParallelTransition;
-import javafx.animation.PauseTransition;
-import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.chart.*;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.Duration;
 import javafx.util.Pair;
-import javafx.util.StringConverter;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ReportController {
 
@@ -32,8 +24,7 @@ public class ReportController {
     private int currentUserId = -1;
 
     @FXML private PieChart pieChart;
-    @FXML private SmoothAreaChart<String, Number> chartAndamento;
-    @FXML private ComboBox<String> cmbRange;
+    @FXML private BarChart<String, Number> barChart;
     @FXML private Label lblRisparmioStimato;
     @FXML private Label lblCategoriaCritica;
 
@@ -51,11 +42,13 @@ public class ReportController {
 
     @FXML
     private void initialize() {
+        if (barChart != null) {
+            barChart.setAnimated(true);
+            barChart.setLegendVisible(true);
+        }
         if (pieChart != null) {
             pieChart.setLegendVisible(true);
         }
-        setupChartAppearance();
-        initRangeSelector();
     }
 
     public void setMainApp(MainApp mainApp) {
@@ -84,8 +77,8 @@ public class ReportController {
             // 1. PieChart - Distribuzione spese per categoria
             loadPieChartData();
 
-            // 2. Line chart - Andamento finanziario
-            populateChart();
+            // 2. BarChart - Confronto mensile ultimi 6 mesi
+            loadBarChartData();
 
             // 3. Forecast section - Previsione Fine Mese
             loadForecastData();
@@ -126,105 +119,57 @@ public class ReportController {
         pieChart.setData(pieData);
     }
 
-    private void initRangeSelector() {
-        if (cmbRange == null) return;
-        cmbRange.getItems().setAll(
-                "Ultimo mese",
-                "Ultimi 3 mesi",
-                "Ultimi 6 mesi",
-                "Ultimo anno"
-        );
-        cmbRange.setValue("Ultimo mese");
-        cmbRange.setOnAction(event -> updateUIFromData());
-    }
+    private void loadBarChartData() throws SQLException {
+        String query = "SELECT YEAR(date) as anno, MONTH(date) as mese, " +
+                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as entrate, " +
+                "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as uscite " +
+                "FROM movements " +
+                "WHERE user_id = ? AND date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) " +
+                "GROUP BY YEAR(date), MONTH(date) " +
+                "ORDER BY anno, mese";
 
-    private int resolveMonthsBack() {
-        if (cmbRange == null || cmbRange.getValue() == null) {
-            return 1;
-        }
-        switch (cmbRange.getValue()) {
-            case "Ultimi 3 mesi":
-                return 3;
-            case "Ultimi 6 mesi":
-                return 6;
-            case "Ultimo anno":
-                return 12;
-            default:
-                return 1;
-        }
-    }
+        XYChart.Series<String, Number> seriesEntrate = new XYChart.Series<>();
+        seriesEntrate.setName("Entrate");
 
-    private void populateChart() throws SQLException {
-        if (chartAndamento == null || currentUserId <= 0) return;
+        XYChart.Series<String, Number> seriesUscite = new XYChart.Series<>();
+        seriesUscite.setName("Uscite");
 
-        chartAndamento.setAnimated(false);
-        chartAndamento.setCreateSymbols(true);
-        chartAndamento.getData().clear();
+        String[] mesi = {"", "Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"};
 
-        XYChart.Series<String, Number> serieEntrate = new XYChart.Series<>();
-        serieEntrate.setName("Entrate");
-        XYChart.Series<String, Number> serieUscite = new XYChart.Series<>();
-        serieUscite.setName("Uscite");
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-        MovimentiDAOMySQLImpl dao = new MovimentiDAOMySQLImpl();
-        int monthsBack = resolveMonthsBack();
-        List<Pair<String, Pair<Float, Float>>> trendData = dao.getIncomeExpenseTrend(currentUserId, monthsBack);
+            pstmt.setInt(1, currentUserId);
 
-        if (trendData.isEmpty()) {
-            return;
-        }
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int mese = rs.getInt("mese");
+                    double entrate = rs.getDouble("entrate");
+                    double uscite = rs.getDouble("uscite");
 
-        boolean groupByDay = monthsBack == 1;
-        float cumulativeEntrate = 0f;
-        float cumulativeUscite = 0f;
-
-        for (Pair<String, Pair<Float, Float>> entry : trendData) {
-            String label = entry.getKey();
-            Pair<Float, Float> values = entry.getValue();
-            Float entrata = values.getKey();
-            Float uscita = values.getValue();
-
-            String abbreviated = groupByDay ? label : abbreviateLabel(label);
-
-            cumulativeEntrate += entrata;
-            cumulativeUscite += uscita;
-
-            if (groupByDay) {
-                if (entrata > 0 || uscita > 0) {
-                    XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, cumulativeUscite);
-                    attachCumulativeTooltip(expenseData, "Uscite", abbreviated, uscita, cumulativeUscite);
-                    serieUscite.getData().add(expenseData);
-
-                    XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
-                    attachCumulativeTooltip(incomeData, "Entrate", abbreviated, entrata, cumulativeEntrate);
-                    serieEntrate.getData().add(incomeData);
-                }
-            } else {
-                if (entrata > 0) {
-                    XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
-                    attachCumulativeTooltip(incomeData, "Entrate", abbreviated, entrata, cumulativeEntrate);
-                    serieEntrate.getData().add(incomeData);
-                }
-
-                if (uscita > 0) {
-                    XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, cumulativeUscite);
-                    attachCumulativeTooltip(expenseData, "Uscite", abbreviated, uscita, cumulativeUscite);
-                    serieUscite.getData().add(expenseData);
+                    String label = mesi[mese];
+                    seriesEntrate.getData().add(new XYChart.Data<>(label, entrate));
+                    seriesUscite.getData().add(new XYChart.Data<>(label, uscite));
                 }
             }
         }
 
-        if (!serieEntrate.getData().isEmpty()) {
-            chartAndamento.getData().add(serieEntrate);
-        }
-        if (!serieUscite.getData().isEmpty()) {
-            chartAndamento.getData().add(serieUscite);
-        }
+        barChart.getData().clear();
+        barChart.getData().addAll(seriesEntrate, seriesUscite);
+        barChart.setBarGap(3);
+        barChart.setCategoryGap(20);
 
+        // Applica colori verde/rosso
         Platform.runLater(() -> {
-            chartAndamento.setAnimated(true);
-            for (XYChart.Series<String, Number> series : chartAndamento.getData()) {
-                animateChartDataAppearance(series);
+            for (XYChart.Data<String, Number> data : seriesEntrate.getData()) {
+                if (data.getNode() != null) {
+                    data.getNode().setStyle("-fx-bar-fill: #10b981;");
+                }
+            }
+            for (XYChart.Data<String, Number> data : seriesUscite.getData()) {
+                if (data.getNode() != null) {
+                    data.getNode().setStyle("-fx-bar-fill: #ef4444;");
+                }
             }
         });
     }
@@ -377,113 +322,6 @@ public class ReportController {
             lblStatusMessaggio.setStyle("-fx-text-fill: " + messageColor + ";");
             lblSaldoStimato.setStyle("-fx-text-fill: " + saldoColor + ";");
         });
-    }
-
-    private void attachCumulativeTooltip(XYChart.Data<String, Number> data, String seriesName,
-                                         String label, Float dailyValue, Float cumulativeValue) {
-        String tooltipText = String.format("%s\n%s: € %.2f\nTotale: € %.2f",
-                label, seriesName, dailyValue, cumulativeValue);
-        Tooltip tooltip = new CustomTooltip(tooltipText);
-        data.nodeProperty().addListener((obs, oldNode, newNode) -> {
-            if (newNode != null) {
-                Tooltip.install(newNode, tooltip);
-            }
-        });
-    }
-
-    private void setupChartAppearance() {
-        if (chartAndamento == null) {
-            return;
-        }
-
-        chartAndamento.setLegendVisible(true);
-        chartAndamento.setCreateSymbols(true);
-        chartAndamento.setAnimated(true);
-        chartAndamento.setPadding(new javafx.geometry.Insets(0));
-
-        if (chartAndamento.getXAxis() instanceof CategoryAxis) {
-            CategoryAxis xAxis = (CategoryAxis) chartAndamento.getXAxis();
-            xAxis.setTickLabelRotation(0);
-            xAxis.setStartMargin(0);
-            xAxis.setEndMargin(0);
-            xAxis.setGapStartAndEnd(false);
-        }
-
-        if (chartAndamento.getYAxis() instanceof NumberAxis) {
-            NumberAxis yAxis = (NumberAxis) chartAndamento.getYAxis();
-            yAxis.setTickLabelFormatter(new StringConverter<Number>() {
-                @Override
-                public String toString(Number n) {
-                    return String.format("€%.0f", n.doubleValue());
-                }
-
-                @Override
-                public Number fromString(String s) {
-                    return null;
-                }
-            });
-        }
-    }
-
-    private void animateChartDataAppearance(XYChart.Series<String, Number> series) {
-        int delay = 0;
-        for (XYChart.Data<String, Number> data : series.getData()) {
-            if (data.getNode() != null) {
-                data.getNode().setOpacity(0);
-                data.getNode().setScaleX(0.8);
-                data.getNode().setScaleY(0.8);
-            }
-
-            final int currentDelay = delay;
-            PauseTransition pause = new PauseTransition(Duration.millis(currentDelay));
-            pause.setOnFinished(event -> {
-                if (data.getNode() != null) {
-                    ParallelTransition transition = new ParallelTransition(
-                            createFadeTransition(data.getNode()),
-                            createScaleTransition(data.getNode())
-                    );
-                    transition.play();
-                }
-            });
-            pause.play();
-            delay += 50;
-        }
-    }
-
-    private FadeTransition createFadeTransition(Node node) {
-        FadeTransition fade = new FadeTransition(Duration.millis(600), node);
-        fade.setFromValue(0);
-        fade.setToValue(1);
-        fade.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
-        return fade;
-    }
-
-    private ScaleTransition createScaleTransition(Node node) {
-        ScaleTransition scale = new ScaleTransition(Duration.millis(600), node);
-        scale.setFromX(0);
-        scale.setFromY(0);
-        scale.setToX(1.0);
-        scale.setToY(1.0);
-        scale.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
-        return scale;
-    }
-
-    private String abbreviateLabel(String label) {
-        if (label == null) {
-            return "";
-        }
-        String trimmed = label.trim();
-        return trimmed.length() > 3 ? trimmed.substring(0, 3) : trimmed;
-    }
-
-    private static class CustomTooltip extends Tooltip {
-        public CustomTooltip(String text) {
-            super(text);
-            this.getStyleClass().add("chart-tooltip");
-            this.setShowDelay(Duration.millis(50));
-            this.setHideDelay(Duration.millis(50));
-            this.setAutoHide(true);
-        }
     }
 
     private Connection getConnection() throws SQLException {

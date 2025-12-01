@@ -5,7 +5,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<?import it.unicas.project.template.address.view.SmoothAreaChart?>
 
 <AnchorPane minHeight="600.0" minWidth="900.0" style="-fx-background-color: #f8fafc;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.ReportController">
     <children>
@@ -52,28 +51,28 @@
                             </children>
                         </AnchorPane>
 
-                        <!-- COLONNA DESTRA: LINE CHART + ANALISI -->
+                        <!-- COLONNA DESTRA: BAR CHART + ANALISI -->
                         <VBox spacing="25.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                             <children>
 
-                                <!-- LINE CHART -->
+                                <!-- BAR CHART -->
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" VBox.vgrow="ALWAYS">
                                     <children>
                                         <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                                             <children>
-                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                                    <children>
-                                                        <Label text="Andamento Finanziario" textFill="#1e293b">
-                                                            <font>
-                                                                <Font name="System Bold" size="18.0" />
-                                                            </font>
-                                                        </Label>
-                                                        <Region HBox.hgrow="ALWAYS" />
-                                                        <ComboBox fx:id="cmbRange" prefWidth="160.0" />
-                                                    </children>
-                                                </HBox>
-
-                                                <SmoothAreaChart fx:id="chartAndamento" animated="true" createSymbols="true" legendVisible="true" minHeight="250.0" prefHeight="300.0" verticalGridLinesVisible="false" />
+                                                <Label text="Confronto Mensile" textFill="#1e293b">
+                                                    <font>
+                                                        <Font name="System Bold" size="18.0" />
+                                                    </font>
+                                                </Label>
+                                                <BarChart fx:id="barChart" legendVisible="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                                                    <xAxis>
+                                                        <CategoryAxis side="BOTTOM" />
+                                                    </xAxis>
+                                                    <yAxis>
+                                                        <NumberAxis side="LEFT" />
+                                                    </yAxis>
+                                                </BarChart>
                                             </children>
                                         </VBox>
                                     </children>
