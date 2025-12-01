@@ -99,10 +99,6 @@ public class RootLayoutController {
 
     @FXML
     private void handleExit() {
-        // Logout: resetta l'utente loggato e torna alla schermata di login
-        if (mainApp != null) {
-            mainApp.setLoggedUser(null);
-            mainApp.showLogin();
-        }
+        System.exit(0);
     }
 }
