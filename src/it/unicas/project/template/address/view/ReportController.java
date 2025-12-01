@@ -174,29 +174,22 @@ public class ReportController {
             return;
         }
 
-        float cumulativeEntrate = 0f;
-        float cumulativeUscite = 0f;
-
         for (Pair<String, Pair<Float, Float>> point : trendData) {
             String label = point.getKey();
             Float entrata = point.getValue().getKey();
             Float uscita = point.getValue().getValue();
 
-            cumulativeEntrate += entrata;
-            cumulativeUscite += uscita;
-
-            XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
-            XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, cumulativeUscite);
+            // Plot monthly values (not cumulative)
+            XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, entrata);
+            XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, uscita);
 
             // Tooltip
-            final float entrateFinale = cumulativeEntrate;
-            final float usciteFinale = cumulativeUscite;
             final float entrataCorrente = entrata;
             final float uscitaCorrente = uscita;
 
             incomeData.nodeProperty().addListener((obs, oldNode, newNode) -> {
                 if (newNode != null) {
-                    Tooltip tooltip = new Tooltip(String.format("%s\nEntrate: € %.2f\nTotale: € %.2f", label, entrataCorrente, entrateFinale));
+                    Tooltip tooltip = new Tooltip(String.format("%s\nEntrate: € %.2f", label, entrataCorrente));
                     tooltip.setShowDelay(Duration.millis(50));
                     Tooltip.install(newNode, tooltip);
                 }
@@ -204,7 +197,7 @@ public class ReportController {
 
             expenseData.nodeProperty().addListener((obs, oldNode, newNode) -> {
                 if (newNode != null) {
-                    Tooltip tooltip = new Tooltip(String.format("%s\nUscite: € %.2f\nTotale: € %.2f", label, uscitaCorrente, usciteFinale));
+                    Tooltip tooltip = new Tooltip(String.format("%s\nUscite: € %.2f", label, uscitaCorrente));
                     tooltip.setShowDelay(Duration.millis(50));
                     Tooltip.install(newNode, tooltip);
                 }
