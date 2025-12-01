@@ -2734,6 +2734,18 @@ Text {
   -fx-icon-color: -color-fg-default;
   -fx-fill: -color-fg-default;
 }
+.menu-item:hover {
+  -fx-background-color: -color-base-1, -color-base-1;
+}
+.menu-item:hover > .label {
+  -fx-text-fill: -color-fg-default;
+}
+.menu-item:pressed {
+  -fx-background-color: -color-base-1, -color-base-1;
+}
+.menu-item:pressed > .label {
+  -fx-text-fill: -color-fg-default;
+}
 .menu-item:disabled {
   -fx-opacity: 0.4;
 }
