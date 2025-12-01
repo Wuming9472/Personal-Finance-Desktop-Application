@@ -209,6 +209,12 @@ public class ReportController {
 
         lineChartAndamento.getData().addAll(serieEntrate, serieUscite);
 
+        // Force horizontal tick labels on X axis
+        if (lineChartAndamento.getXAxis() instanceof CategoryAxis) {
+            CategoryAxis xAxis = (CategoryAxis) lineChartAndamento.getXAxis();
+            xAxis.setTickLabelRotation(0);
+        }
+
         Platform.runLater(() -> {
             lineChartAndamento.setAnimated(true);
         });
