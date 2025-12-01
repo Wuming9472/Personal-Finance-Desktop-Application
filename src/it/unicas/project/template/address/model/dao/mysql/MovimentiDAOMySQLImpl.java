@@ -268,6 +268,42 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
         return data;
     }
 
+    public List<javafx.util.Pair<Integer, javafx.util.Pair<Float, Float>>> getThreeDayBucketsForMonth(int userId, LocalDate referenceDate) throws SQLException {
+        LocalDate monthDate = referenceDate.withDayOfMonth(1);
+        int targetYear = monthDate.getYear();
+        int targetMonth = monthDate.getMonthValue();
+
+        String query = "SELECT FLOOR((DAY(date) - 1) / 3) AS bucket, " +
+                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as entrate, " +
+                "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as uscite " +
+                "FROM movements " +
+                "WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ? " +
+                "GROUP BY bucket " +
+                "ORDER BY bucket ASC " +
+                "LIMIT 10";
+
+        List<javafx.util.Pair<Integer, javafx.util.Pair<Float, Float>>> data = new ArrayList<>();
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, targetYear);
+            pstmt.setInt(3, targetMonth);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int bucketIndex = rs.getInt("bucket");
+                    float entrate = rs.getFloat("entrate");
+                    float uscite = rs.getFloat("uscite");
+                    data.add(new javafx.util.Pair<>(bucketIndex, new javafx.util.Pair<>(entrate, uscite)));
+                }
+            }
+        }
+
+        return data;
+    }
+
     // Metodi dell'interfaccia DAO generica (non usati direttamente qui ma richiesti)
     @Override public List<Movimenti> select(Movimenti m) throws DAOException { return null; }
     @Override public void update(Movimenti m) throws DAOException {}
