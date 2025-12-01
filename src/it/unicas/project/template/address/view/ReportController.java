@@ -228,8 +228,8 @@ public class ReportController {
         int remainingDays = daysInMonth - currentDay;
 
         String query = "SELECT " +
-                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as totaleEntrate, " +
-                "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as totaleUscite, " +
+                "SUM(CASE WHEN LOWER(type) IN ('entrata') THEN amount ELSE 0 END) as totaleEntrate, " +
+                "SUM(CASE WHEN LOWER(type) IN ('uscita') THEN amount ELSE 0 END) as totaleUscite, " +
                 "COUNT(DISTINCT DATE(date)) as giorniConMovimenti " +
                 "FROM movements " +
                 "WHERE user_id = ? " +
