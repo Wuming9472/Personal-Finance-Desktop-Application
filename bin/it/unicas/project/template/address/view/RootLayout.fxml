@@ -77,8 +77,8 @@
 
                         <MenuButton fx:id="btnUser" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Utente">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#handleSettings" text="Impostazioni" />
-                                <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Logout" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleSettings" style="-fx-text-fill: #000000;" text="Impostazioni" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleExit" style="-fx-text-fill: #000000;" text="Logout" />
                             </items>
                             <font>
                                 <Font name="System Bold" size="22.0" />

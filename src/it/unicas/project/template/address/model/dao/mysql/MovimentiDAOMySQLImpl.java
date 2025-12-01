@@ -213,6 +213,15 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
         LocalDate today = LocalDate.now();
         boolean groupByDay = monthsBack == 1;
 
+        // When grouping by month, include the entire current month
+        // When grouping by day, only include up to today
+        LocalDate endDate;
+        if (groupByDay) {
+            endDate = today;
+        } else {
+            endDate = YearMonth.from(today).atEndOfMonth();
+        }
+
         String selectClause;
         String groupByClause;
         String orderByClause;
@@ -242,7 +251,7 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
 
             pstmt.setInt(1, userId);
             pstmt.setDate(2, Date.valueOf(startDate));
-            pstmt.setDate(3, Date.valueOf(today));
+            pstmt.setDate(3, Date.valueOf(endDate));
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -257,10 +266,49 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
                         int year = rs.getInt("periodo_year");
                         int month = rs.getInt("periodo_month");
                         YearMonth ym = YearMonth.of(year, month);
-                        label = ym.getMonth().getDisplayName(TextStyle.SHORT, Locale.ITALIAN) + " " + ym.getYear();
+                        // Use shorter format for better display: "gen '25" instead of "gen 2025"
+                        String monthName = ym.getMonth().getDisplayName(TextStyle.SHORT, Locale.ITALIAN);
+                        String yearShort = String.format("'%02d", year % 100);
+                        label = monthName + " " + yearShort;
                     }
 
                     data.add(new javafx.util.Pair<>(label, new javafx.util.Pair<>(entrate, uscite)));
+                }
+            }
+        }
+
+        return data;
+    }
+
+    public List<javafx.util.Pair<Integer, javafx.util.Pair<Float, Float>>> getThreeDayBucketsForMonth(int userId, LocalDate referenceDate) throws SQLException {
+        LocalDate monthDate = referenceDate.withDayOfMonth(1);
+        int targetYear = monthDate.getYear();
+        int targetMonth = monthDate.getMonthValue();
+
+        String query = "SELECT FLOOR((DAY(date) - 1) / 3) AS bucket, " +
+                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as entrate, " +
+                "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as uscite " +
+                "FROM movements " +
+                "WHERE user_id = ? AND YEAR(date) = ? AND MONTH(date) = ? " +
+                "GROUP BY bucket " +
+                "ORDER BY bucket ASC " +
+                "LIMIT 10";
+
+        List<javafx.util.Pair<Integer, javafx.util.Pair<Float, Float>>> data = new ArrayList<>();
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, targetYear);
+            pstmt.setInt(3, targetMonth);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int bucketIndex = rs.getInt("bucket");
+                    float entrate = rs.getFloat("entrate");
+                    float uscite = rs.getFloat("uscite");
+                    data.add(new javafx.util.Pair<>(bucketIndex, new javafx.util.Pair<>(entrate, uscite)));
                 }
             }
         }

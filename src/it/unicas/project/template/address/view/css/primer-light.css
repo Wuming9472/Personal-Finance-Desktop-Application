@@ -5135,3 +5135,22 @@ Text {
 .default-color1.chart-legend-item-symbol {
     -fx-background-color: #ef4444 !important;
 }
+
+/* FIX: Menu item text deve rimanere nero quando selezionato/hover */
+.menu-item:hover,
+.menu-item:focused,
+.menu-item:selected {
+    -fx-background-color: #e2e8f0;
+}
+
+.menu-item:hover > .label,
+.menu-item:focused > .label,
+.menu-item:selected > .label {
+    -fx-text-fill: #000000 !important;
+}
+
+.menu-item:hover .text,
+.menu-item:focused .text,
+.menu-item:selected .text {
+    -fx-fill: #000000 !important;
+}

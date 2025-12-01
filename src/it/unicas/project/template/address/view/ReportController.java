@@ -7,16 +7,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.*;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.format.TextStyle;
+import java.util.List;
+import java.util.Locale;
 
 public class ReportController {
 
@@ -24,7 +27,8 @@ public class ReportController {
     private int currentUserId = -1;
 
     @FXML private PieChart pieChart;
-    @FXML private BarChart<String, Number> barChart;
+    @FXML private SmoothAreaChart<String, Number> lineChartAndamento;
+    @FXML private ComboBox<String> cmbRange;
     @FXML private Label lblRisparmioStimato;
     @FXML private Label lblCategoriaCritica;
 
@@ -42,13 +46,15 @@ public class ReportController {
 
     @FXML
     private void initialize() {
-        if (barChart != null) {
-            barChart.setAnimated(true);
-            barChart.setLegendVisible(true);
+        if (lineChartAndamento != null) {
+            lineChartAndamento.setAnimated(true);
+            lineChartAndamento.setLegendVisible(true);
+            lineChartAndamento.setCreateSymbols(true);
         }
         if (pieChart != null) {
             pieChart.setLegendVisible(true);
         }
+        initRangeSelector();
     }
 
     public void setMainApp(MainApp mainApp) {
@@ -62,10 +68,6 @@ public class ReportController {
         updateUIFromData();
     }
 
-    /**
-     * Metodo pubblico per aggiornare i dati del report.
-     * Può essere chiamato da altri controller quando i movimenti vengono modificati.
-     */
     public void refreshReportData() {
         updateUIFromData();
     }
@@ -77,14 +79,46 @@ public class ReportController {
             // 1. PieChart - Distribuzione spese per categoria
             loadPieChartData();
 
-            // 2. BarChart - Confronto mensile ultimi 6 mesi
-            loadBarChartData();
+            // 2. LineChart - Andamento finanziario 6/12 mesi
+            loadLineChartData();
 
             // 3. Forecast section - Previsione Fine Mese
             loadForecastData();
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void initRangeSelector() {
+        if (cmbRange != null) {
+            cmbRange.getItems().setAll(
+                    "Ultimi 6 mesi",
+                    "Ultimo anno"
+            );
+            cmbRange.setValue("Ultimi 6 mesi");
+            cmbRange.setOnAction(event -> {
+                try {
+                    loadLineChartData();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
+
+    private int resolveMonthsBack() {
+        if (cmbRange == null) return 6;
+        String selected = cmbRange.getValue();
+        if (selected == null) {
+            return 6;
+        }
+        switch (selected) {
+            case "Ultimo anno":
+                return 12;
+            case "Ultimi 6 mesi":
+            default:
+                return 6;
         }
     }
 
@@ -119,72 +153,88 @@ public class ReportController {
         pieChart.setData(pieData);
     }
 
-    private void loadBarChartData() throws SQLException {
-        String query = "SELECT YEAR(date) as anno, MONTH(date) as mese, " +
-                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as entrate, " +
-                "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as uscite " +
-                "FROM movements " +
-                "WHERE user_id = ? AND date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) " +
-                "GROUP BY YEAR(date), MONTH(date) " +
-                "ORDER BY anno, mese";
+    private void loadLineChartData() throws SQLException {
+        if (lineChartAndamento == null) return;
 
-        XYChart.Series<String, Number> seriesEntrate = new XYChart.Series<>();
-        seriesEntrate.setName("Entrate");
+        lineChartAndamento.setAnimated(false);
+        lineChartAndamento.getData().clear();
 
-        XYChart.Series<String, Number> seriesUscite = new XYChart.Series<>();
-        seriesUscite.setName("Uscite");
+        int monthsBack = resolveMonthsBack();
 
-        String[] mesi = {"", "Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"};
+        MovimentiDAOMySQLImpl dao = new MovimentiDAOMySQLImpl();
+        List<Pair<String, Pair<Float, Float>>> trendData = dao.getIncomeExpenseTrend(currentUserId, monthsBack);
 
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+        XYChart.Series<String, Number> serieEntrate = new XYChart.Series<>();
+        serieEntrate.setName("Entrate");
+        XYChart.Series<String, Number> serieUscite = new XYChart.Series<>();
+        serieUscite.setName("Uscite");
 
-            pstmt.setInt(1, currentUserId);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    int mese = rs.getInt("mese");
-                    double entrate = rs.getDouble("entrate");
-                    double uscite = rs.getDouble("uscite");
-
-                    String label = mesi[mese];
-                    seriesEntrate.getData().add(new XYChart.Data<>(label, entrate));
-                    seriesUscite.getData().add(new XYChart.Data<>(label, uscite));
-                }
-            }
+        if (trendData.isEmpty()) {
+            lineChartAndamento.setAnimated(true);
+            return;
         }
 
-        barChart.getData().clear();
-        barChart.getData().addAll(seriesEntrate, seriesUscite);
-        barChart.setBarGap(3);
-        barChart.setCategoryGap(20);
+        for (Pair<String, Pair<Float, Float>> point : trendData) {
+            String label = point.getKey();
+            Float entrata = point.getValue().getKey();
+            Float uscita = point.getValue().getValue();
 
-        // Applica colori verde/rosso
+            // Plot monthly values (not cumulative)
+            XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, entrata);
+            XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, uscita);
+
+            // Tooltip
+            final float entrataCorrente = entrata;
+            final float uscitaCorrente = uscita;
+
+            incomeData.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                if (newNode != null) {
+                    Tooltip tooltip = new Tooltip(String.format("%s\nEntrate: € %.2f", label, entrataCorrente));
+                    tooltip.setShowDelay(Duration.millis(50));
+                    Tooltip.install(newNode, tooltip);
+                }
+            });
+
+            expenseData.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                if (newNode != null) {
+                    Tooltip tooltip = new Tooltip(String.format("%s\nUscite: € %.2f", label, uscitaCorrente));
+                    tooltip.setShowDelay(Duration.millis(50));
+                    Tooltip.install(newNode, tooltip);
+                }
+            });
+
+            serieEntrate.getData().add(incomeData);
+            serieUscite.getData().add(expenseData);
+        }
+
+        lineChartAndamento.getData().addAll(serieEntrate, serieUscite);
+
+        // Force horizontal tick labels on X axis
+        if (lineChartAndamento.getXAxis() instanceof CategoryAxis) {
+            CategoryAxis xAxis = (CategoryAxis) lineChartAndamento.getXAxis();
+            xAxis.setTickLabelRotation(-45);
+        }
+
         Platform.runLater(() -> {
-            for (XYChart.Data<String, Number> data : seriesEntrate.getData()) {
-                if (data.getNode() != null) {
-                    data.getNode().setStyle("-fx-bar-fill: #10b981;");
-                }
-            }
-            for (XYChart.Data<String, Number> data : seriesUscite.getData()) {
-                if (data.getNode() != null) {
-                    data.getNode().setStyle("-fx-bar-fill: #ef4444;");
-                }
-            }
+            lineChartAndamento.setAnimated(true);
         });
     }
 
     private void loadForecastData() throws SQLException {
-        LocalDate today = LocalDate.now();
-        YearMonth currentMonth = YearMonth.from(today);
-        int currentDay = today.getDayOfMonth();
-        int daysInMonth = currentMonth.lengthOfMonth();
+        LocalDate referenceDate = getLatestExpenseDate();
+        if (referenceDate == null) {
+            displayInsufficientDataMessage();
+            return;
+        }
+
+        YearMonth referenceMonth = YearMonth.from(referenceDate);
+        int currentDay = referenceDate.getDayOfMonth();
+        int daysInMonth = referenceMonth.lengthOfMonth();
         int remainingDays = daysInMonth - currentDay;
 
-        // Query per ottenere i movimenti del mese corrente
         String query = "SELECT " +
-                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as totaleEntrate, " +
-                "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as totaleUscite, " +
+                "SUM(CASE WHEN LOWER(type) IN ('entrata') THEN amount ELSE 0 END) as totaleEntrate, " +
+                "SUM(CASE WHEN LOWER(type) IN ('uscita') THEN amount ELSE 0 END) as totaleUscite, " +
                 "COUNT(DISTINCT DATE(date)) as giorniConMovimenti " +
                 "FROM movements " +
                 "WHERE user_id = ? " +
@@ -195,8 +245,8 @@ public class ReportController {
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setInt(1, currentUserId);
-            pstmt.setInt(2, today.getYear());
-            pstmt.setInt(3, today.getMonthValue());
+            pstmt.setInt(2, referenceDate.getYear());
+            pstmt.setInt(3, referenceDate.getMonthValue());
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -204,29 +254,49 @@ public class ReportController {
                     double totaleUscite = rs.getDouble("totaleUscite");
                     int giorniConMovimenti = rs.getInt("giorniConMovimenti");
 
-                    // Verifica se ci sono dati sufficienti (almeno 3 giorni con movimenti)
                     if (giorniConMovimenti < 3) {
                         displayInsufficientDataMessage();
                         return;
                     }
 
-                    // Calcola la media giornaliera delle spese
-                    double mediaGiornaliera = totaleUscite / currentDay;
+                    double mediaSpeseGiornaliera = totaleUscite / currentDay;
+                    double mediaEntrateGiornaliera = totaleEntrate / currentDay;
 
-                    // Proietta le spese totali per il mese
-                    double speseProiettate = totaleUscite + (mediaGiornaliera * remainingDays);
+                    double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
+                    double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
+                    double saldoStimato = entrateProiettate - speseProiettate;
 
-                    // Calcola il saldo stimato (assumendo che le entrate non cambino)
-                    double saldoStimato = totaleEntrate - speseProiettate;
-
-                    // Aggiorna l'UI
-                    updateForecastUI(currentDay, remainingDays, mediaGiornaliera, speseProiettate,
-                                   saldoStimato, totaleEntrate, totaleUscite);
+                    updateForecastUI(currentDay, remainingDays, mediaSpeseGiornaliera, speseProiettate,
+                            saldoStimato, totaleEntrate, totaleUscite);
                 } else {
                     displayInsufficientDataMessage();
                 }
             }
         }
+    }
+
+    private LocalDate getLatestExpenseDate() throws SQLException {
+        String query = "SELECT MAX(DATE(date)) as latestExpense " +
+                "FROM movements " +
+                "WHERE user_id = ? " +
+                "AND LOWER(type) IN ('uscita', 'expense')";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, currentUserId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Date latestDate = rs.getDate("latestExpense");
+                    if (latestDate != null) {
+                        return latestDate.toLocalDate();
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     private void displayInsufficientDataMessage() {
@@ -240,7 +310,7 @@ public class ReportController {
             lblStatusIcon.setText("⚠️");
 
             paneStatus.setStyle("-fx-background-color: #fef3c7; -fx-background-radius: 12; " +
-                              "-fx-border-color: #f59e0b; -fx-border-radius: 12; -fx-border-width: 2;");
+                    "-fx-border-color: #f59e0b; -fx-border-radius: 12; -fx-border-width: 2;");
             lblStatusTitolo.setStyle("-fx-text-fill: #92400e;");
             lblStatusMessaggio.setStyle("-fx-text-fill: #b45309;");
 
@@ -254,18 +324,14 @@ public class ReportController {
                                   double speseProiettate, double saldoStimato,
                                   double totaleEntrate, double totaleUscite) {
         Platform.runLater(() -> {
-            // Aggiorna periodo di calcolo
             lblPeriodoCalcolo.setText(String.format("Calcolata sui movimenti reali dal giorno 1 al %d", currentDay));
 
-            // Aggiorna saldo stimato
             lblSaldoStimato.setText(String.format("€ %.2f", saldoStimato));
 
-            // Aggiorna dettagli
             lblGiorniRimanenti.setText(String.format("%d gg", remainingDays));
             lblMediaSpeseGiornaliera.setText(String.format("€ %.2f", mediaGiornaliera));
             lblSpeseProiettateTotali.setText(String.format("€ %.2f", speseProiettate));
 
-            // Determina lo stato e i colori
             String statusIcon;
             String statusTitolo;
             String statusMessaggio;
@@ -275,9 +341,7 @@ public class ReportController {
             String messageColor;
             String saldoColor;
 
-            // Logica per determinare lo stato
             if (saldoStimato > 200) {
-                // Verde - Situazione positiva
                 statusIcon = "📈";
                 statusTitolo = "Situazione Stabile";
                 statusMessaggio = "Previsione positiva. Mantenendo questo trend, chiuderai il mese in attivo.";
@@ -287,7 +351,6 @@ public class ReportController {
                 messageColor = "#047857";
                 saldoColor = "#10b981";
             } else if (saldoStimato >= -100 && saldoStimato <= 200) {
-                // Arancione - Situazione limite
                 statusIcon = "⚠️";
                 statusTitolo = "Attenzione";
                 statusMessaggio = "Previsione vicina al limite. Monitora le spese per evitare di chiudere in negativo.";
@@ -297,7 +360,6 @@ public class ReportController {
                 messageColor = "#b45309";
                 saldoColor = "#f59e0b";
             } else {
-                // Rosso - Situazione critica
                 statusIcon = "📉";
                 statusTitolo = "Situazione Critica";
                 statusMessaggio = "Previsione negativa. Riduci le spese o aumenta le entrate per evitare un deficit.";
@@ -308,15 +370,14 @@ public class ReportController {
                 saldoColor = "#ef4444";
             }
 
-            // Applica gli stili
             lblStatusIcon.setText(statusIcon);
             lblStatusTitolo.setText(statusTitolo);
             lblStatusMessaggio.setText(statusMessaggio);
 
             paneStatus.setStyle(String.format(
-                "-fx-background-color: %s; -fx-background-radius: 12; " +
-                "-fx-border-color: %s; -fx-border-radius: 12; -fx-border-width: 2;",
-                backgroundColor, borderColor));
+                    "-fx-background-color: %s; -fx-background-radius: 12; " +
+                            "-fx-border-color: %s; -fx-border-radius: 12; -fx-border-width: 2;",
+                    backgroundColor, borderColor));
 
             lblStatusTitolo.setStyle("-fx-text-fill: " + titleColor + ";");
             lblStatusMessaggio.setStyle("-fx-text-fill: " + messageColor + ";");
@@ -325,7 +386,6 @@ public class ReportController {
     }
 
     private Connection getConnection() throws SQLException {
-        // Usa le stesse impostazioni del tuo DAO esistente
         it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings settings =
                 it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings.getCurrentDAOMySQLSettings();
         String connectionString = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
