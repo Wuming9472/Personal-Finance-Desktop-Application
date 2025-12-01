@@ -8,6 +8,7 @@ import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -36,7 +37,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DashboardController {
 
