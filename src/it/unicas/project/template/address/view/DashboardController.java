@@ -12,7 +12,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
@@ -34,7 +33,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
@@ -46,11 +44,6 @@ public class DashboardController {
     @FXML private Label lblUscite;
     @FXML private Label lblPrevisione;
     @FXML private Label lblMeseCorrente;
-    @FXML private Label lblChartTitle;
-    @FXML private Label lblForecastNote;
-
-    @FXML private Button btnPrevMonth;
-    @FXML private Button btnNextMonth;
 
     @FXML private BarChart<String, Number> barChartAndamento;
 
@@ -58,7 +51,6 @@ public class DashboardController {
     @FXML private GridPane gridBudgetList;
 
     private MainApp mainApp;
-    private YearMonth selectedMonth = YearMonth.now();
 
     @FXML
     private void initialize() {
@@ -84,13 +76,12 @@ public class DashboardController {
         }
 
         int userId = mainApp.getLoggedUser().getUser_id();
-        YearMonth monthToShow = selectedMonth != null ? selectedMonth : YearMonth.now();
-        YearMonth currentMonth = YearMonth.now();
+        LocalDate now = LocalDate.now();
         MovimentiDAOMySQLImpl dao = new MovimentiDAOMySQLImpl();
 
         try {
-            float totalEntrate = dao.getSumByMonth(userId, monthToShow.getMonthValue(), monthToShow.getYear(), "Entrata");
-            float totalUscite = dao.getSumByMonth(userId, monthToShow.getMonthValue(), monthToShow.getYear(), "Uscita");
+            float totalEntrate = dao.getSumByMonth(userId, now.getMonthValue(), now.getYear(), "Entrata");
+            float totalUscite = dao.getSumByMonth(userId, now.getMonthValue(), now.getYear(), "Uscita");
             float saldo = totalEntrate - totalUscite;
 
             lblEntrate.setText(String.format("€ %.2f", totalEntrate));
@@ -98,21 +89,20 @@ public class DashboardController {
             lblSaldo.setText(String.format("€ %.2f", saldo));
             lblSaldo.setStyle(saldo >= 0 ? "-fx-text-fill: #10b981;" : "-fx-text-fill: #ef4444;");
 
-            float currentEntrate = dao.getSumByMonth(userId, currentMonth.getMonthValue(), currentMonth.getYear(), "Entrata");
-            float currentUscite = dao.getSumByMonth(userId, currentMonth.getMonthValue(), currentMonth.getYear(), "Uscita");
-            calculateForecast(currentEntrate - currentUscite, currentEntrate, currentUscite, currentMonth.atEndOfMonth());
+            calculateForecast(saldo, totalEntrate, totalUscite, now);
 
-            if (btnNextMonth != null) {
-                btnNextMonth.setDisable(!monthToShow.isBefore(currentMonth));
+            // Aggiorna label mese corrente
+            if (lblMeseCorrente != null) {
+                String nomeMese = now.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
+                lblMeseCorrente.setText(nomeMese.substring(0, 1).toUpperCase() + nomeMese.substring(1) + " " + now.getYear());
             }
-            updateMonthLabels(monthToShow);
 
             List<Movimenti> recent = dao.selectLastByUser(userId, 5);
             populateRecentMovements(recent);
 
-            populateBudgetStatus(userId, monthToShow.getMonthValue(), monthToShow.getYear());
+            populateBudgetStatus(userId, now.getMonthValue(), now.getYear());
 
-            populateBarChart(userId, monthToShow.getMonthValue(), monthToShow.getYear());
+            populateBarChart(userId, now.getMonthValue(), now.getYear());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -347,11 +337,10 @@ public class DashboardController {
         }
     }
 
-    private void calculateForecast(float saldoAttuale, float entrate, float uscite, LocalDate referenceDate) {
+    private void calculateForecast(float saldoAttuale, float entrate, float uscite, LocalDate now) {
         if (lblPrevisione == null) return;
-        if (referenceDate == null) referenceDate = LocalDate.now();
-        int daysInMonth = referenceDate.lengthOfMonth();
-        int currentDay = referenceDate.getDayOfMonth();
+        int daysInMonth = now.lengthOfMonth();
+        int currentDay = now.getDayOfMonth();
         if (currentDay == 0) currentDay = 1;
 
         float netto = entrate - uscite;
@@ -359,42 +348,6 @@ public class DashboardController {
         float previsioneFinale = saldoAttuale + (proiezione - netto);
 
         lblPrevisione.setText(String.format("€ %.2f", previsioneFinale));
-
-        if (lblForecastNote != null) {
-            String nomeMese = referenceDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
-            lblForecastNote.setText("Stima per " + capitalize(nomeMese) + " " + referenceDate.getYear());
-        }
-    }
-
-    @FXML
-    private void onPreviousMonth() {
-        selectedMonth = selectedMonth.minusMonths(1);
-        refreshDashboardData();
-    }
-
-    @FXML
-    private void onNextMonth() {
-        YearMonth current = YearMonth.now();
-        if (selectedMonth.isBefore(current)) {
-            selectedMonth = selectedMonth.plusMonths(1);
-            refreshDashboardData();
-        }
-    }
-
-    private void updateMonthLabels(YearMonth month) {
-        String nomeMese = month.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
-        String monthText = capitalize(nomeMese) + " " + month.getYear();
-        if (lblMeseCorrente != null) {
-            lblMeseCorrente.setText(monthText);
-        }
-        if (lblChartTitle != null) {
-            lblChartTitle.setText("Andamento " + capitalize(nomeMese));
-        }
-    }
-
-    private String capitalize(String value) {
-        if (value == null || value.isEmpty()) return "";
-        return value.substring(0, 1).toUpperCase() + value.substring(1);
     }
 
     private void populateRecentMovements(List<Movimenti> list) {

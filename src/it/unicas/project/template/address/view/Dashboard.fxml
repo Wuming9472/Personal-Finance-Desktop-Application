@@ -164,7 +164,7 @@
                                                         </Label>
                                                     </children>
                                                 </HBox>
-                                                <Label fx:id="lblForecastNote" text="Stima basata su media" textFill="#10b981">
+                                                <Label text="Stima basata su media" textFill="#10b981">
                                                     <font>
                                                         <Font name="System Bold" size="11.0" />
                                                     </font>
@@ -183,27 +183,17 @@
                                     <children>
                                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                                             <children>
-                                                <Label fx:id="lblChartTitle" text="Andamento Mese Corrente" textFill="#1e293b">
+                                                <Label text="Andamento Mese Corrente" textFill="#1e293b">
                                                     <font>
                                                         <Font name="System Bold" size="18.0" />
                                                     </font>
                                                 </Label>
                                                 <Region HBox.hgrow="ALWAYS" />
-                                                <Button fx:id="btnPrevMonth" mnemonicParsing="false" onAction="#onPreviousMonth" style="-fx-background-color: transparent; -fx-border-color: #e2e8f0; -fx-background-radius: 8; -fx-border-radius: 8; -fx-padding: 4 10;">
-                                                    <text>
-                                                        <String fx:value="◀" />
-                                                    </text>
-                                                </Button>
                                                 <Label fx:id="lblMeseCorrente" text="" textFill="#64748b">
                                                     <font>
                                                         <Font name="System Bold" size="14.0" />
                                                     </font>
                                                 </Label>
-                                                <Button fx:id="btnNextMonth" mnemonicParsing="false" onAction="#onNextMonth" style="-fx-background-color: transparent; -fx-border-color: #e2e8f0; -fx-background-radius: 8; -fx-border-radius: 8; -fx-padding: 4 10;">
-                                                    <text>
-                                                        <String fx:value="▶" />
-                                                    </text>
-                                                </Button>
                                             </children>
                                         </HBox>
 
