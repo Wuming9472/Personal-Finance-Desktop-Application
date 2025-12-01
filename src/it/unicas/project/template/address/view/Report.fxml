@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import it.unicas.project.template.address.view.SmoothAreaChart?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
@@ -51,28 +52,27 @@
                             </children>
                         </AnchorPane>
 
-                        <!-- COLONNA DESTRA: BAR CHART + ANALISI -->
+                        <!-- COLONNA DESTRA: LINE CHART (Andamento Finanziario) -->
                         <VBox spacing="25.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                             <children>
 
-                                <!-- BAR CHART -->
+                                <!-- LINE CHART -->
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" VBox.vgrow="ALWAYS">
                                     <children>
                                         <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                                             <children>
-                                                <Label text="Confronto Mensile" textFill="#1e293b">
-                                                    <font>
-                                                        <Font name="System Bold" size="18.0" />
-                                                    </font>
-                                                </Label>
-                                                <BarChart fx:id="barChart" legendVisible="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
-                                                    <xAxis>
-                                                        <CategoryAxis side="BOTTOM" />
-                                                    </xAxis>
-                                                    <yAxis>
-                                                        <NumberAxis side="LEFT" />
-                                                    </yAxis>
-                                                </BarChart>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <Label text="Andamento Finanziario" textFill="#1e293b">
+                                                            <font>
+                                                                <Font name="System Bold" size="18.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Region HBox.hgrow="ALWAYS" />
+                                                        <ComboBox fx:id="cmbRange" prefWidth="140.0" />
+                                                    </children>
+                                                </HBox>
+                                                <SmoothAreaChart fx:id="lineChartAndamento" animated="true" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" />
                                             </children>
                                         </VBox>
                                     </children>
@@ -118,21 +118,21 @@
                                                         </Label>
                                                         <Label fx:id="lblPeriodoCalcolo" text="Calcolata sui movimenti reali dal giorno 1 al 22" textFill="#94a3b8">
                                                             <font>
-                                                                <Font size="12.0" />
+                                                                <Font size="13.0" />
                                                             </font>
                                                         </Label>
                                                     </children>
                                                 </VBox>
 
                                                 <!-- Saldo Stimato -->
-                                                <VBox alignment="TOP_RIGHT" spacing="3.0">
+                                                <VBox alignment="CENTER_RIGHT" spacing="3.0">
                                                     <children>
                                                         <Label text="SALDO STIMATO" textFill="#64748b">
                                                             <font>
                                                                 <Font name="System Bold" size="11.0" />
                                                             </font>
                                                         </Label>
-                                                        <Label fx:id="lblSaldoStimato" text="€ 1350.00" textFill="#10b981">
+                                                        <Label fx:id="lblSaldoStimato" text="€ 850.00" textFill="#10b981">
                                                             <font>
                                                                 <Font name="System Bold" size="32.0" />
                                                             </font>
@@ -142,13 +142,13 @@
                                             </children>
                                         </HBox>
 
-                                        <!-- Situazione/Status Card -->
+                                        <!-- Status Box -->
                                         <AnchorPane fx:id="paneStatus" style="-fx-background-color: #d1fae5; -fx-background-radius: 12; -fx-border-color: #10b981; -fx-border-radius: 12; -fx-border-width: 2;">
                                             <children>
-                                                <HBox alignment="CENTER_LEFT" spacing="12.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="15.0">
+                                                <HBox alignment="CENTER_LEFT" spacing="15.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="15.0">
                                                     <children>
                                                         <Label fx:id="lblStatusIcon" text="📈" style="-fx-font-size: 28px;" />
-                                                        <VBox spacing="4.0">
+                                                        <VBox spacing="3.0" HBox.hgrow="ALWAYS">
                                                             <children>
                                                                 <Label fx:id="lblStatusTitolo" text="Situazione Stabile" textFill="#065f46">
                                                                     <font>

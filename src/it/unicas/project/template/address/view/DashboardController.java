@@ -6,20 +6,12 @@ import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.animation.FadeTransition;
-import javafx.animation.ParallelTransition;
-import javafx.animation.PauseTransition;
-import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
@@ -34,13 +26,16 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
-import javafx.util.Pair;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.time.format.TextStyle;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 public class DashboardController {
 
@@ -48,13 +43,11 @@ public class DashboardController {
     @FXML private Label lblEntrate;
     @FXML private Label lblUscite;
     @FXML private Label lblPrevisione;
+    @FXML private Label lblMeseCorrente;
 
-    @FXML private SmoothAreaChart<String, Number> chartAndamento;
-    @FXML private BarChart<String, Number> chartThreeDay;
+    @FXML private BarChart<String, Number> barChartAndamento;
 
-    @FXML private ComboBox<String> cmbRange;
     @FXML private VBox boxUltimiMovimenti;
-
     @FXML private GridPane gridBudgetList;
 
     private MainApp mainApp;
@@ -62,16 +55,17 @@ public class DashboardController {
     @FXML
     private void initialize() {
         resetLabels("...");
-        FadeTransition fade = new FadeTransition(Duration.millis(1000), chartAndamento);
-        fade.setFromValue(0);
-        fade.setToValue(1);
-        fade.play();
+        if (barChartAndamento != null) {
+            FadeTransition fade = new FadeTransition(Duration.millis(1000), barChartAndamento);
+            fade.setFromValue(0);
+            fade.setToValue(1);
+            fade.play();
+        }
     }
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
         setupChartAppearance();
-        initRangeSelector();
         refreshDashboardData();
     }
 
@@ -97,17 +91,143 @@ public class DashboardController {
 
             calculateForecast(saldo, totalEntrate, totalUscite, now);
 
+            // Aggiorna label mese corrente
+            if (lblMeseCorrente != null) {
+                String nomeMese = now.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
+                lblMeseCorrente.setText(nomeMese.substring(0, 1).toUpperCase() + nomeMese.substring(1) + " " + now.getYear());
+            }
+
             List<Movimenti> recent = dao.selectLastByUser(userId, 5);
             populateRecentMovements(recent);
 
             populateBudgetStatus(userId, now.getMonthValue(), now.getYear());
 
-            populateChart(dao, userId);
-            populateThreeDayBarChart(dao, userId);
+            populateBarChart(userId, now.getMonthValue(), now.getYear());
 
         } catch (Exception e) {
             e.printStackTrace();
             lblSaldo.setText("Err DB");
+        }
+    }
+
+    /**
+     * Popola il BarChart con dati aggregati per periodi di 3 giorni.
+     * Un mese viene diviso in 10 periodi (1-3, 4-6, 7-9, ..., 28-30/31).
+     */
+    private void populateBarChart(int userId, int month, int year) throws SQLException {
+        barChartAndamento.getData().clear();
+
+        XYChart.Series<String, Number> seriesEntrate = new XYChart.Series<>();
+        seriesEntrate.setName("Entrate");
+
+        XYChart.Series<String, Number> seriesUscite = new XYChart.Series<>();
+        seriesUscite.setName("Uscite");
+
+        LocalDate firstDay = LocalDate.of(year, month, 1);
+        int daysInMonth = firstDay.lengthOfMonth();
+
+        // Query per ottenere somme per ogni giorno
+        String query = "SELECT DAY(date) as giorno, " +
+                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as entrate, " +
+                "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as uscite " +
+                "FROM movements " +
+                "WHERE user_id = ? AND MONTH(date) = ? AND YEAR(date) = ? " +
+                "GROUP BY DAY(date) " +
+                "ORDER BY giorno";
+
+        // Array per memorizzare i valori giornalieri
+        float[] entrateGiornaliere = new float[32]; // indice 1-31
+        float[] usciteGiornaliere = new float[32];
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, month);
+            pstmt.setInt(3, year);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int giorno = rs.getInt("giorno");
+                    entrateGiornaliere[giorno] = rs.getFloat("entrate");
+                    usciteGiornaliere[giorno] = rs.getFloat("uscite");
+                }
+            }
+        }
+
+        // Aggrega per periodi di 3 giorni (10 periodi totali)
+        for (int periodo = 0; periodo < 10; periodo++) {
+            int giornoInizio = periodo * 3 + 1;
+            int giornoFine = Math.min(giornoInizio + 2, daysInMonth);
+
+            // Se è l'ultimo periodo, includi tutti i giorni rimanenti
+            if (periodo == 9) {
+                giornoFine = daysInMonth;
+            }
+
+            float sommaEntrate = 0;
+            float sommaUscite = 0;
+
+            for (int g = giornoInizio; g <= giornoFine; g++) {
+                sommaEntrate += entrateGiornaliere[g];
+                sommaUscite += usciteGiornaliere[g];
+            }
+
+            // Label per il periodo (es. "1-3", "4-6", ecc.)
+            String label = giornoInizio + "-" + giornoFine;
+
+            XYChart.Data<String, Number> dataEntrate = new XYChart.Data<>(label, sommaEntrate);
+            XYChart.Data<String, Number> dataUscite = new XYChart.Data<>(label, sommaUscite);
+
+            // Tooltip
+            final float entrateFinale = sommaEntrate;
+            final float usciteFinale = sommaUscite;
+            dataEntrate.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                if (newNode != null) {
+                    Tooltip.install(newNode, new Tooltip(String.format("Entrate: € %.2f", entrateFinale)));
+                }
+            });
+            dataUscite.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                if (newNode != null) {
+                    Tooltip.install(newNode, new Tooltip(String.format("Uscite: € %.2f", usciteFinale)));
+                }
+            });
+
+            seriesEntrate.getData().add(dataEntrate);
+            seriesUscite.getData().add(dataUscite);
+        }
+
+        barChartAndamento.getData().addAll(seriesEntrate, seriesUscite);
+
+        // Applica colori verde/rosso
+        Platform.runLater(() -> {
+            for (XYChart.Data<String, Number> data : seriesEntrate.getData()) {
+                if (data.getNode() != null) {
+                    data.getNode().setStyle("-fx-bar-fill: #10b981;");
+                }
+            }
+            for (XYChart.Data<String, Number> data : seriesUscite.getData()) {
+                if (data.getNode() != null) {
+                    data.getNode().setStyle("-fx-bar-fill: #ef4444;");
+                }
+            }
+        });
+    }
+
+    private Connection getConnection() throws SQLException {
+        it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings settings =
+                it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings.getCurrentDAOMySQLSettings();
+        String connectionString = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
+                + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
+        return DriverManager.getConnection(connectionString);
+    }
+
+    private void setupChartAppearance() {
+        if (barChartAndamento != null) {
+            barChartAndamento.setLegendVisible(true);
+            barChartAndamento.setAnimated(true);
+            barChartAndamento.setBarGap(2);
+            barChartAndamento.setCategoryGap(8);
         }
     }
 
@@ -191,7 +311,7 @@ public class DashboardController {
             lblSpesi.setTextFill(Color.web("#64748b"));
             lblSpesi.setFont(Font.font("System", 12));
 
-            String leftText = isOver ? "Over: €" + String.format("%.0f", Math.abs(remaining)) : "Left: €" + String.format("%.0f", remaining);
+            String leftText = isOver ? "Superato di: €" + String.format("%.0f", Math.abs(remaining)) : "Rimasti: €" + String.format("%.0f", remaining);
             Label lblLeft = new Label(leftText);
             lblLeft.setTextFill(Color.web(accentColor));
             lblLeft.setFont(Font.font("System", FontWeight.BOLD, 12));
@@ -291,303 +411,5 @@ public class DashboardController {
         if(lblSaldo!=null) lblSaldo.setText(text);
         if(lblEntrate!=null) lblEntrate.setText(text);
         if(lblUscite!=null) lblUscite.setText(text);
-    }
-
-    private void initRangeSelector() {
-        cmbRange.getItems().setAll(
-                "Ultimi 6 mesi",
-                "Ultimo anno"
-        );
-        cmbRange.setValue("Ultimi 6 mesi");
-        cmbRange.setOnAction(event -> refreshDashboardData());
-    }
-
-    private int resolveMonthsBack() {
-        String selected = cmbRange.getValue();
-        if (selected == null) {
-            return 6;
-        }
-        switch (selected) {
-            case "Ultimo anno":
-                return 12;
-            case "Ultimi 6 mesi":
-            default:
-                return 6;
-        }
-    }
-
-    private void populateChart(MovimentiDAOMySQLImpl dao, int userId) {
-        chartAndamento.setAnimated(false);
-        chartAndamento.setCreateSymbols(true);
-        chartAndamento.getData().clear();
-
-        XYChart.Series<String, Number> serieEntrate = new XYChart.Series<>();
-        serieEntrate.setName("Entrate");
-        XYChart.Series<String, Number> serieUscite = new XYChart.Series<>();
-        serieUscite.setName("Uscite");
-
-        try {
-            int monthsBack = resolveMonthsBack();
-            List<Pair<String, Pair<Float, Float>>> trendData = dao.getIncomeExpenseTrend(userId, monthsBack);
-
-            if (trendData.isEmpty()) {
-                return;
-            }
-
-            boolean entrataStarted = false;
-            boolean uscitaStarted = false;
-            boolean bothStarted = false;
-
-            float cumulativeEntrate = 0f;
-            float cumulativeUscite = 0f;
-
-            for (Pair<String, Pair<Float, Float>> point : trendData) {
-                String label = point.getKey();
-                String abbreviated = abbreviateLabel(label);
-                Float entrata = point.getValue().getKey();
-                Float uscita = point.getValue().getValue();
-
-                if (entrata > 0) entrataStarted = true;
-                if (uscita > 0) uscitaStarted = true;
-
-                if (entrataStarted && uscitaStarted && !bothStarted) {
-                    bothStarted = true;
-                }
-
-                cumulativeEntrate += entrata;
-                cumulativeUscite += uscita;
-
-                if (!bothStarted) {
-                    if (entrataStarted) {
-                        XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
-                        attachCumulativeTooltip(incomeData, "Entrate", abbreviated, entrata, cumulativeEntrate);
-                        serieEntrate.getData().add(incomeData);
-
-                        XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, cumulativeUscite);
-                        attachCumulativeTooltip(expenseData, "Uscite", abbreviated, uscita, cumulativeUscite);
-                        serieUscite.getData().add(expenseData);
-                    } else if (uscitaStarted) {
-                        XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, cumulativeUscite);
-                        attachCumulativeTooltip(expenseData, "Uscite", abbreviated, uscita, cumulativeUscite);
-                        serieUscite.getData().add(expenseData);
-
-                        XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
-                        attachCumulativeTooltip(incomeData, "Entrate", abbreviated, entrata, cumulativeEntrate);
-                        serieEntrate.getData().add(incomeData);
-                    }
-                } else {
-                    if (entrata > 0) {
-                        XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, cumulativeEntrate);
-                        attachCumulativeTooltip(incomeData, "Entrate", abbreviated, entrata, cumulativeEntrate);
-                        serieEntrate.getData().add(incomeData);
-                    }
-
-                    if (uscita > 0) {
-                        XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, cumulativeUscite);
-                        attachCumulativeTooltip(expenseData, "Uscite", abbreviated, uscita, cumulativeUscite);
-                        serieUscite.getData().add(expenseData);
-                    }
-                }
-            }
-
-            if (!serieEntrate.getData().isEmpty()) {
-                chartAndamento.getData().add(serieEntrate);
-            }
-            if (!serieUscite.getData().isEmpty()) {
-                chartAndamento.getData().add(serieUscite);
-            }
-
-            Platform.runLater(() -> {
-                chartAndamento.setAnimated(true);
-                for (XYChart.Series<String, Number> series : chartAndamento.getData()) {
-                    animateChartDataAppearance(series);
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Errore caricamento grafico: " + e.getMessage());
-        }
-    }
-
-    private void populateThreeDayBarChart(MovimentiDAOMySQLImpl dao, int userId) {
-        if (chartThreeDay == null) {
-            return;
-        }
-
-        chartThreeDay.setAnimated(false);
-        chartThreeDay.getData().clear();
-
-        LocalDate referenceMonth = LocalDate.now().withDayOfMonth(1);
-        int daysInMonth = referenceMonth.lengthOfMonth();
-        int bucketCount = Math.min(10, (int) Math.ceil(daysInMonth / 3.0));
-
-        Map<Integer, Pair<Float, Float>> bucketMap = new HashMap<>();
-
-        try {
-            List<Pair<Integer, Pair<Float, Float>>> rawBuckets = dao.getThreeDayBucketsForMonth(userId, referenceMonth);
-            for (Pair<Integer, Pair<Float, Float>> entry : rawBuckets) {
-                bucketMap.put(entry.getKey(), entry.getValue());
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        XYChart.Series<String, Number> entrateSeries = new XYChart.Series<>();
-        entrateSeries.setName("Entrate");
-        XYChart.Series<String, Number> usciteSeries = new XYChart.Series<>();
-        usciteSeries.setName("Uscite");
-
-        List<String> categories = new java.util.ArrayList<>();
-
-        for (int i = 0; i < bucketCount; i++) {
-            int startDay = (i * 3) + 1;
-            int endDay = Math.min(startDay + 2, daysInMonth);
-            String label = startDay + "-" + endDay;
-            categories.add(label);
-
-            Pair<Float, Float> values = bucketMap.getOrDefault(i, new Pair<>(0f, 0f));
-            entrateSeries.getData().add(new XYChart.Data<>(label, values.getKey()));
-            usciteSeries.getData().add(new XYChart.Data<>(label, values.getValue()));
-        }
-
-        if (chartThreeDay.getXAxis() instanceof CategoryAxis) {
-            ((CategoryAxis) chartThreeDay.getXAxis()).setCategories(FXCollections.observableArrayList(categories));
-        }
-
-        chartThreeDay.getData().addAll(entrateSeries, usciteSeries);
-
-        Platform.runLater(this::applyBarColors);
-    }
-
-    private void applyBarColors() {
-        if (chartThreeDay == null) {
-            return;
-        }
-        for (XYChart.Series<String, Number> series : chartThreeDay.getData()) {
-            String color = series.getName().equalsIgnoreCase("Entrate") ? "#10b981" : "#ef4444";
-            for (XYChart.Data<String, Number> data : series.getData()) {
-                if (data.getNode() != null) {
-                    data.getNode().setStyle("-fx-bar-fill: " + color + ";");
-                } else {
-                    data.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                        if (newNode != null) {
-                            newNode.setStyle("-fx-bar-fill: " + color + ";");
-                        }
-                    });
-                }
-            }
-        }
-    }
-
-    private void attachCumulativeTooltip(XYChart.Data<String, Number> data, String seriesName,
-                                         String label, Float dailyValue, Float cumulativeValue) {
-        String tooltipText = String.format("%s\n%s: € %.2f\nTotale: € %.2f",
-                label, seriesName, dailyValue, cumulativeValue);
-        Tooltip tooltip = new CustomTooltip(tooltipText);
-        data.nodeProperty().addListener((obs, oldNode, newNode) -> {
-            if (newNode != null) {
-                Tooltip.install(newNode, tooltip);
-            }
-        });
-    }
-
-    private void setupChartAppearance() {
-        chartAndamento.setLegendVisible(true);
-        chartAndamento.setCreateSymbols(true);
-        chartAndamento.setAnimated(true);
-        chartAndamento.setPadding(new javafx.geometry.Insets(0));
-
-        if (chartAndamento.getXAxis() instanceof CategoryAxis) {
-            CategoryAxis xAxis = (CategoryAxis) chartAndamento.getXAxis();
-            xAxis.setTickLabelRotation(0);
-            xAxis.setStartMargin(0);
-            xAxis.setEndMargin(0);
-            xAxis.setGapStartAndEnd(false);
-        }
-
-        if (chartAndamento.getYAxis() instanceof NumberAxis) {
-            NumberAxis yAxis = (NumberAxis) chartAndamento.getYAxis();
-            yAxis.setTickLabelFormatter(new javafx.util.StringConverter<Number>() {
-                @Override
-                public String toString(Number n) {
-                    return String.format("€%.0f", n.doubleValue());
-                }
-                @Override
-                public Number fromString(String s) {
-                    return null;
-                }
-            });
-        }
-    }
-
-    private void animateChartDataAppearance(XYChart.Series<String, Number> series) {
-        int delay = 0;
-        for (XYChart.Data<String, Number> data : series.getData()) {
-            if (data.getNode() != null) {
-                data.getNode().setOpacity(0);
-                data.getNode().setScaleX(0.8);
-                data.getNode().setScaleY(0.8);
-            }
-
-            final int currentDelay = delay;
-            PauseTransition pause = new PauseTransition(Duration.millis(currentDelay));
-            pause.setOnFinished(event -> {
-                if (data.getNode() != null) {
-                    ParallelTransition transition = new ParallelTransition(
-                            createFadeTransition(data.getNode()),
-                            createScaleTransition(data.getNode())
-                    );
-                    transition.play();
-                }
-            });
-            pause.play();
-            delay += 50;
-        }
-    }
-
-    private void attachTooltip(XYChart.Data<String, Number> data, String seriesName, String label, Float value) {
-        Tooltip tooltip = new CustomTooltip(String.format("%s\n%s: € %.2f", label, seriesName, value));
-        data.nodeProperty().addListener((obs, oldNode, newNode) -> {
-            if (newNode != null) {
-                Tooltip.install(newNode, tooltip);
-            }
-        });
-    }
-
-    private FadeTransition createFadeTransition(Node node) {
-        FadeTransition fade = new FadeTransition(Duration.millis(600), node);
-        fade.setFromValue(0);
-        fade.setToValue(1);
-        fade.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
-        return fade;
-    }
-
-    private ScaleTransition createScaleTransition(Node node) {
-        ScaleTransition scale = new ScaleTransition(Duration.millis(600), node);
-        scale.setFromX(0);
-        scale.setFromY(0);
-        scale.setToX(1.0);
-        scale.setToY(1.0);
-        scale.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
-        return scale;
-    }
-
-    private String abbreviateLabel(String label) {
-        if (label == null) {
-            return "";
-        }
-        String trimmed = label.trim();
-        return trimmed.length() > 3 ? trimmed.substring(0, 3) : trimmed;
-    }
-
-    private static class CustomTooltip extends Tooltip {
-        public CustomTooltip(String text) {
-            super(text);
-            this.getStyleClass().add("chart-tooltip");
-            this.setShowDelay(Duration.millis(50));
-            this.setHideDelay(Duration.millis(50));
-            this.setAutoHide(true);
-        }
     }
 }

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import it.unicas.project.template.address.view.SmoothAreaChart?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -138,7 +137,7 @@
                                                         </StackPane>
                                                     </children>
                                                 </HBox>
-                                                <Label fx:id="lblUscite" text="€ 378.69" textFill="#1e293b">
+                                                <Label fx:id="lblUscite" text="€ 1500.00" textFill="#1e293b">
                                                     <font>
                                                         <Font name="System Bold" size="28.0" />
                                                     </font>
@@ -193,30 +192,28 @@
                             </children>
                         </GridPane>
 
+                        <!-- BARCHART per Andamento Mese Corrente -->
                         <AnchorPane fx:id="chartContainer" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
                             <children>
                                 <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                                     <children>
                                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                                             <children>
-                                                <Label text="Andamento Finanziario" textFill="#1e293b">
+                                                <Label text="Andamento Mese Corrente" textFill="#1e293b">
                                                     <font>
                                                         <Font name="System Bold" size="18.0" />
                                                     </font>
                                                 </Label>
                                                 <Region HBox.hgrow="ALWAYS" />
-                                                <ComboBox fx:id="cmbRange" prefWidth="160.0" />
+                                                <Label fx:id="lblMeseCorrente" text="" textFill="#64748b">
+                                                    <font>
+                                                        <Font name="System Bold" size="14.0" />
+                                                    </font>
+                                                </Label>
                                             </children>
                                         </HBox>
 
-                                        <SmoothAreaChart fx:id="chartAndamento" animated="true" createSymbols="true" legendVisible="true" minHeight="250.0" prefHeight="300.0" verticalGridLinesVisible="false" />
-
-                                        <Label text="Entrate e uscite per intervalli di 3 giorni (mese corrente)" textFill="#1e293b">
-                                            <font>
-                                                <Font name="System Bold" size="16.0" />
-                                            </font>
-                                        </Label>
-                                        <BarChart fx:id="chartThreeDay" legendVisible="true" prefHeight="260.0" verticalGridLinesVisible="false">
+                                        <BarChart fx:id="barChartAndamento" animated="true" barGap="2.0" categoryGap="8.0" legendVisible="true" minHeight="250.0" prefHeight="300.0">
                                             <xAxis>
                                                 <CategoryAxis side="BOTTOM" />
                                             </xAxis>
