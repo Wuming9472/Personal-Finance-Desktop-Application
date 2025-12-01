@@ -266,7 +266,10 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
                         int year = rs.getInt("periodo_year");
                         int month = rs.getInt("periodo_month");
                         YearMonth ym = YearMonth.of(year, month);
-                        label = ym.getMonth().getDisplayName(TextStyle.SHORT, Locale.ITALIAN) + " " + ym.getYear();
+                        // Use shorter format for better display: "gen '25" instead of "gen 2025"
+                        String monthName = ym.getMonth().getDisplayName(TextStyle.SHORT, Locale.ITALIAN);
+                        String yearShort = String.format("'%02d", year % 100);
+                        label = monthName + " " + yearShort;
                     }
 
                     data.add(new javafx.util.Pair<>(label, new javafx.util.Pair<>(entrate, uscite)));
