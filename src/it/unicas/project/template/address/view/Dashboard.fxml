@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import it.unicas.project.template.address.view.SmoothAreaChart?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -202,12 +204,17 @@
                                                         <Font name="System Bold" size="18.0" />
                                                     </font>
                                                 </Label>
-                                                <Region HBox.hgrow="ALWAYS" />
-                                                <ComboBox fx:id="cmbRange" prefWidth="160.0" />
                                             </children>
                                         </HBox>
 
-                                        <SmoothAreaChart fx:id="chartAndamento" animated="true" createSymbols="true" legendVisible="true" minHeight="250.0" prefHeight="300.0" verticalGridLinesVisible="false" />
+                                        <BarChart fx:id="barChart" legendVisible="true" minHeight="250.0" prefHeight="300.0" style="-fx-background-color: transparent;" verticalGridLinesVisible="false">
+                                            <xAxis>
+                                                <CategoryAxis fx:id="barChartCategoryAxis" side="BOTTOM" />
+                                            </xAxis>
+                                            <yAxis>
+                                                <NumberAxis fx:id="barChartNumberAxis" side="LEFT" />
+                                            </yAxis>
+                                        </BarChart>
                                     </children>
                                 </VBox>
                             </children>
