@@ -213,6 +213,15 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
         LocalDate today = LocalDate.now();
         boolean groupByDay = monthsBack == 1;
 
+        // When grouping by month, include the entire current month
+        // When grouping by day, only include up to today
+        LocalDate endDate;
+        if (groupByDay) {
+            endDate = today;
+        } else {
+            endDate = YearMonth.from(today).atEndOfMonth();
+        }
+
         String selectClause;
         String groupByClause;
         String orderByClause;
@@ -242,7 +251,7 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
 
             pstmt.setInt(1, userId);
             pstmt.setDate(2, Date.valueOf(startDate));
-            pstmt.setDate(3, Date.valueOf(today));
+            pstmt.setDate(3, Date.valueOf(endDate));
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
