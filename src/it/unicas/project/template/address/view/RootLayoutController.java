@@ -101,8 +101,8 @@ public class RootLayoutController {
     private void handleExit() {
         // Logout: resetta l'utente e torna alla schermata di login
         if (mainApp != null) {
-            mainApp.setLoggedUser(null);  // Pulisce l'utente loggato
-            mainApp.showLogin();          // Torna al login
+            mainApp.setLoggedUser(null);
+            mainApp.showLogin();
         }
     }
 }

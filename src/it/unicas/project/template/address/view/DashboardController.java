@@ -23,7 +23,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.GridPane; // Importante per la griglia
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -55,7 +55,6 @@ public class DashboardController {
     @FXML private ComboBox<String> cmbRange;
     @FXML private VBox boxUltimiMovimenti;
 
-    // --- MODIFICA: Ora usiamo GridPane invece di VBox per i budget ---
     @FXML private GridPane gridBudgetList;
 
     private MainApp mainApp;
@@ -63,7 +62,6 @@ public class DashboardController {
     @FXML
     private void initialize() {
         resetLabels("...");
-        // Animazione di ingresso per il grafico
         FadeTransition fade = new FadeTransition(Duration.millis(1000), chartAndamento);
         fade.setFromValue(0);
         fade.setToValue(1);
@@ -97,13 +95,11 @@ public class DashboardController {
             lblSaldo.setText(String.format("€ %.2f", saldo));
             lblSaldo.setStyle(saldo >= 0 ? "-fx-text-fill: #10b981;" : "-fx-text-fill: #ef4444;");
 
-            // Calcolo Previsione (Semplice)
             calculateForecast(saldo, totalEntrate, totalUscite, now);
 
             List<Movimenti> recent = dao.selectLastByUser(userId, 5);
             populateRecentMovements(recent);
 
-            // Popola Budget (Metodo Aggiornato per Card View)
             populateBudgetStatus(userId, now.getMonthValue(), now.getYear());
 
             populateChart(dao, userId);
@@ -115,9 +111,6 @@ public class DashboardController {
         }
     }
 
-    // =================================================================================
-    // LOGICA BUDGET: CARD VIEW (GRIGLIA COLORATA)
-    // =================================================================================
     private void populateBudgetStatus(int userId, int month, int year) {
         if (gridBudgetList == null) return;
         gridBudgetList.getChildren().clear();
@@ -145,53 +138,44 @@ public class DashboardController {
         int row = 0;
 
         for (Budget b : budgetList) {
-            // --- 1. Calcoli ---
             double progress = b.getProgress();
             double remaining = b.getBudgetAmount() - b.getSpentAmount();
             boolean isOver = remaining < 0;
 
-            // --- 2. Definizione Colori (Stile Card "Pastello" come foto) ---
             String bgColor, accentColor, textColor;
 
             if (progress >= 1.0) {
-                // ROSSO (Sforato/Critico)
-                bgColor = "#fff1f2"; // Rosa chiarissimo
-                accentColor = "#e11d48"; // Rosso acceso
+                bgColor = "#fff1f2";
+                accentColor = "#e11d48";
                 textColor = "#be123c";
             } else if (progress > 0.80) {
-                // GIALLO (Attenzione)
-                bgColor = "#fffbeb"; // Giallo chiarissimo
-                accentColor = "#d97706"; // Ambra
+                bgColor = "#fffbeb";
+                accentColor = "#d97706";
                 textColor = "#b45309";
             } else {
-                // VERDE (Safe)
-                bgColor = "#ecfdf5"; // Verde chiarissimo
-                accentColor = "#059669"; // Smeraldo
+                bgColor = "#ecfdf5";
+                accentColor = "#059669";
                 textColor = "#047857";
             }
 
-            // --- 3. Creazione CARD (VBox) ---
             VBox card = new VBox(10);
             card.setPadding(new Insets(15));
-            // Stile CSS Inline per il riquadro arrotondato
             card.setStyle("-fx-background-color: " + bgColor + "; " +
                     "-fx-background-radius: 15; " +
                     "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);");
 
-            // -- RIGA A: Titolo Categoria --
             HBox topRow = new HBox();
             topRow.setAlignment(Pos.CENTER_LEFT);
 
             Label lblName = new Label(b.getCategoryName());
             lblName.setFont(Font.font("System", FontWeight.BOLD, 15));
-            lblName.setTextFill(Color.web("#1e293b")); // Grigio scuro
+            lblName.setTextFill(Color.web("#1e293b"));
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
             topRow.getChildren().addAll(lblName, spacer);
 
-            // Se sforato, icona di warning
             if (isOver || progress > 0.9) {
                 Label icon = new Label("!");
                 icon.setFont(Font.font("System", FontWeight.BOLD, 14));
@@ -200,38 +184,31 @@ public class DashboardController {
                 topRow.getChildren().add(icon);
             }
 
-            // -- RIGA B: Dettagli Spesi / Rimanenti --
             HBox detailsRow = new HBox(10);
             detailsRow.setAlignment(Pos.CENTER_LEFT);
 
             Label lblSpesi = new Label("Spesi: €" + String.format("%.0f", b.getSpentAmount()));
-            lblSpesi.setTextFill(Color.web("#64748b")); // Grigio medio
+            lblSpesi.setTextFill(Color.web("#64748b"));
             lblSpesi.setFont(Font.font("System", 12));
 
-            // Logica per testo "Left" o "Over"
             String leftText = isOver ? "Over: €" + String.format("%.0f", Math.abs(remaining)) : "Left: €" + String.format("%.0f", remaining);
             Label lblLeft = new Label(leftText);
-            lblLeft.setTextFill(Color.web(accentColor)); // Colore dinamico
+            lblLeft.setTextFill(Color.web(accentColor));
             lblLeft.setFont(Font.font("System", FontWeight.BOLD, 12));
 
             detailsRow.getChildren().addAll(lblSpesi, lblLeft);
 
-            // -- RIGA C: Progress Bar Sottile --
             ProgressBar pb = new ProgressBar(progress > 1.0 ? 1.0 : progress);
             pb.setMaxWidth(Double.MAX_VALUE);
-            pb.setPrefHeight(6); // Molto sottile
-            // Colora la barra interna e nasconde il bordo
+            pb.setPrefHeight(6);
             pb.setStyle("-fx-accent: " + accentColor + "; " +
                     "-fx-control-inner-background: rgba(0,0,0,0.05); " +
                     "-fx-text-box-border: transparent; -fx-background-insets: 0;");
 
-            // Assemblaggio Card
             card.getChildren().addAll(topRow, detailsRow, pb);
 
-            // Aggiunta alla Griglia
             gridBudgetList.add(card, column, row);
 
-            // Gestione colonne (Max 2 per riga)
             column++;
             if (column == 2) {
                 column = 0;
@@ -239,10 +216,6 @@ public class DashboardController {
             }
         }
     }
-
-    // =================================================================================
-    // ALTRE FUNZIONI (Chart, Forecast, Movimenti) - INVARIATE
-    // =================================================================================
 
     private void calculateForecast(float saldoAttuale, float entrate, float uscite, LocalDate now) {
         if (lblPrevisione == null) return;
@@ -322,29 +295,24 @@ public class DashboardController {
 
     private void initRangeSelector() {
         cmbRange.getItems().setAll(
-                "Ultimo mese",
-                "Ultimi 3 mesi",
                 "Ultimi 6 mesi",
                 "Ultimo anno"
         );
-        cmbRange.setValue("Ultimo mese");
+        cmbRange.setValue("Ultimi 6 mesi");
         cmbRange.setOnAction(event -> refreshDashboardData());
     }
 
     private int resolveMonthsBack() {
         String selected = cmbRange.getValue();
         if (selected == null) {
-            return 1;
+            return 6;
         }
         switch (selected) {
-            case "Ultimi 3 mesi":
-                return 3;
-            case "Ultimi 6 mesi":
-                return 6;
             case "Ultimo anno":
                 return 12;
+            case "Ultimi 6 mesi":
             default:
-                return 1;
+                return 6;
         }
     }
 
