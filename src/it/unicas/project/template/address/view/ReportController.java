@@ -221,15 +221,10 @@ public class ReportController {
     }
 
     private void loadForecastData() throws SQLException {
-        LocalDate referenceDate = getLatestExpenseDate();
-        if (referenceDate == null) {
-            displayInsufficientDataMessage();
-            return;
-        }
-
-        YearMonth referenceMonth = YearMonth.from(referenceDate);
-        int currentDay = referenceDate.getDayOfMonth();
-        int daysInMonth = referenceMonth.lengthOfMonth();
+        LocalDate today = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(today);
+        int currentDay = today.getDayOfMonth();
+        int daysInMonth = currentMonth.lengthOfMonth();
         int remainingDays = daysInMonth - currentDay;
 
         String query = "SELECT " +
@@ -245,8 +240,8 @@ public class ReportController {
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setInt(1, currentUserId);
-            pstmt.setInt(2, referenceDate.getYear());
-            pstmt.setInt(3, referenceDate.getMonthValue());
+            pstmt.setInt(2, today.getYear());
+            pstmt.setInt(3, today.getMonthValue());
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -259,44 +254,17 @@ public class ReportController {
                         return;
                     }
 
-                    double mediaSpeseGiornaliera = totaleUscite / currentDay;
-                    double mediaEntrateGiornaliera = totaleEntrate / currentDay;
+                    double mediaGiornaliera = totaleUscite / currentDay;
+                    double speseProiettate = totaleUscite + (mediaGiornaliera * remainingDays);
+                    double saldoStimato = totaleEntrate - speseProiettate;
 
-                    double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
-                    double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
-                    double saldoStimato = entrateProiettate - speseProiettate;
-
-                    updateForecastUI(currentDay, remainingDays, mediaSpeseGiornaliera, speseProiettate,
+                    updateForecastUI(currentDay, remainingDays, mediaGiornaliera, speseProiettate,
                             saldoStimato, totaleEntrate, totaleUscite);
                 } else {
                     displayInsufficientDataMessage();
                 }
             }
         }
-    }
-
-    private LocalDate getLatestExpenseDate() throws SQLException {
-        String query = "SELECT MAX(DATE(date)) as latestExpense " +
-                "FROM movements " +
-                "WHERE user_id = ? " +
-                "AND LOWER(type) IN ('uscita', 'expense')";
-
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setInt(1, currentUserId);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    Date latestDate = rs.getDate("latestExpense");
-                    if (latestDate != null) {
-                        return latestDate.toLocalDate();
-                    }
-                }
-            }
-        }
-
-        return null;
     }
 
     private void displayInsufficientDataMessage() {
