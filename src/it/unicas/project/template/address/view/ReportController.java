@@ -212,7 +212,7 @@ public class ReportController {
         // Force horizontal tick labels on X axis
         if (lineChartAndamento.getXAxis() instanceof CategoryAxis) {
             CategoryAxis xAxis = (CategoryAxis) lineChartAndamento.getXAxis();
-            xAxis.setTickLabelRotation(0);
+            xAxis.setTickLabelRotation(-45);
         }
 
         Platform.runLater(() -> {
