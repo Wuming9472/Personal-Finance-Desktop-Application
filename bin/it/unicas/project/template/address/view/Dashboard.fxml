@@ -209,28 +209,12 @@
                                             </children>
                                         </HBox>
 
-<<<<<<< Updated upstream
-                                        <SmoothAreaChart fx:id="chartAndamento" animated="true" createSymbols="true" legendVisible="true" minHeight="250.0" prefHeight="300.0" verticalGridLinesVisible="false" />
-
-                                        <Label text="Entrate e uscite per intervalli di 3 giorni (mese corrente)" textFill="#1e293b">
-                                            <font>
-                                                <Font name="System Bold" size="16.0" />
-                                            </font>
-                                        </Label>
-                                        <BarChart fx:id="chartThreeDay" legendVisible="true" prefHeight="260.0" verticalGridLinesVisible="false">
-                                            <xAxis>
-                                                <CategoryAxis side="BOTTOM" />
-                                            </xAxis>
-                                            <yAxis>
-                                                <NumberAxis side="LEFT" />
-=======
                                         <BarChart fx:id="barChart" legendVisible="true" minHeight="250.0" prefHeight="300.0" style="-fx-background-color: transparent;" verticalGridLinesVisible="false">
                                             <xAxis>
                                                 <CategoryAxis fx:id="barChartCategoryAxis" side="BOTTOM" />
                                             </xAxis>
                                             <yAxis>
                                                 <NumberAxis fx:id="barChartNumberAxis" side="LEFT" />
->>>>>>> Stashed changes
                                             </yAxis>
                                         </BarChart>
                                     </children>
