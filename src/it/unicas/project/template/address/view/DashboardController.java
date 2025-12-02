@@ -352,17 +352,12 @@ public class DashboardController {
             minX -= padding;
             maxX += padding;
 
-            // Trova la posizione Y dell'asse X (bottom del plotArea)
-            javafx.geometry.Bounds plotAreaBounds = plotContent.sceneToLocal(
-                plotArea.localToScene(plotArea.getBoundsInLocal())
-            );
-
-            // Crea Rectangle che parte dall'asse X fino in alto
+            // Crea Rectangle che copre l'intera altezza del grafico
             Rectangle hoverArea = new Rectangle();
             hoverArea.setX(minX);
-            hoverArea.setY(plotAreaBounds.getMinY());
+            hoverArea.setY(0);
             hoverArea.setWidth(maxX - minX);
-            hoverArea.setHeight(plotAreaBounds.getHeight());
+            hoverArea.setHeight(plotContent.getBoundsInLocal().getHeight());
 
             // Inizialmente trasparente
             hoverArea.setFill(Color.TRANSPARENT);
@@ -385,8 +380,8 @@ public class DashboardController {
      */
     private void setupHoverAreaEffect(Rectangle hoverArea, Node nodeEntrate, Node nodeUscite, String period) {
         hoverArea.setOnMouseEntered(e -> {
-            // Mostra area grigia leggermente più scura
-            hoverArea.setFill(Color.rgb(0, 0, 0, 0.08));
+            // Mostra area grigia
+            hoverArea.setFill(Color.rgb(0, 0, 0, 0.05));
 
             // Scala le barre
             ScaleTransition stEntrate = new ScaleTransition(Duration.millis(150), nodeEntrate);
