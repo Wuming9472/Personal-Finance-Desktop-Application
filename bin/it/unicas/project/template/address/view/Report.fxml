@@ -202,20 +202,25 @@
                                                             </children>
                                                         </HBox>
 
-                                                        <!-- Media Spese Giornaliera -->
+                                                        <!-- Media Movimenti Giornaliera -->
                                                         <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1">
                                                             <children>
                                                                 <Label text="💰" style="-fx-font-size: 20px;" />
                                                                 <VBox spacing="3.0">
                                                                     <children>
-                                                                        <Label text="Media spese giornaliera" textFill="#64748b">
+                                                                        <Label text="Media giornaliera" textFill="#64748b">
                                                                             <font>
                                                                                 <Font size="13.0" />
                                                                             </font>
                                                                         </Label>
-                                                                        <Label fx:id="lblMediaSpeseGiornaliera" text="€ 55.00" textFill="#1e293b">
+                                                                        <Label fx:id="lblMediaSpeseGiornaliera" text="Uscite: € 10.94" textFill="#ef4444">
                                                                             <font>
-                                                                                <Font name="System Bold" size="20.0" />
+                                                                                <Font name="System Bold" size="14.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                        <Label fx:id="lblMediaEntrateGiornaliera" text="Entrate: € 50.00" textFill="#10b981">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="14.0" />
                                                                             </font>
                                                                         </Label>
                                                                     </children>
@@ -223,20 +228,25 @@
                                                             </children>
                                                         </HBox>
 
-                                                        <!-- Spese Proiettate Totali -->
+                                                        <!-- Proiezioni Fine Mese -->
                                                         <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="2">
                                                             <children>
                                                                 <Label text="💸" style="-fx-font-size: 20px;" />
                                                                 <VBox spacing="3.0">
                                                                     <children>
-                                                                        <Label text="Spese Proiettate Totali" textFill="#64748b">
+                                                                        <Label text="Proiezioni fine mese" textFill="#64748b">
                                                                             <font>
                                                                                 <Font size="13.0" />
                                                                             </font>
                                                                         </Label>
-                                                                        <Label fx:id="lblSpeseProiettateTotali" text="€ 1650.00" textFill="#ef4444">
+                                                                        <Label fx:id="lblSpeseProiettateTotali" text="Uscite: € 339.16" textFill="#ef4444">
                                                                             <font>
-                                                                                <Font name="System Bold" size="20.0" />
+                                                                                <Font name="System Bold" size="14.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                        <Label fx:id="lblEntrateProiettateTotali" text="Entrate: € 1550.00" textFill="#10b981">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="14.0" />
                                                                             </font>
                                                                         </Label>
                                                                     </children>
@@ -251,7 +261,7 @@
                                                 <HBox alignment="CENTER_LEFT" spacing="8.0" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-padding: 12;">
                                                     <children>
                                                         <Label text="ℹ️" style="-fx-font-size: 14px;" />
-                                                        <Label fx:id="lblDisclaimer" text="Il calcolo si basa sulla media ponderata delle spese effettuate nel mese corrente. Non include spese ricorrenti future non ancora contabilizzate." textFill="#475569" wrapText="true">
+                                                        <Label fx:id="lblDisclaimer" text="Il calcolo si basa sulla data più recente dei movimenti registrati e proietta sia entrate che uscite fino a fine mese. Non include movimenti ricorrenti futuri non ancora contabilizzati." textFill="#475569" wrapText="true">
                                                             <font>
                                                                 <Font size="12.0" />
                                                             </font>
