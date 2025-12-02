@@ -225,7 +225,7 @@
                                             </children>
                                         </HBox>
 
-                                        <BarChart fx:id="barChartAndamento" animated="true" barGap="2.0" categoryGap="8.0" legendVisible="true" minHeight="250.0" prefHeight="300.0">
+                                        <BarChart fx:id="barChartAndamento" animated="true" barGap="8.0" categoryGap="20.0" legendVisible="true" minHeight="250.0" prefHeight="300.0">
                                             <xAxis>
                                                 <CategoryAxis side="BOTTOM" />
                                             </xAxis>
