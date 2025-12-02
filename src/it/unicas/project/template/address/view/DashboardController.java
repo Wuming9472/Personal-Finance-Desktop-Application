@@ -5,7 +5,9 @@ import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
-import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -55,12 +57,6 @@ public class DashboardController {
     @FXML
     private void initialize() {
         resetLabels("...");
-        if (barChartAndamento != null) {
-            FadeTransition fade = new FadeTransition(Duration.millis(1000), barChartAndamento);
-            fade.setFromValue(0);
-            fade.setToValue(1);
-            fade.play();
-        }
     }
 
     public void setMainApp(MainApp mainApp) {
@@ -116,6 +112,8 @@ public class DashboardController {
      */
     private void populateBarChart(int userId, int month, int year) throws SQLException {
         barChartAndamento.getData().clear();
+
+        Timeline timeline = new Timeline();
 
         XYChart.Series<String, Number> seriesEntrate = new XYChart.Series<>();
         seriesEntrate.setName("Entrate");
@@ -176,8 +174,8 @@ public class DashboardController {
             // Label per il periodo (es. "1-3", "4-6", ecc.)
             String label = giornoInizio + "-" + giornoFine;
 
-            XYChart.Data<String, Number> dataEntrate = new XYChart.Data<>(label, sommaEntrate);
-            XYChart.Data<String, Number> dataUscite = new XYChart.Data<>(label, sommaUscite);
+            XYChart.Data<String, Number> dataEntrate = new XYChart.Data<>(label, 0);
+            XYChart.Data<String, Number> dataUscite = new XYChart.Data<>(label, 0);
 
             // Tooltip
             final float entrateFinale = sommaEntrate;
@@ -185,33 +183,28 @@ public class DashboardController {
             dataEntrate.nodeProperty().addListener((obs, oldNode, newNode) -> {
                 if (newNode != null) {
                     Tooltip.install(newNode, new Tooltip(String.format("Entrate: € %.2f", entrateFinale)));
+                    newNode.setStyle("-fx-bar-fill: #10b981;");
                 }
             });
             dataUscite.nodeProperty().addListener((obs, oldNode, newNode) -> {
                 if (newNode != null) {
                     Tooltip.install(newNode, new Tooltip(String.format("Uscite: € %.2f", usciteFinale)));
+                    newNode.setStyle("-fx-bar-fill: #ef4444;");
                 }
             });
 
             seriesEntrate.getData().add(dataEntrate);
             seriesUscite.getData().add(dataUscite);
+
+            timeline.getKeyFrames().add(new KeyFrame(Duration.millis(800),
+                    new KeyValue(dataEntrate.YValueProperty(), sommaEntrate)));
+            timeline.getKeyFrames().add(new KeyFrame(Duration.millis(800),
+                    new KeyValue(dataUscite.YValueProperty(), sommaUscite)));
         }
 
         barChartAndamento.getData().addAll(seriesEntrate, seriesUscite);
 
-        // Applica colori verde/rosso
-        Platform.runLater(() -> {
-            for (XYChart.Data<String, Number> data : seriesEntrate.getData()) {
-                if (data.getNode() != null) {
-                    data.getNode().setStyle("-fx-bar-fill: #10b981;");
-                }
-            }
-            for (XYChart.Data<String, Number> data : seriesUscite.getData()) {
-                if (data.getNode() != null) {
-                    data.getNode().setStyle("-fx-bar-fill: #ef4444;");
-                }
-            }
-        });
+        Platform.runLater(timeline::play);
     }
 
     private Connection getConnection() throws SQLException {
@@ -225,7 +218,7 @@ public class DashboardController {
     private void setupChartAppearance() {
         if (barChartAndamento != null) {
             barChartAndamento.setLegendVisible(true);
-            barChartAndamento.setAnimated(true);
+            barChartAndamento.setAnimated(false);
             barChartAndamento.setBarGap(2);
             barChartAndamento.setCategoryGap(8);
         }
