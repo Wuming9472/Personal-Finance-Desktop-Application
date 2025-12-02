@@ -17,9 +17,6 @@
                     </padding>
                     <children>
 
-                        <!-- ========================================= -->
-                        <!-- 4 CARDS IN ALTO -->
-                        <!-- ========================================= -->
                         <GridPane hgap="20.0" vgap="20.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -31,160 +28,94 @@
                                 <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
-
-                                <!-- SALDO ATTUALE -->
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
                                     <children>
                                         <VBox layoutX="14.0" layoutY="14.0" spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                                             <children>
                                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                                                     <children>
-                                                        <Label text="Saldo Attuale" textFill="#64748b">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
-                                                        </Label>
+                                                        <Label text="Saldo Attuale" textFill="#64748b"><font><Font name="System Bold" size="13.0" /></font></Label>
                                                         <Region HBox.hgrow="ALWAYS" />
                                                         <StackPane>
                                                             <children>
-                                                                <Circle fill="#3b82f6" radius="16.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                                                                <Label text="€" textFill="WHITE">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="14.0" />
-                                                                    </font>
-                                                                </Label>
+                                                                <Circle fill="#3b82f6" radius="20.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                                                <Label text="€" textFill="WHITE"><font><Font name="System Bold" size="18.0" /></font></Label>
                                                             </children>
                                                         </StackPane>
                                                     </children>
                                                 </HBox>
-                                                <Label fx:id="lblSaldo" text="€ 2121.31" textFill="#1e293b">
-                                                    <font>
-                                                        <Font name="System Bold" size="28.0" />
-                                                    </font>
-                                                </Label>
+                                                <Label fx:id="lblSaldo" text="€ 2121.31" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font></Label>
                                             </children>
                                         </VBox>
                                     </children>
                                 </AnchorPane>
 
-                                <!-- ENTRATE (MESE) -->
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="1">
                                     <children>
                                         <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                                             <children>
                                                 <HBox alignment="CENTER_LEFT">
                                                     <children>
-                                                        <Label text="Entrate (Mese)" textFill="#64748b">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
-                                                        </Label>
+                                                        <Label text="Entrate (Mese)" textFill="#64748b"><font><Font name="System Bold" size="13.0" /></font></Label>
                                                         <Region HBox.hgrow="ALWAYS" />
                                                         <StackPane>
                                                             <children>
-                                                                <Circle fill="#10b981" radius="16.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                                                                <!-- Icona freccia su moderna -->
-                                                                <SVGPath
-                                                                        content="M8 3 L8 13 M5 6 L8 3 L11 6"
-                                                                        fill="TRANSPARENT"
-                                                                        stroke="WHITE"
-                                                                        strokeWidth="1.8"
-                                                                        strokeLineCap="ROUND"
-                                                                        strokeLineJoin="ROUND" />
+                                                                <Circle fill="#10b981" radius="19.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                                                <SVGPath content="M8 3 L8 13 M5 6 L8 3 L11 6" fill="TRANSPARENT" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.5" />
                                                             </children>
                                                         </StackPane>
                                                     </children>
                                                 </HBox>
-                                                <Label fx:id="lblEntrate" text="€ 2500.00" textFill="#1e293b">
-                                                    <font>
-                                                        <Font name="System Bold" size="28.0" />
-                                                    </font>
-                                                </Label>
+                                                <Label fx:id="lblEntrate" text="€ 2500.00" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font></Label>
                                             </children>
                                         </VBox>
                                     </children>
                                 </AnchorPane>
 
-                                <!-- USCITE (MESE) -->
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="2">
                                     <children>
                                         <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                                             <children>
                                                 <HBox alignment="CENTER_LEFT">
                                                     <children>
-                                                        <Label text="Uscite (Mese)" textFill="#64748b">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
-                                                        </Label>
+                                                        <Label text="Uscite (Mese)" textFill="#64748b"><font><Font name="System Bold" size="13.0" /></font></Label>
                                                         <Region HBox.hgrow="ALWAYS" />
                                                         <StackPane>
                                                             <children>
-                                                                <Circle fill="#ef4444" radius="16.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                                                                <!-- Icona freccia giù moderna -->
-                                                                <SVGPath
-                                                                        content="M8 3 L8 13 M5 10 L8 13 L11 10"
-                                                                        fill="TRANSPARENT"
-                                                                        stroke="WHITE"
-                                                                        strokeWidth="1.8"
-                                                                        strokeLineCap="ROUND"
-                                                                        strokeLineJoin="ROUND" />
+                                                                <Circle fill="#ef4444" radius="20.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                                                <SVGPath content="M8 3 L8 13 M5 10 L8 13 L11 10" fill="TRANSPARENT" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.5" />
                                                             </children>
                                                         </StackPane>
                                                     </children>
                                                 </HBox>
-                                                <Label fx:id="lblUscite" text="€ 1500.00" textFill="#1e293b">
-                                                    <font>
-                                                        <Font name="System Bold" size="28.0" />
-                                                    </font>
-                                                </Label>
+                                                <Label fx:id="lblUscite" text="€ 1500.00" textFill="#1e293b"><font><Font name="System Bold" size="28.0" /></font></Label>
                                             </children>
                                         </VBox>
                                     </children>
                                 </AnchorPane>
 
-                                <!-- PREVISIONE FINE MESE -->
                                 <AnchorPane fx:id="cardPrevisione" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="3">
                                     <children>
                                         <VBox spacing="5.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                                             <children>
                                                 <HBox alignment="CENTER_LEFT">
                                                     <children>
-                                                        <Label text="Previsione Fine Mese" textFill="#64748b">
-                                                            <font>
-                                                                <Font name="System Bold" size="13.0" />
-                                                            </font>
-                                                        </Label>
+                                                        <Label text="Previsione Fine Mese" textFill="#64748b"><font><Font name="System Bold" size="13.0" /></font></Label>
                                                         <Region HBox.hgrow="ALWAYS" />
                                                         <StackPane>
                                                             <children>
-                                                                <Circle fill="#8b5cf6" radius="16.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                                                                <!-- Icona grafico a linea (trend) -->
-                                                                <SVGPath
-                                                                        content="M3 11 L6 8 L9 10 L13 5"
-                                                                        fill="TRANSPARENT"
-                                                                        stroke="WHITE"
-                                                                        strokeWidth="1.8"
-                                                                        strokeLineCap="ROUND"
-                                                                        strokeLineJoin="ROUND" />
+                                                                <Circle fill="#8b5cf6" radius="20.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                                                <SVGPath content="M3 11 L6 8 L9 10 L13 5 M10 5 L13 5 L13 8" fill="TRANSPARENT" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.5" />
                                                             </children>
                                                         </StackPane>
                                                     </children>
                                                 </HBox>
                                                 <HBox alignment="BASELINE_LEFT" spacing="5.0">
                                                     <children>
-                                                        <Label fx:id="lblPrevisione" text="€ 473.36" textFill="#1e293b">
-                                                            <font>
-                                                                <Font name="System Bold" size="26.0" />
-                                                            </font>
-                                                        </Label>
+                                                        <Label fx:id="lblPrevisione" text="€ 473.36" textFill="#1e293b"><font><Font name="System Bold" size="26.0" /></font></Label>
                                                     </children>
                                                 </HBox>
-                                                <Label text="Stima basata su media" textFill="#10b981">
-                                                    <font>
-                                                        <Font name="System Bold" size="11.0" />
-                                                    </font>
-                                                </Label>
+                                                <Label text="Stima basata su media" textFill="#10b981"><font><Font name="System Bold" size="11.0" /></font></Label>
                                             </children>
                                         </VBox>
                                     </children>
@@ -192,9 +123,6 @@
                             </children>
                         </GridPane>
 
-                        <!-- ========================================= -->
-                        <!-- BARCHART ANDAMENTO -->
-                        <!-- ========================================= -->
                         <AnchorPane fx:id="chartContainer" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
                             <children>
                                 <VBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
@@ -202,30 +130,22 @@
                                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                                             <children>
                                                 <Label text="Andamento Mese Corrente" textFill="#1e293b">
-                                                    <font>
-                                                        <Font name="System Bold" size="18.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="18.0" /></font>
                                                 </Label>
                                                 <Region HBox.hgrow="ALWAYS" />
                                                 <Button onAction="#handlePreviousMonth" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 12 8 12; -fx-border-width: 0;" text="◀">
-                                                    <font>
-                                                        <Font name="System Bold" size="14.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="14.0" /></font>
                                                 </Button>
                                                 <Label fx:id="lblMeseCorrente" text="" textFill="#64748b">
-                                                    <font>
-                                                        <Font name="System Bold" size="14.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="14.0" /></font>
                                                 </Label>
                                                 <Button onAction="#handleNextMonth" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 12 8 12; -fx-border-width: 0;" text="▶">
-                                                    <font>
-                                                        <Font name="System Bold" size="14.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="14.0" /></font>
                                                 </Button>
                                             </children>
                                         </HBox>
 
-                                        <BarChart fx:id="barChartAndamento" animated="true" barGap="4.0" categoryGap="20.0" legendVisible="true" minHeight="250.0" prefHeight="300.0">
+                                        <BarChart fx:id="barChartAndamento" animated="true" barGap="8.0" categoryGap="20.0" legendVisible="true" minHeight="250.0" prefHeight="300.0">
                                             <xAxis>
                                                 <CategoryAxis side="BOTTOM" />
                                             </xAxis>
@@ -238,9 +158,6 @@
                             </children>
                         </AnchorPane>
 
-                        <!-- ========================================= -->
-                        <!-- BUDGET + ULTIMI MOVIMENTI -->
-                        <!-- ========================================= -->
                         <GridPane hgap="30.0" vgap="20.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="ALWAYS" percentWidth="60.0" />
@@ -258,9 +175,7 @@
                                                 <HBox alignment="CENTER_LEFT">
                                                     <children>
                                                         <Label text="I tuoi Budget" textFill="#1e293b">
-                                                            <font>
-                                                                <Font name="System Bold" size="18.0" />
-                                                            </font>
+                                                            <font><Font name="System Bold" size="18.0" /></font>
                                                         </Label>
                                                         <Region HBox.hgrow="ALWAYS" />
                                                     </children>
@@ -289,12 +204,14 @@
                                         <VBox spacing="15.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
                                             <children>
                                                 <Label text="Ultimi Movimenti" textFill="#1e293b">
-                                                    <font>
-                                                        <Font name="System Bold" size="18.0" />
-                                                    </font>
+                                                    <font><Font name="System Bold" size="18.0" /></font>
                                                 </Label>
 
-                                                <VBox fx:id="boxUltimiMovimenti" spacing="15.0" />
+                                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="300.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0;" vbarPolicy="AS_NEEDED">
+                                                    <content>
+                                                        <VBox fx:id="boxUltimiMovimenti" spacing="15.0" />
+                                                    </content>
+                                                </ScrollPane>
                                             </children>
                                         </VBox>
                                     </children>
