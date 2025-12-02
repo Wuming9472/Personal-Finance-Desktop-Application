@@ -1,0 +1,27 @@
+/* Custom styles for modern UI elements */
+
+/* Modern table header style */
+.modern-table > .column-header-background .column-header {
+    -fx-font-weight: 600;
+}
+
+.modern-table > .column-header-background .column-header .label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-padding: 0 0.5em 0 0.5em;
+}
+
+/* Modern DatePicker style to match other form fields */
+.date-picker > .text-field {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 8;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: #64748b;
+}
