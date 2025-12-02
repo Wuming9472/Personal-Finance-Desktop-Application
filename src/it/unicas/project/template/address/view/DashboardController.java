@@ -284,18 +284,28 @@ public class DashboardController {
 
         // Applica stili e tooltip dopo che i nodi sono stati creati
         Platform.runLater(() -> {
-            // Applica colori
+            // Crea liste dei nodi per l'hover unificato
+            java.util.List<Node> entrateNodes = new java.util.ArrayList<>();
+            java.util.List<Node> usciteNodes = new java.util.ArrayList<>();
+
+            // Applica colori e raccogli i nodi
             for (XYChart.Data<String, Number> data : seriesEntrate.getData()) {
                 if (data.getNode() != null) {
                     data.getNode().setStyle("-fx-bar-fill: #10b981;");
-                    setupBarHoverEffect(data.getNode(), data.getXValue());
+                    entrateNodes.add(data.getNode());
                 }
             }
             for (XYChart.Data<String, Number> data : seriesUscite.getData()) {
                 if (data.getNode() != null) {
                     data.getNode().setStyle("-fx-bar-fill: #ef4444;");
-                    setupBarHoverEffect(data.getNode(), data.getXValue());
+                    usciteNodes.add(data.getNode());
                 }
+            }
+
+            // Applica hover effect unificato
+            for (int i = 0; i < Math.min(entrateNodes.size(), usciteNodes.size()); i++) {
+                String period = seriesEntrate.getData().get(i).getXValue();
+                setupBarHoverEffect(entrateNodes.get(i), usciteNodes.get(i), period);
             }
 
             // Avvia animazione delle barre
@@ -304,32 +314,70 @@ public class DashboardController {
     }
 
     /**
-     * Configura l'effetto hover su una barra con tooltip custom
+     * Configura l'effetto hover unificato su una coppia di barre (entrate e uscite dello stesso periodo)
      */
-    private void setupBarHoverEffect(Node node, String period) {
-        node.setOnMouseEntered(e -> {
-            // Scala la barra
-            ScaleTransition st = new ScaleTransition(Duration.millis(150), node);
-            st.setToX(1.05);
-            st.setToY(1.02);
-            st.play();
+    private void setupBarHoverEffect(Node nodeEntrate, Node nodeUscite, String period) {
+        // Handler per entrambe le barre
+        Runnable onEnter = () -> {
+            // Applica overlay grigio semitrasparente su entrambe le barre
+            nodeEntrate.setStyle("-fx-bar-fill: #10b981; -fx-opacity: 0.7;");
+            nodeUscite.setStyle("-fx-bar-fill: #ef4444; -fx-opacity: 0.7;");
 
-            // Mostra tooltip custom
-            showCustomTooltip(period, e.getScreenX(), e.getScreenY());
-        });
+            // Scala entrambe le barre
+            ScaleTransition stEntrate = new ScaleTransition(Duration.millis(150), nodeEntrate);
+            stEntrate.setToX(1.05);
+            stEntrate.setToY(1.02);
+            stEntrate.play();
 
-        node.setOnMouseExited(e -> {
-            // Ripristina scala
-            ScaleTransition st = new ScaleTransition(Duration.millis(150), node);
-            st.setToX(1.0);
-            st.setToY(1.0);
-            st.play();
+            ScaleTransition stUscite = new ScaleTransition(Duration.millis(150), nodeUscite);
+            stUscite.setToX(1.05);
+            stUscite.setToY(1.02);
+            stUscite.play();
+        };
+
+        Runnable onExit = () -> {
+            // Ripristina opacità originale
+            nodeEntrate.setStyle("-fx-bar-fill: #10b981;");
+            nodeUscite.setStyle("-fx-bar-fill: #ef4444;");
+
+            // Ripristina scala originale
+            ScaleTransition stEntrate = new ScaleTransition(Duration.millis(150), nodeEntrate);
+            stEntrate.setToX(1.0);
+            stEntrate.setToY(1.0);
+            stEntrate.play();
+
+            ScaleTransition stUscite = new ScaleTransition(Duration.millis(150), nodeUscite);
+            stUscite.setToX(1.0);
+            stUscite.setToY(1.0);
+            stUscite.play();
 
             // Nascondi tooltip
             customTooltip.hide();
+        };
+
+        // Applica gli handler a entrambe le barre
+        nodeEntrate.setOnMouseEntered(e -> {
+            onEnter.run();
+            showCustomTooltip(period, e.getScreenX(), e.getScreenY());
         });
 
-        node.setOnMouseMoved(e -> {
+        nodeUscite.setOnMouseEntered(e -> {
+            onEnter.run();
+            showCustomTooltip(period, e.getScreenX(), e.getScreenY());
+        });
+
+        nodeEntrate.setOnMouseExited(e -> onExit.run());
+        nodeUscite.setOnMouseExited(e -> onExit.run());
+
+        // Aggiorna posizione tooltip durante il movimento
+        nodeEntrate.setOnMouseMoved(e -> {
+            if (customTooltip.isShowing()) {
+                customTooltip.setX(e.getScreenX() + 15);
+                customTooltip.setY(e.getScreenY() - 60);
+            }
+        });
+
+        nodeUscite.setOnMouseMoved(e -> {
             if (customTooltip.isShowing()) {
                 customTooltip.setX(e.getScreenX() + 15);
                 customTooltip.setY(e.getScreenY() - 60);
@@ -437,8 +485,8 @@ public class DashboardController {
         if (barChartAndamento != null) {
             barChartAndamento.setLegendVisible(true);
             barChartAndamento.setAnimated(false); // Usiamo animazione custom
-            barChartAndamento.setBarGap(2);
-            barChartAndamento.setCategoryGap(8);
+            barChartAndamento.setBarGap(8);
+            barChartAndamento.setCategoryGap(20);
         }
     }
 
