@@ -12,6 +12,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -223,16 +224,24 @@ public class ReportController {
         // Aspetta che il layout sia completo
         Platform.runLater(() -> {
             try {
-                // Crea un clip rettangolare
+                Region plotBackground = (Region) lineChartAndamento.lookup(".chart-plot-background");
+                if (plotBackground == null || plotBackground.getParent() == null) {
+                    return;
+                }
+
                 Rectangle clip = new Rectangle();
-                clip.setHeight(lineChartAndamento.getHeight() + 100);
-                clip.setWidth(0); // Inizia da 0
+                clip.widthProperty().set(0);
+                clip.heightProperty().bind(plotBackground.heightProperty());
+                clip.xProperty().bind(plotBackground.layoutXProperty());
+                clip.yProperty().bind(plotBackground.layoutYProperty());
 
-                lineChartAndamento.setClip(clip);
+                plotBackground.getParent().setClip(clip);
 
-                double targetWidth = lineChartAndamento.getWidth() + 100;
+                double targetWidth = plotBackground.getWidth();
+                if (targetWidth <= 0) {
+                    targetWidth = plotBackground.getBoundsInParent().getWidth();
+                }
 
-                // Animazione del clip
                 Timeline timeline = new Timeline();
 
                 KeyValue kv = new KeyValue(clip.widthProperty(), targetWidth, Interpolator.EASE_OUT);
@@ -240,10 +249,7 @@ public class ReportController {
 
                 timeline.getKeyFrames().add(kf);
 
-                timeline.setOnFinished(e -> {
-                    // Rimuovi il clip alla fine
-                    lineChartAndamento.setClip(null);
-                });
+                timeline.setOnFinished(e -> plotBackground.getParent().setClip(null));
 
                 // Piccolo delay per assicurarsi che il grafico sia renderizzato
                 PauseTransition pause = new PauseTransition(Duration.millis(100));
