@@ -1,16 +1,19 @@
 package it.unicas.project.template.address.view;
 
 import it.unicas.project.template.address.MainApp;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.Tooltip;
+import javafx.css.PseudoClass;
+import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 public class RootLayoutController {
 
@@ -34,12 +37,22 @@ public class RootLayoutController {
     private boolean sidebarExpanded = true;
     private Button currentSelectedButton = null;
 
+    private static final double EXPANDED_WIDTH = 240.0;
+    private static final double COLLAPSED_WIDTH = 86.0;
+    private static final PseudoClass COLLAPSED = PseudoClass.getPseudoClass("collapsed");
+
     @FXML
     private void initialize() {
         // Imposta Dashboard come selezionato di default
         if (btnDashboard != null) {
             setSelectedButton(btnDashboard);
         }
+
+        configureButton(btnDashboard, "Dashboard");
+        configureButton(btnMovimenti, "Movimenti");
+        configureButton(btnBudget, "Budget");
+        configureButton(btnReport, "Report");
+        configureButton(btnAccount, "Account");
     }
 
     public void setMainApp(MainApp mainApp) {
@@ -101,7 +114,8 @@ public class RootLayoutController {
      * Collassa la sidebar mostrando solo le icone
      */
     private void collapseSidebar() {
-        sidebar.setPrefWidth(70.0);
+        animateSidebarWidth(COLLAPSED_WIDTH);
+        sidebar.pseudoClassStateChanged(COLLAPSED, true);
 
         // Nascondi il testo dei pulsanti
         hideButtonText(btnDashboard);
@@ -120,7 +134,8 @@ public class RootLayoutController {
      * Espande la sidebar mostrando icone + testo
      */
     private void expandSidebar() {
-        sidebar.setPrefWidth(220.0);
+        animateSidebarWidth(EXPANDED_WIDTH);
+        sidebar.pseudoClassStateChanged(COLLAPSED, false);
 
         // Mostra il testo dei pulsanti
         showButtonText(btnDashboard, "Dashboard");
@@ -139,6 +154,7 @@ public class RootLayoutController {
         if (button != null) {
             button.setText("");
             button.setGraphicTextGap(0.0);
+            button.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         }
     }
 
@@ -146,26 +162,27 @@ public class RootLayoutController {
         if (button != null) {
             button.setText(text);
             button.setGraphicTextGap(15.0);
+            button.setContentDisplay(ContentDisplay.LEFT);
         }
     }
 
     private void centerButtons() {
-        setButtonAlignment(btnDashboard, javafx.geometry.Pos.CENTER);
-        setButtonAlignment(btnMovimenti, javafx.geometry.Pos.CENTER);
-        setButtonAlignment(btnBudget, javafx.geometry.Pos.CENTER);
-        setButtonAlignment(btnReport, javafx.geometry.Pos.CENTER);
-        setButtonAlignment(btnAccount, javafx.geometry.Pos.CENTER);
+        setButtonAlignment(btnDashboard, Pos.CENTER);
+        setButtonAlignment(btnMovimenti, Pos.CENTER);
+        setButtonAlignment(btnBudget, Pos.CENTER);
+        setButtonAlignment(btnReport, Pos.CENTER);
+        setButtonAlignment(btnAccount, Pos.CENTER);
     }
 
     private void leftAlignButtons() {
-        setButtonAlignment(btnDashboard, javafx.geometry.Pos.CENTER_LEFT);
-        setButtonAlignment(btnMovimenti, javafx.geometry.Pos.CENTER_LEFT);
-        setButtonAlignment(btnBudget, javafx.geometry.Pos.CENTER_LEFT);
-        setButtonAlignment(btnReport, javafx.geometry.Pos.CENTER_LEFT);
-        setButtonAlignment(btnAccount, javafx.geometry.Pos.CENTER_LEFT);
+        setButtonAlignment(btnDashboard, Pos.CENTER_LEFT);
+        setButtonAlignment(btnMovimenti, Pos.CENTER_LEFT);
+        setButtonAlignment(btnBudget, Pos.CENTER_LEFT);
+        setButtonAlignment(btnReport, Pos.CENTER_LEFT);
+        setButtonAlignment(btnAccount, Pos.CENTER_LEFT);
     }
 
-    private void setButtonAlignment(Button button, javafx.geometry.Pos alignment) {
+    private void setButtonAlignment(Button button, Pos alignment) {
         if (button != null) {
             button.setAlignment(alignment);
         }
@@ -182,7 +199,6 @@ public class RootLayoutController {
         for (Button btn : menuButtons) {
             if (btn != null) {
                 btn.getStyleClass().remove("selected");
-                setIconColor(btn, "#64748b"); // Colore grigio
             }
         }
 
@@ -191,49 +207,40 @@ public class RootLayoutController {
             if (!button.getStyleClass().contains("selected")) {
                 button.getStyleClass().add("selected");
             }
-            setIconColor(button, "#3b82f6"); // Colore blu
         }
 
         currentSelectedButton = button;
     }
 
-    /**
-     * Cambia il colore di tutte le shape nell'icona del pulsante
-     */
-    private void setIconColor(Button button, String color) {
-        if (button == null || button.getGraphic() == null) return;
+    private void animateSidebarWidth(double targetWidth) {
+        if (sidebar == null) {
+            return;
+        }
 
-        Color fillColor = Color.web(color);
-        setColorRecursive(button.getGraphic(), fillColor);
+        double startWidth = sidebar.getWidth() > 0 ? sidebar.getWidth() : sidebar.getPrefWidth();
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(sidebar.prefWidthProperty(), startWidth)),
+                new KeyFrame(Duration.millis(240), new KeyValue(sidebar.prefWidthProperty(), targetWidth))
+        );
+
+        timeline.setOnFinished(event -> {
+            sidebar.setPrefWidth(targetWidth);
+            sidebar.setMinWidth(targetWidth);
+            sidebar.setMaxWidth(targetWidth);
+        });
+
+        timeline.play();
     }
 
-    /**
-     * Applica il colore ricorsivamente a tutte le shape
-     */
-    private void setColorRecursive(Node node, Color color) {
-        if (node instanceof Rectangle) {
-            Rectangle rect = (Rectangle) node;
-            // Cambia fill solo se non è trasparente
-            if (rect.getFill() != null && !rect.getFill().equals(Color.TRANSPARENT)) {
-                rect.setFill(color);
-            }
-            // Cambia stroke solo se presente
-            if (rect.getStroke() != null && !rect.getStroke().equals(Color.TRANSPARENT)) {
-                rect.setStroke(color);
-            }
-        } else if (node instanceof Circle) {
-            Circle circle = (Circle) node;
-            if (circle.getFill() != null && !circle.getFill().equals(Color.TRANSPARENT)) {
-                circle.setFill(color);
-            }
-            if (circle.getStroke() != null && !circle.getStroke().equals(Color.TRANSPARENT)) {
-                circle.setStroke(color);
-            }
-        } else if (node instanceof Parent) {
-            for (Node child : ((Parent) node).getChildrenUnmodifiable()) {
-                setColorRecursive(child, color);
-            }
+    private void configureButton(Button button, String label) {
+        if (button == null) {
+            return;
         }
+
+        button.setText(label);
+        button.setContentDisplay(ContentDisplay.LEFT);
+        button.setGraphicTextGap(14.0);
+        button.setTooltip(new Tooltip(label));
     }
 
     // --- NAVIGATION HANDLERS ---
