@@ -343,8 +343,14 @@ public class DashboardController {
                 nodeUscite.localToScene(nodeUscite.getBoundsInLocal())
             );
 
+            // Calcola l'area che copre entrambe le colonne più metà del categoryGap ai lati
             double minX = Math.min(entrateInPlot.getMinX(), usciteInPlot.getMinX());
             double maxX = Math.max(entrateInPlot.getMaxX(), usciteInPlot.getMaxX());
+
+            // Aggiungi padding: metà del categoryGap (20/2 = 10) su ogni lato
+            double padding = 10;
+            minX -= padding;
+            maxX += padding;
 
             // Crea Rectangle che copre l'intera altezza del grafico
             Rectangle hoverArea = new Rectangle();
