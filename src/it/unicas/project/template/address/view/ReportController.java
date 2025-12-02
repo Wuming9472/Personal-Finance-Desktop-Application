@@ -7,11 +7,13 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -223,16 +225,31 @@ public class ReportController {
         // Aspetta che il layout sia completo
         Platform.runLater(() -> {
             try {
-                // Crea un clip rettangolare
+                Region plotBackground = (Region) lineChartAndamento.lookup(".chart-plot-background");
+                if (plotBackground == null || plotBackground.getParent() == null) {
+                    return;
+                }
+
+                Node plotArea = findPlotArea(plotBackground);
+                if (plotArea == null) {
+                    plotArea = plotBackground.getParent();
+                }
+
                 Rectangle clip = new Rectangle();
-                clip.setHeight(lineChartAndamento.getHeight() + 100);
-                clip.setWidth(0); // Inizia da 0
+                clip.widthProperty().set(0);
+                clip.heightProperty().bind(plotBackground.heightProperty());
 
-                lineChartAndamento.setClip(clip);
+                if (plotArea instanceof Region) {
+                    clip.heightProperty().bind(((Region) plotArea).heightProperty());
+                }
 
-                double targetWidth = lineChartAndamento.getWidth() + 100;
+                plotArea.setClip(clip);
 
-                // Animazione del clip
+                double targetWidth = plotBackground.getWidth();
+                if (targetWidth <= 0) {
+                    targetWidth = plotBackground.getBoundsInParent().getWidth();
+                }
+
                 Timeline timeline = new Timeline();
 
                 KeyValue kv = new KeyValue(clip.widthProperty(), targetWidth, Interpolator.EASE_OUT);
@@ -240,10 +257,8 @@ public class ReportController {
 
                 timeline.getKeyFrames().add(kf);
 
-                timeline.setOnFinished(e -> {
-                    // Rimuovi il clip alla fine
-                    lineChartAndamento.setClip(null);
-                });
+                Node finalPlotArea = plotArea;
+                timeline.setOnFinished(e -> finalPlotArea.setClip(null));
 
                 // Piccolo delay per assicurarsi che il grafico sia renderizzato
                 PauseTransition pause = new PauseTransition(Duration.millis(100));
@@ -255,6 +270,17 @@ public class ReportController {
                 lineChartAndamento.setClip(null);
             }
         });
+    }
+
+    private Node findPlotArea(Node startNode) {
+        Node current = startNode;
+        while (current != null) {
+            if (current.getStyleClass().contains("chart-plot-area")) {
+                return current;
+            }
+            current = current.getParent();
+        }
+        return null;
     }
 
     private void loadForecastData() throws SQLException {

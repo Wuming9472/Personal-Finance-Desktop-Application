@@ -12,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -219,6 +220,22 @@ public class DashboardController {
         }
 
         barChartAndamento.getData().addAll(seriesEntrate, seriesUscite);
+
+        // Fissa il range dell'asse Y per evitare scatti durante l'animazione
+        NumberAxis yAxis = (NumberAxis) barChartAndamento.getYAxis();
+        double maxValue = 0;
+        for (float v : entrateFinali) {
+            maxValue = Math.max(maxValue, v);
+        }
+        for (float v : usciteFinali) {
+            maxValue = Math.max(maxValue, v);
+        }
+
+        double padding = maxValue * 0.1;
+        yAxis.setAutoRanging(false);
+        yAxis.setLowerBound(0);
+        yAxis.setUpperBound(Math.max(10, maxValue + padding));
+        yAxis.setTickUnit(yAxis.getUpperBound() / 5);
 
         // Applica stili e tooltip dopo che i nodi sono stati creati
         Platform.runLater(() -> {
