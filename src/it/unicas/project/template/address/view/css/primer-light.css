@@ -5252,6 +5252,106 @@ Text {
     -fx-text-fill: #3b82f6;
 }
 
+/* --- Modern side navigation --- */
+.nav-drawer {
+    -fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: rgba(226,232,240,0.7);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(15,23,42,0.08), 18, 0.12, 0, 6);
+    -fx-spacing: 10;
+}
+
+.nav-drawer:collapsed {
+    -fx-padding: 12 10 12 10;
+}
+
+.nav-drawer__header {
+    -fx-padding: 8 10;
+}
+
+.nav-drawer__pulse {
+    -fx-background-color: rgba(59,130,246,0.12);
+    -fx-background-radius: 999;
+    -fx-padding: 6;
+}
+
+.nav-drawer__pulse > Circle {
+    -fx-fill: #3b82f6;
+}
+
+.ghost-icon {
+    -fx-background-color: transparent;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-cursor: hand;
+    -fx-padding: 8;
+}
+
+.ghost-icon:hover {
+    -fx-background-color: rgba(148,163,184,0.18);
+}
+
+.ghost-icon StackPane Rectangle {
+    -fx-fill: #0f172a;
+}
+
+.nav-drawer__section {
+    -fx-padding: 4 2 0 2;
+    -fx-spacing: 6;
+}
+
+.nav-pill {
+    -fx-background-color: transparent;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-padding: 0 14 0 16;
+    -fx-font-size: 16px;
+    -fx-text-fill: #1e293b;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.nav-pill .menu-icon Rectangle,
+.nav-pill .menu-icon Circle,
+.nav-pill .menu-icon Pane,
+.nav-pill .menu-icon HBox {
+    -fx-fill: #94a3b8;
+    -fx-stroke: transparent;
+}
+
+.nav-pill:hover {
+    -fx-background-color: rgba(59,130,246,0.1);
+}
+
+.nav-pill.selected {
+    -fx-background-color: rgba(59,130,246,0.16);
+    -fx-text-fill: #0f172a;
+    -fx-border-color: rgba(59,130,246,0.32);
+    -fx-border-width: 1.2;
+}
+
+.nav-pill.selected .label {
+    -fx-text-fill: #0f172a;
+    -fx-font-weight: bold;
+}
+
+.nav-pill.selected .menu-icon Rectangle,
+.nav-pill.selected .menu-icon Circle,
+.nav-pill.selected .menu-icon Pane,
+.nav-pill.selected .menu-icon HBox {
+    -fx-fill: linear-gradient(to bottom, #2563eb 0%, #22c55e 100%);
+}
+
+.nav-drawer:collapsed .nav-pill {
+    -fx-padding: 0 10;
+    -fx-alignment: CENTER;
+}
+
+.nav-drawer:collapsed .nav-pill .label {
+    -fx-opacity: 0;
+}
+
 
 
 
