@@ -41,7 +41,9 @@ public class ReportController {
     @FXML private Label lblStatusMessaggio;
     @FXML private Label lblGiorniRimanenti;
     @FXML private Label lblMediaSpeseGiornaliera;
+    @FXML private Label lblMediaEntrateGiornaliera;
     @FXML private Label lblSpeseProiettateTotali;
+    @FXML private Label lblEntrateProiettateTotali;
     @FXML private Label lblDisclaimer;
 
     @FXML
@@ -297,7 +299,9 @@ public class ReportController {
 
             lblGiorniRimanenti.setText("--");
             lblMediaSpeseGiornaliera.setText("--");
+            lblMediaEntrateGiornaliera.setText("--");
             lblSpeseProiettateTotali.setText("--");
+            lblEntrateProiettateTotali.setText("--");
         });
     }
 
@@ -311,10 +315,14 @@ public class ReportController {
             lblSaldoStimato.setText(String.format("€ %.2f", saldoStimato));
 
             lblGiorniRimanenti.setText(String.format("%d gg", remainingDays));
-            lblMediaSpeseGiornaliera.setText(String.format("€ %.2f/gg (Uscite) | € %.2f/gg (Entrate)",
-                    mediaSpeseGiornaliera, mediaEntrateGiornaliera));
-            lblSpeseProiettateTotali.setText(String.format("€ %.2f (Uscite) | € %.2f (Entrate)",
-                    speseProiettate, entrateProiettate));
+
+            // Media giornaliera - label separate per uscite ed entrate
+            lblMediaSpeseGiornaliera.setText(String.format("Uscite: € %.2f", mediaSpeseGiornaliera));
+            lblMediaEntrateGiornaliera.setText(String.format("Entrate: € %.2f", mediaEntrateGiornaliera));
+
+            // Proiezioni fine mese - label separate per uscite ed entrate
+            lblSpeseProiettateTotali.setText(String.format("Uscite: € %.2f", speseProiettate));
+            lblEntrateProiettateTotali.setText(String.format("Entrate: € %.2f", entrateProiettate));
 
             String statusIcon;
             String statusTitolo;
