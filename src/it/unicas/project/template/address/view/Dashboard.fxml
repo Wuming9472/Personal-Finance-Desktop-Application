@@ -194,7 +194,7 @@
                                             </children>
                                         </HBox>
 
-                                        <BarChart fx:id="barChartAndamento" animated="true" barGap="8.0" categoryGap="20.0" legendVisible="true" minHeight="250.0" prefHeight="300.0">
+                                        <BarChart fx:id="barChartAndamento" animated="true" barGap="8.0" categoryGap="20.0" legendVisible="true" minHeight="250.0" minWidth="600.0" prefHeight="300.0" prefWidth="800.0">
                                             <xAxis>
                                                 <CategoryAxis side="BOTTOM" />
                                             </xAxis>
@@ -209,11 +209,11 @@
 
                         <GridPane hgap="30.0" vgap="20.0">
                             <columnConstraints>
-                                <ColumnConstraints hgrow="ALWAYS" percentWidth="60.0" />
-                                <ColumnConstraints hgrow="ALWAYS" percentWidth="40.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="520.0" prefWidth="560.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="360.0" prefWidth="400.0" />
                             </columnConstraints>
                             <rowConstraints>
-                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="350.0" prefHeight="400.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
 

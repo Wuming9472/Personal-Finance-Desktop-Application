@@ -27,14 +27,14 @@
                         <!-- CONTENUTO PRINCIPALE - GridPane che si espande -->
                         <GridPane hgap="25.0" vgap="25.0" VBox.vgrow="ALWAYS">
                             <columnConstraints>
-                                <!-- Colonna sinistra: 50% -->
-                                <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
-                                <!-- Colonna destra: 50% -->
-                                <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+                                <!-- Colonna sinistra con larghezza minima -->
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="440.0" prefWidth="480.0" />
+                                <!-- Colonna destra con larghezza minima -->
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="440.0" prefWidth="480.0" />
                             </columnConstraints>
                             <rowConstraints>
                                 <!-- Unica riga che si espande -->
-                                <RowConstraints minHeight="500.0" vgrow="ALWAYS" />
+                                <RowConstraints minHeight="500.0" prefHeight="520.0" vgrow="ALWAYS" />
                             </rowConstraints>
                             <children>
 
@@ -48,7 +48,7 @@
                                                         <Font name="System Bold" size="18.0" />
                                                     </font>
                                                 </Label>
-                                                <PieChart fx:id="pieChart" legendSide="BOTTOM" minHeight="400.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" />
+                                                <PieChart fx:id="pieChart" legendSide="BOTTOM" minHeight="400.0" minWidth="420.0" prefHeight="420.0" prefWidth="460.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" />
                                             </children>
                                         </VBox>
                                     </children>
@@ -74,7 +74,7 @@
                                                                 <ComboBox fx:id="cmbRange" prefWidth="140.0" />
                                                             </children>
                                                         </HBox>
-                                                        <SmoothAreaChart fx:id="lineChartAndamento" animated="false" createSymbols="true" legendVisible="true" minHeight="400.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" />
+                                                        <SmoothAreaChart fx:id="lineChartAndamento" animated="false" createSymbols="true" legendVisible="true" minHeight="400.0" minWidth="420.0" prefHeight="420.0" prefWidth="480.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" />
                                                     </children>
                                                 </VBox>
                                             </children>
