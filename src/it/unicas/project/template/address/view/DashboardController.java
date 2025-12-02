@@ -335,21 +335,23 @@ public class DashboardController {
                 continue;
             }
 
-            // Calcola bounds delle due barre
-            double entrateX = nodeEntrate.getBoundsInParent().getMinX();
-            double usciteX = nodeUscite.getBoundsInParent().getMinX();
-            double minX = Math.min(entrateX, usciteX);
-            double maxX = Math.max(
-                nodeEntrate.getBoundsInParent().getMaxX(),
-                nodeUscite.getBoundsInParent().getMaxX()
+            // Converti i bounds delle barre in coordinate relative al plotContent
+            javafx.geometry.Bounds entrateInPlot = plotContent.sceneToLocal(
+                nodeEntrate.localToScene(nodeEntrate.getBoundsInLocal())
             );
+            javafx.geometry.Bounds usciteInPlot = plotContent.sceneToLocal(
+                nodeUscite.localToScene(nodeUscite.getBoundsInLocal())
+            );
+
+            double minX = Math.min(entrateInPlot.getMinX(), usciteInPlot.getMinX());
+            double maxX = Math.max(entrateInPlot.getMaxX(), usciteInPlot.getMaxX());
 
             // Crea Rectangle che copre l'intera altezza del grafico
             Rectangle hoverArea = new Rectangle();
             hoverArea.setX(minX);
             hoverArea.setY(0);
             hoverArea.setWidth(maxX - minX);
-            hoverArea.setHeight(plotArea.getBoundsInLocal().getHeight());
+            hoverArea.setHeight(plotContent.getBoundsInLocal().getHeight());
 
             // Inizialmente trasparente
             hoverArea.setFill(Color.TRANSPARENT);
