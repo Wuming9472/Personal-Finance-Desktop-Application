@@ -92,79 +92,152 @@
     </top>
 
     <left>
-        <VBox prefHeight="520.0" prefWidth="220.0" spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #e2e8f0; -fx-border-width: 0 1 0 0;" BorderPane.alignment="CENTER">
+        <VBox fx:id="sidebar" prefWidth="220.0" spacing="4.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #e2e8f0; -fx-border-width: 0 1 0 0;" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="10.0" />
+            </padding>
             <children>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowDashboard" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Dashboard" textAlignment="CENTER" textFill="#475569">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                    <padding>
-                        <Insets left="20.0" />
-                    </padding>
+                <Button fx:id="btnToggleSidebar" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleToggleSidebar" prefHeight="50.0" style="-fx-background-color: transparent; -fx-cursor: hand;">
+                    <graphic>
+                        <VBox alignment="CENTER" spacing="4.0">
+                            <children>
+                                <Rectangle arcHeight="2.0" arcWidth="2.0" fill="#64748b" height="2.0" width="18.0" />
+                                <Rectangle arcHeight="2.0" arcWidth="2.0" fill="#64748b" height="2.0" width="18.0" />
+                                <Rectangle arcHeight="2.0" arcWidth="2.0" fill="#64748b" height="2.0" width="18.0" />
+                            </children>
+                        </VBox>
+                    </graphic>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets bottom="10.0" top="10.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowMovements" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Movimenti" textAlignment="CENTER" textFill="#475569">
+                <Button fx:id="btnDashboard" alignment="CENTER_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowDashboard" prefHeight="50.0" styleClass="menu-button" text="Dashboard" textFill="#475569">
+                    <graphic>
+                        <HBox alignment="CENTER" spacing="3.0">
+                            <children>
+                                <VBox spacing="3.0">
+                                    <children>
+                                        <Rectangle arcHeight="2.0" arcWidth="2.0" fill="#64748b" height="8.0" width="8.0" />
+                                        <Rectangle arcHeight="2.0" arcWidth="2.0" fill="#64748b" height="8.0" width="8.0" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="3.0">
+                                    <children>
+                                        <Rectangle arcHeight="2.0" arcWidth="2.0" fill="#64748b" height="8.0" width="8.0" />
+                                        <Rectangle arcHeight="2.0" arcWidth="2.0" fill="#64748b" height="8.0" width="8.0" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </graphic>
                     <font>
-                        <Font size="20.0" />
+                        <Font size="16.0" />
                     </font>
                     <padding>
-                        <Insets left="20.0" />
+                        <Insets left="25.0" right="20.0" />
                     </padding>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets top="15.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowBudget" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Budget" textAlignment="CENTER" textFill="#475569">
+                <Button fx:id="btnMovimenti" alignment="CENTER_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowMovements" prefHeight="50.0" styleClass="menu-button" text="Movimenti" textFill="#475569">
+                    <graphic>
+                        <StackPane>
+                            <children>
+                                <Rectangle arcHeight="4.0" arcWidth="4.0" fill="TRANSPARENT" height="14.0" stroke="#64748b" strokeWidth="1.5" width="20.0" />
+                                <Rectangle fill="#64748b" height="2.0" width="20.0" translateY="-4.0" />
+                            </children>
+                        </StackPane>
+                    </graphic>
                     <font>
-                        <Font size="20.0" />
+                        <Font size="16.0" />
                     </font>
                     <padding>
-                        <Insets left="20.0" />
+                        <Insets left="25.0" right="20.0" />
                     </padding>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets top="8.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowReport" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Report" textAlignment="CENTER" textFill="#475569">
+                <Button fx:id="btnBudget" alignment="CENTER_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowBudget" prefHeight="50.0" styleClass="menu-button" text="Budget" textFill="#475569">
+                    <graphic>
+                        <StackPane>
+                            <children>
+                                <Circle fill="TRANSPARENT" radius="9.0" stroke="#64748b" strokeWidth="1.5" />
+                                <Rectangle fill="#64748b" height="9.0" width="9.0" StackPane.alignment="TOP_RIGHT">
+                                    <StackPane.margin>
+                                        <Insets right="1.0" top="1.0" />
+                                    </StackPane.margin>
+                                </Rectangle>
+                            </children>
+                        </StackPane>
+                    </graphic>
                     <font>
-                        <Font size="20.0" />
+                        <Font size="16.0" />
                     </font>
                     <padding>
-                        <Insets left="20.0" />
+                        <Insets left="25.0" right="20.0" />
                     </padding>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets top="8.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" layoutX="10.0" layoutY="216.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowAccount" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Account" textAlignment="CENTER" textFill="#475569">
+                <Button fx:id="btnReport" alignment="CENTER_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowReport" prefHeight="50.0" styleClass="menu-button" text="Report" textFill="#475569">
+                    <graphic>
+                        <HBox alignment="BOTTOM_LEFT" spacing="2.0">
+                            <children>
+                                <Rectangle arcHeight="2.0" arcWidth="2.0" fill="#64748b" height="8.0" width="4.0" />
+                                <Rectangle arcHeight="2.0" arcWidth="2.0" fill="#64748b" height="14.0" width="4.0" />
+                                <Rectangle arcHeight="2.0" arcWidth="2.0" fill="#64748b" height="18.0" width="4.0" />
+                            </children>
+                        </HBox>
+                    </graphic>
                     <font>
-                        <Font size="20.0" />
+                        <Font size="16.0" />
                     </font>
                     <padding>
-                        <Insets left="20.0" />
+                        <Insets left="25.0" right="20.0" />
                     </padding>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets top="8.0" />
                     </VBox.margin>
                 </Button>
+
+                <Button fx:id="btnAccount" alignment="CENTER_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowAccount" prefHeight="50.0" styleClass="menu-button" text="Account" textFill="#475569">
+                    <graphic>
+                        <VBox alignment="CENTER" spacing="2.0">
+                            <children>
+                                <Circle fill="TRANSPARENT" radius="5.0" stroke="#64748b" strokeWidth="1.5" />
+                                <Rectangle arcHeight="10.0" arcWidth="10.0" fill="TRANSPARENT" height="8.0" stroke="#64748b" strokeWidth="1.5" width="14.0" />
+                            </children>
+                        </VBox>
+                    </graphic>
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                    <padding>
+                        <Insets left="25.0" right="20.0" />
+                    </padding>
+                    <VBox.margin>
+                        <Insets top="8.0" />
+                    </VBox.margin>
+                </Button>
+
             </children>
-            <padding>
-                <Insets top="20.0" />
-            </padding>
         </VBox>
     </left>
-   <bottom>
+
+    <bottom>
         <StackPane style="-fx-background-color: #f8fafc;" BorderPane.alignment="CENTER">
             <BorderPane.margin>
                 <Insets />
-            </BorderPane.margin></StackPane>
-   </bottom>
+            </BorderPane.margin>
+        </StackPane>
+    </bottom>
 
 </BorderPane>
