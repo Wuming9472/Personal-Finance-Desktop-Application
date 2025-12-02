@@ -3,23 +3,33 @@ package it.unicas.project.template.address.view;
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.User;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 public class RootLayoutController {
 
     private MainApp mainApp;
+    private boolean isMenuOpen = true;
 
     @FXML private Label lblPageTitle;
     @FXML private Label lblInitials;
     @FXML private MenuButton btnUser;
+    @FXML private VBox leftMenu;
+    @FXML private Button btnHamburger;
 
     @FXML
     private void initialize() {
-        // Init
+        // Imposta l'icona iniziale del menu button
+        if (btnHamburger != null) {
+            btnHamburger.setText(isMenuOpen ? "✕" : "☰");
+        }
     }
 
     public void setMainApp(MainApp mainApp) {
@@ -104,5 +114,30 @@ public class RootLayoutController {
             mainApp.setLoggedUser(null);
             mainApp.showLogin();
         }
+    }
+
+    @FXML
+    private void handleToggleMenu() {
+        if (leftMenu == null) return;
+
+        TranslateTransition transition = new TranslateTransition(Duration.millis(300), leftMenu);
+        transition.setFromX(leftMenu.getTranslateX());
+
+        if (isMenuOpen) {
+            // Chiudi il menu: spostalo a sinistra
+            transition.setToX(-leftMenu.getPrefWidth());
+            if (btnHamburger != null) {
+                btnHamburger.setText("☰");
+            }
+        } else {
+            // Apri il menu: riportalo alla posizione originale
+            transition.setToX(0);
+            if (btnHamburger != null) {
+                btnHamburger.setText("✕");
+            }
+        }
+
+        transition.play();
+        isMenuOpen = !isMenuOpen;
     }
 }
