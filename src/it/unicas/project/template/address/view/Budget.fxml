@@ -21,7 +21,7 @@
                     <children>
                         <VBox>
                             <children>
-                                <Label text="Pianificazione Budget" textFill="#1e293b">
+                                <Label text="Budget" textFill="#1e293b">
                                     <font>
                                         <Font name="System Bold" size="28.0" />
                                     </font>
