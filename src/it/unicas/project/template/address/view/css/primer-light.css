@@ -5194,6 +5194,37 @@ Text {
 }
 
 /********************************************
+ * CUSTOM: DatePicker coerente con i campi testo
+ ********************************************/
+
+.date-picker {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 0 10 0 10;
+}
+
+.date-picker > .text-field {
+    -fx-background-color: transparent;
+    -fx-padding: 6 0 6 0;
+}
+
+.date-picker > .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 6 0 8;
+}
+
+.date-picker > .arrow-button > .arrow {
+    -fx-background-color: #94a3b8;
+    -fx-shape: "M3 5H21V19H3Z M7 3V7 M17 3V7 M3 9H21";
+    -fx-scale-shape: true;
+}
+
+.date-picker > .arrow-button:hover {
+    -fx-background-color: rgba(148,163,184,0.12);
+}
+
+/********************************************
  * CUSTOM: ComboBox categoria / metodo uguali
  ********************************************/
 
