@@ -2,22 +2,17 @@ package it.unicas.project.template.address.view;
 
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.ParallelTransition;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.shape.Path;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
@@ -56,7 +51,7 @@ public class ReportController {
     @FXML
     private void initialize() {
         if (lineChartAndamento != null) {
-            lineChartAndamento.setAnimated(false);
+            lineChartAndamento.setAnimated(false); // Usiamo animazione custom
             lineChartAndamento.setLegendVisible(true);
             lineChartAndamento.setCreateSymbols(true);
         }
@@ -85,13 +80,8 @@ public class ReportController {
         if (currentUserId <= 0) return;
 
         try {
-            // 1. PieChart - Distribuzione spese per categoria
             loadPieChartData();
-
-            // 2. LineChart - Andamento finanziario 6/12 mesi
             loadLineChartData();
-
-            // 3. Forecast section - Previsione Fine Mese
             loadForecastData();
 
         } catch (SQLException e) {
@@ -187,11 +177,9 @@ public class ReportController {
             Float entrata = point.getValue().getKey();
             Float uscita = point.getValue().getValue();
 
-            // Plot monthly values (not cumulative)
             XYChart.Data<String, Number> incomeData = new XYChart.Data<>(label, entrata);
             XYChart.Data<String, Number> expenseData = new XYChart.Data<>(label, uscita);
 
-            // Tooltip
             final float entrataCorrente = entrata;
             final float uscitaCorrente = uscita;
 
@@ -217,59 +205,54 @@ public class ReportController {
 
         lineChartAndamento.getData().addAll(serieEntrate, serieUscite);
 
-        // Force horizontal tick labels on X axis
         if (lineChartAndamento.getXAxis() instanceof CategoryAxis) {
             CategoryAxis xAxis = (CategoryAxis) lineChartAndamento.getXAxis();
             xAxis.setTickLabelRotation(-45);
         }
 
-        animateLineSeries();
+        // Avvia animazione da sinistra a destra
+        Platform.runLater(() -> animateChartReveal());
     }
 
-    private void animateLineSeries() {
+    /**
+     * Anima il grafico rivelando progressivamente da sinistra a destra
+     */
+    private void animateChartReveal() {
+        if (lineChartAndamento == null) return;
+
+        // Aspetta che il layout sia completo
         Platform.runLater(() -> {
-            if (lineChartAndamento == null || lineChartAndamento.getData().isEmpty()) {
-                return;
-            }
+            try {
+                // Crea un clip rettangolare
+                Rectangle clip = new Rectangle();
+                clip.setHeight(lineChartAndamento.getHeight() + 100);
+                clip.setWidth(0); // Inizia da 0
 
-            for (XYChart.Series<String, Number> series : lineChartAndamento.getData()) {
-                Node seriesNode = series.getNode();
-                if (seriesNode == null) continue;
+                lineChartAndamento.setClip(clip);
 
-                Node lineNode = seriesNode.lookup(".chart-series-area-line");
-                Node fillNode = seriesNode.lookup(".chart-series-area-fill");
+                double targetWidth = lineChartAndamento.getWidth() + 100;
 
-                Timeline lineTimeline = null;
-                if (lineNode instanceof Path path) {
-                    double dashLength = Math.max(path.getBoundsInLocal().getWidth(), path.getBoundsInLocal().getHeight());
-                    if (dashLength <= 0) {
-                        dashLength = 200;
-                    }
+                // Animazione del clip
+                Timeline timeline = new Timeline();
 
-                    path.getStrokeDashArray().setAll(dashLength, dashLength);
-                    path.setStrokeDashOffset(dashLength);
+                KeyValue kv = new KeyValue(clip.widthProperty(), targetWidth, Interpolator.EASE_OUT);
+                KeyFrame kf = new KeyFrame(Duration.millis(1200), kv);
 
-                    lineTimeline = new Timeline(
-                            new KeyFrame(Duration.ZERO, new KeyValue(path.strokeDashOffsetProperty(), dashLength, Interpolator.EASE_BOTH)),
-                            new KeyFrame(Duration.seconds(1.2), new KeyValue(path.strokeDashOffsetProperty(), 0, Interpolator.EASE_BOTH))
-                    );
-                }
+                timeline.getKeyFrames().add(kf);
 
-                Timeline fillTimeline = null;
-                if (fillNode != null) {
-                    fillNode.setOpacity(0);
-                    fillTimeline = new Timeline(
-                            new KeyFrame(Duration.ZERO, new KeyValue(fillNode.opacityProperty(), 0, Interpolator.EASE_BOTH)),
-                            new KeyFrame(Duration.seconds(1.2), new KeyValue(fillNode.opacityProperty(), 0.35, Interpolator.EASE_BOTH))
-                    );
-                }
+                timeline.setOnFinished(e -> {
+                    // Rimuovi il clip alla fine
+                    lineChartAndamento.setClip(null);
+                });
 
-                if (lineTimeline != null || fillTimeline != null) {
-                    ParallelTransition transition = new ParallelTransition();
-                    if (lineTimeline != null) transition.getChildren().add(lineTimeline);
-                    if (fillTimeline != null) transition.getChildren().add(fillTimeline);
-                    transition.play();
-                }
+                // Piccolo delay per assicurarsi che il grafico sia renderizzato
+                PauseTransition pause = new PauseTransition(Duration.millis(100));
+                pause.setOnFinished(e -> timeline.play());
+                pause.play();
+
+            } catch (Exception e) {
+                // Se qualcosa va storto, assicurati che il grafico sia visibile
+                lineChartAndamento.setClip(null);
             }
         });
     }
@@ -279,7 +262,6 @@ public class ReportController {
         YearMonth currentMonth = YearMonth.from(today);
         int daysInMonth = currentMonth.lengthOfMonth();
 
-        // Query modificata per includere la data più recente dei movimenti
         String query = "SELECT " +
                 "SUM(CASE WHEN LOWER(type) IN ('entrata') THEN amount ELSE 0 END) as totaleEntrate, " +
                 "SUM(CASE WHEN LOWER(type) IN ('uscita') THEN amount ELSE 0 END) as totaleUscite, " +
@@ -309,20 +291,16 @@ public class ReportController {
                         return;
                     }
 
-                    // Usa la data più recente dei movimenti invece della data corrente
                     LocalDate dataRecente = dataRecenteSQL.toLocalDate();
                     int currentDay = dataRecente.getDayOfMonth();
                     int remainingDays = daysInMonth - currentDay;
 
-                    // Calcola la media giornaliera per uscite E entrate
                     double mediaSpeseGiornaliera = totaleUscite / currentDay;
                     double mediaEntrateGiornaliera = totaleEntrate / currentDay;
 
-                    // Proietta sia le spese che le entrate
                     double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
                     double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
 
-                    // Saldo stimato con entrate proiettate
                     double saldoStimato = entrateProiettate - speseProiettate;
 
                     updateForecastUI(currentDay, remainingDays, mediaSpeseGiornaliera, speseProiettate,
@@ -368,11 +346,9 @@ public class ReportController {
 
             lblGiorniRimanenti.setText(String.format("%d gg", remainingDays));
 
-            // Media giornaliera - label separate per uscite ed entrate
             lblMediaSpeseGiornaliera.setText(String.format("Uscite: € %.2f", mediaSpeseGiornaliera));
             lblMediaEntrateGiornaliera.setText(String.format("Entrate: € %.2f", mediaEntrateGiornaliera));
 
-            // Proiezioni fine mese - label separate per uscite ed entrate
             lblSpeseProiettateTotali.setText(String.format("Uscite: € %.2f", speseProiettate));
             lblEntrateProiettateTotali.setText(String.format("Entrate: € %.2f", entrateProiettate));
 

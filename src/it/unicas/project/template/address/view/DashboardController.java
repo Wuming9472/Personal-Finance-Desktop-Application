@@ -5,28 +5,25 @@ import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Popup;
 import javafx.util.Duration;
 
 import java.sql.Connection;
@@ -36,8 +33,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class DashboardController {
 
@@ -54,9 +53,40 @@ public class DashboardController {
 
     private MainApp mainApp;
 
+    // Mappa per memorizzare i valori per ogni periodo (per il tooltip combinato)
+    private Map<String, float[]> periodData = new HashMap<>();
+
+    // Popup per tooltip custom
+    private Popup customTooltip;
+    private VBox tooltipContent;
+
     @FXML
     private void initialize() {
         resetLabels("...");
+        setupCustomTooltip();
+    }
+
+    private void setupCustomTooltip() {
+        customTooltip = new Popup();
+        customTooltip.setAutoHide(true);
+
+        tooltipContent = new VBox(8);
+        tooltipContent.setPadding(new Insets(12, 16, 12, 16));
+        tooltipContent.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-background-radius: 10;" +
+                        "-fx-border-color: #e2e8f0;" +
+                        "-fx-border-radius: 10;" +
+                        "-fx-border-width: 1;"
+        );
+
+        DropShadow shadow = new DropShadow();
+        shadow.setColor(Color.rgb(0, 0, 0, 0.15));
+        shadow.setRadius(15);
+        shadow.setOffsetY(4);
+        tooltipContent.setEffect(shadow);
+
+        customTooltip.getContent().add(tooltipContent);
     }
 
     public void setMainApp(MainApp mainApp) {
@@ -87,7 +117,6 @@ public class DashboardController {
 
             calculateForecast(saldo, totalEntrate, totalUscite, now);
 
-            // Aggiorna label mese corrente
             if (lblMeseCorrente != null) {
                 String nomeMese = now.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
                 lblMeseCorrente.setText(nomeMese.substring(0, 1).toUpperCase() + nomeMese.substring(1) + " " + now.getYear());
@@ -107,13 +136,14 @@ public class DashboardController {
     }
 
     /**
-     * Popola il BarChart con dati aggregati per periodi di 3 giorni.
-     * Un mese viene diviso in 10 periodi (1-3, 4-6, 7-9, ..., 28-30/31).
+     * Popola il BarChart con animazione delle barre che salgono dal basso
      */
     private void populateBarChart(int userId, int month, int year) throws SQLException {
         barChartAndamento.getData().clear();
+        periodData.clear();
 
-        Timeline timeline = new Timeline();
+        // Disabilita animazione built-in per usare la nostra custom
+        barChartAndamento.setAnimated(false);
 
         XYChart.Series<String, Number> seriesEntrate = new XYChart.Series<>();
         seriesEntrate.setName("Entrate");
@@ -124,7 +154,6 @@ public class DashboardController {
         LocalDate firstDay = LocalDate.of(year, month, 1);
         int daysInMonth = firstDay.lengthOfMonth();
 
-        // Query per ottenere somme per ogni giorno
         String query = "SELECT DAY(date) as giorno, " +
                 "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as entrate, " +
                 "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as uscite " +
@@ -133,8 +162,7 @@ public class DashboardController {
                 "GROUP BY DAY(date) " +
                 "ORDER BY giorno";
 
-        // Array per memorizzare i valori giornalieri
-        float[] entrateGiornaliere = new float[32]; // indice 1-31
+        float[] entrateGiornaliere = new float[32];
         float[] usciteGiornaliere = new float[32];
 
         try (Connection conn = getConnection();
@@ -153,12 +181,15 @@ public class DashboardController {
             }
         }
 
-        // Aggrega per periodi di 3 giorni (10 periodi totali)
+        // Array per memorizzare i valori finali per l'animazione
+        float[] entrateFinali = new float[10];
+        float[] usciteFinali = new float[10];
+        String[] labels = new String[10];
+
         for (int periodo = 0; periodo < 10; periodo++) {
             int giornoInizio = periodo * 3 + 1;
             int giornoFine = Math.min(giornoInizio + 2, daysInMonth);
 
-            // Se è l'ultimo periodo, includi tutti i giorni rimanenti
             if (periodo == 9) {
                 giornoFine = daysInMonth;
             }
@@ -171,40 +202,165 @@ public class DashboardController {
                 sommaUscite += usciteGiornaliere[g];
             }
 
-            // Label per il periodo (es. "1-3", "4-6", ecc.)
             String label = giornoInizio + "-" + giornoFine;
+            labels[periodo] = label;
+            entrateFinali[periodo] = sommaEntrate;
+            usciteFinali[periodo] = sommaUscite;
 
+            // Salva i dati per il tooltip
+            periodData.put(label, new float[]{sommaEntrate, sommaUscite});
+
+            // Inizializza a 0 per l'animazione
             XYChart.Data<String, Number> dataEntrate = new XYChart.Data<>(label, 0);
             XYChart.Data<String, Number> dataUscite = new XYChart.Data<>(label, 0);
 
-            // Tooltip
-            final float entrateFinale = sommaEntrate;
-            final float usciteFinale = sommaUscite;
-            dataEntrate.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                if (newNode != null) {
-                    Tooltip.install(newNode, new Tooltip(String.format("Entrate: € %.2f", entrateFinale)));
-                    newNode.setStyle("-fx-bar-fill: #10b981;");
-                }
-            });
-            dataUscite.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                if (newNode != null) {
-                    Tooltip.install(newNode, new Tooltip(String.format("Uscite: € %.2f", usciteFinale)));
-                    newNode.setStyle("-fx-bar-fill: #ef4444;");
-                }
-            });
-
             seriesEntrate.getData().add(dataEntrate);
             seriesUscite.getData().add(dataUscite);
-
-            timeline.getKeyFrames().add(new KeyFrame(Duration.millis(800),
-                    new KeyValue(dataEntrate.YValueProperty(), sommaEntrate)));
-            timeline.getKeyFrames().add(new KeyFrame(Duration.millis(800),
-                    new KeyValue(dataUscite.YValueProperty(), sommaUscite)));
         }
 
         barChartAndamento.getData().addAll(seriesEntrate, seriesUscite);
 
-        Platform.runLater(timeline::play);
+        // Applica stili e tooltip dopo che i nodi sono stati creati
+        Platform.runLater(() -> {
+            // Applica colori
+            for (XYChart.Data<String, Number> data : seriesEntrate.getData()) {
+                if (data.getNode() != null) {
+                    data.getNode().setStyle("-fx-bar-fill: #10b981;");
+                    setupBarHoverEffect(data.getNode(), data.getXValue());
+                }
+            }
+            for (XYChart.Data<String, Number> data : seriesUscite.getData()) {
+                if (data.getNode() != null) {
+                    data.getNode().setStyle("-fx-bar-fill: #ef4444;");
+                    setupBarHoverEffect(data.getNode(), data.getXValue());
+                }
+            }
+
+            // Avvia animazione delle barre
+            animateBars(seriesEntrate, seriesUscite, entrateFinali, usciteFinali);
+        });
+    }
+
+    /**
+     * Configura l'effetto hover su una barra con tooltip custom
+     */
+    private void setupBarHoverEffect(Node node, String period) {
+        node.setOnMouseEntered(e -> {
+            // Scala la barra
+            ScaleTransition st = new ScaleTransition(Duration.millis(150), node);
+            st.setToX(1.05);
+            st.setToY(1.02);
+            st.play();
+
+            // Mostra tooltip custom
+            showCustomTooltip(period, e.getScreenX(), e.getScreenY());
+        });
+
+        node.setOnMouseExited(e -> {
+            // Ripristina scala
+            ScaleTransition st = new ScaleTransition(Duration.millis(150), node);
+            st.setToX(1.0);
+            st.setToY(1.0);
+            st.play();
+
+            // Nascondi tooltip
+            customTooltip.hide();
+        });
+
+        node.setOnMouseMoved(e -> {
+            if (customTooltip.isShowing()) {
+                customTooltip.setX(e.getScreenX() + 15);
+                customTooltip.setY(e.getScreenY() - 60);
+            }
+        });
+    }
+
+    /**
+     * Mostra il tooltip custom con entrate e uscite
+     */
+    private void showCustomTooltip(String period, double x, double y) {
+        float[] values = periodData.get(period);
+        if (values == null) return;
+
+        tooltipContent.getChildren().clear();
+
+        // Titolo periodo
+        Label titleLabel = new Label("Periodo: " + period);
+        titleLabel.setFont(Font.font("System", FontWeight.BOLD, 13));
+        titleLabel.setTextFill(Color.web("#1e293b"));
+
+        // Riga Entrate
+        HBox entrateRow = new HBox(8);
+        entrateRow.setAlignment(Pos.CENTER_LEFT);
+        Circle greenDot = new Circle(5, Color.web("#10b981"));
+        Label entrateLabel = new Label(String.format("Entrate: € %.2f", values[0]));
+        entrateLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+        entrateLabel.setTextFill(Color.web("#10b981"));
+        entrateRow.getChildren().addAll(greenDot, entrateLabel);
+
+        // Riga Uscite
+        HBox usciteRow = new HBox(8);
+        usciteRow.setAlignment(Pos.CENTER_LEFT);
+        Circle redDot = new Circle(5, Color.web("#ef4444"));
+        Label usciteLabel = new Label(String.format("Uscite: € %.2f", values[1]));
+        usciteLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+        usciteLabel.setTextFill(Color.web("#ef4444"));
+        usciteRow.getChildren().addAll(redDot, usciteLabel);
+
+        // Separatore
+        Region separator = new Region();
+        separator.setPrefHeight(1);
+        separator.setStyle("-fx-background-color: #e2e8f0;");
+
+        // Saldo periodo
+        float saldo = values[0] - values[1];
+        Label saldoLabel = new Label(String.format("Saldo: € %.2f", saldo));
+        saldoLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+        saldoLabel.setTextFill(saldo >= 0 ? Color.web("#10b981") : Color.web("#ef4444"));
+
+        tooltipContent.getChildren().addAll(titleLabel, entrateRow, usciteRow, separator, saldoLabel);
+
+        customTooltip.setX(x + 15);
+        customTooltip.setY(y - 80);
+
+        if (barChartAndamento.getScene() != null && barChartAndamento.getScene().getWindow() != null) {
+            customTooltip.show(barChartAndamento.getScene().getWindow());
+        }
+    }
+
+    /**
+     * Anima le barre dal basso verso l'alto
+     */
+    private void animateBars(XYChart.Series<String, Number> seriesEntrate,
+                             XYChart.Series<String, Number> seriesUscite,
+                             float[] entrateFinali, float[] usciteFinali) {
+
+        Duration animDuration = Duration.millis(800);
+
+        Timeline timeline = new Timeline();
+
+        for (int i = 0; i < seriesEntrate.getData().size(); i++) {
+            final int index = i;
+            final XYChart.Data<String, Number> dataEntrata = seriesEntrate.getData().get(i);
+            final XYChart.Data<String, Number> dataUscita = seriesUscite.getData().get(i);
+            final float targetEntrata = entrateFinali[i];
+            final float targetUscita = usciteFinali[i];
+
+            // Delay crescente per effetto onda
+            Duration delay = Duration.millis(i * 50);
+
+            // KeyFrame per entrate
+            KeyValue kvEntrata = new KeyValue(dataEntrata.YValueProperty(), targetEntrata, Interpolator.EASE_OUT);
+            KeyFrame kfEntrata = new KeyFrame(animDuration.add(delay), kvEntrata);
+
+            // KeyFrame per uscite
+            KeyValue kvUscita = new KeyValue(dataUscita.YValueProperty(), targetUscita, Interpolator.EASE_OUT);
+            KeyFrame kfUscita = new KeyFrame(animDuration.add(delay), kvUscita);
+
+            timeline.getKeyFrames().addAll(kfEntrata, kfUscita);
+        }
+
+        timeline.play();
     }
 
     private Connection getConnection() throws SQLException {
@@ -218,7 +374,7 @@ public class DashboardController {
     private void setupChartAppearance() {
         if (barChartAndamento != null) {
             barChartAndamento.setLegendVisible(true);
-            barChartAndamento.setAnimated(false);
+            barChartAndamento.setAnimated(false); // Usiamo animazione custom
             barChartAndamento.setBarGap(2);
             barChartAndamento.setCategoryGap(8);
         }
@@ -337,7 +493,6 @@ public class DashboardController {
             int userId = mainApp.getLoggedUser().getUser_id();
             int daysInMonth = now.lengthOfMonth();
 
-            // Query modificata per includere la data più recente dei movimenti
             String query = "SELECT " +
                     "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as totaleEntrate, " +
                     "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as totaleUscite, " +
@@ -362,26 +517,21 @@ public class DashboardController {
                         int giorniConMovimenti = rs.getInt("giorniConMovimenti");
                         java.sql.Date dataRecenteSQL = rs.getDate("dataRecente");
 
-                        // Se non ci sono dati sufficienti
                         if (giorniConMovimenti < 3 || dataRecenteSQL == null) {
                             lblPrevisione.setText("N/A");
                             return;
                         }
 
-                        // Usa la data più recente dei movimenti invece della data corrente
                         LocalDate dataRecente = dataRecenteSQL.toLocalDate();
                         int currentDay = dataRecente.getDayOfMonth();
                         int remainingDays = daysInMonth - currentDay;
 
-                        // Calcola la media giornaliera per uscite E entrate
                         double mediaSpeseGiornaliera = totaleUscite / currentDay;
                         double mediaEntrateGiornaliera = totaleEntrate / currentDay;
 
-                        // Proietta sia le spese che le entrate
                         double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
                         double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
 
-                        // Saldo stimato con entrate proiettate
                         double saldoStimato = entrateProiettate - speseProiettate;
 
                         lblPrevisione.setText(String.format("€ %.2f", saldoStimato));
