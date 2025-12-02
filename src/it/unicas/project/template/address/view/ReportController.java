@@ -3,14 +3,25 @@ package it.unicas.project.template.address.view;
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.application.Platform;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.*;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
@@ -49,7 +60,7 @@ public class ReportController {
     @FXML
     private void initialize() {
         if (lineChartAndamento != null) {
-            lineChartAndamento.setAnimated(true);
+            lineChartAndamento.setAnimated(false);
             lineChartAndamento.setLegendVisible(true);
             lineChartAndamento.setCreateSymbols(true);
         }
@@ -217,9 +228,122 @@ public class ReportController {
             xAxis.setTickLabelRotation(-45);
         }
 
-        Platform.runLater(() -> {
-            lineChartAndamento.setAnimated(true);
-        });
+        Platform.runLater(this::animateLineChartSeries);
+    }
+
+    private void animateLineChartSeries() {
+        if (lineChartAndamento == null) {
+            return;
+        }
+
+        Node plotBackground = lineChartAndamento.lookup(".chart-plot-background");
+        double plotWidth = plotBackground != null ? plotBackground.getLayoutBounds().getWidth() : lineChartAndamento.getWidth();
+
+        for (XYChart.Series<String, Number> series : lineChartAndamento.getData()) {
+            Node seriesNode = series.getNode();
+            if (seriesNode == null) {
+                continue;
+            }
+
+            Path seriesLine = (Path) seriesNode.lookup(".chart-series-area-line");
+            Path seriesFill = (Path) seriesNode.lookup(".chart-series-area-fill");
+
+            if (seriesLine != null) {
+                animatePathDrawing(seriesLine);
+            }
+            if (seriesFill != null) {
+                revealAreaFill(seriesFill, plotWidth);
+            }
+        }
+    }
+
+    private void animatePathDrawing(Path path) {
+        double totalLength = computePathLength(path);
+        if (totalLength == 0) {
+            return;
+        }
+
+        path.getStrokeDashArray().setAll(totalLength, totalLength);
+        path.setStrokeDashOffset(totalLength);
+
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(path.strokeDashOffsetProperty(), totalLength, Interpolator.EASE_BOTH)),
+                new KeyFrame(Duration.seconds(1.5), new KeyValue(path.strokeDashOffsetProperty(), 0, Interpolator.EASE_BOTH))
+        );
+        timeline.play();
+    }
+
+    private void revealAreaFill(Path fill, double plotWidth) {
+        Rectangle clip = new Rectangle();
+        clip.setWidth(0);
+        clip.setHeight(Math.max(fill.getBoundsInParent().getHeight(), lineChartAndamento.getHeight()));
+        clip.setTranslateX(fill.getBoundsInParent().getMinX());
+        clip.setTranslateY(fill.getBoundsInParent().getMinY());
+        fill.setClip(clip);
+
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(clip.widthProperty(), 0, Interpolator.EASE_BOTH)),
+                new KeyFrame(Duration.seconds(1.5), new KeyValue(clip.widthProperty(), Math.max(plotWidth, fill.getBoundsInParent().getWidth()), Interpolator.EASE_BOTH))
+        );
+        timeline.setOnFinished(event -> fill.setClip(null));
+        timeline.play();
+    }
+
+    private double computePathLength(Path path) {
+        double length = 0;
+        double lastX = 0;
+        double lastY = 0;
+        boolean hasStart = false;
+
+        for (PathElement element : path.getElements()) {
+            if (element instanceof MoveTo moveTo) {
+                lastX = moveTo.getX();
+                lastY = moveTo.getY();
+                hasStart = true;
+            } else if (element instanceof LineTo lineTo && hasStart) {
+                length += distance(lastX, lastY, lineTo.getX(), lineTo.getY());
+                lastX = lineTo.getX();
+                lastY = lineTo.getY();
+            } else if (element instanceof CubicCurveTo curve && hasStart) {
+                length += computeCubicCurveLength(lastX, lastY, curve);
+                lastX = curve.getX();
+                lastY = curve.getY();
+            }
+        }
+
+        return length;
+    }
+
+    private double computeCubicCurveLength(double startX, double startY, CubicCurveTo curve) {
+        double length = 0;
+        double previousX = startX;
+        double previousY = startY;
+
+        int steps = 20;
+        for (int i = 1; i <= steps; i++) {
+            double t = i / (double) steps;
+            double x = cubicBezier(startX, curve.getControlX1(), curve.getControlX2(), curve.getX(), t);
+            double y = cubicBezier(startY, curve.getControlY1(), curve.getControlY2(), curve.getY(), t);
+            length += distance(previousX, previousY, x, y);
+            previousX = x;
+            previousY = y;
+        }
+
+        return length;
+    }
+
+    private double cubicBezier(double p0, double p1, double p2, double p3, double t) {
+        double u = 1 - t;
+        return (u * u * u * p0)
+                + (3 * u * u * t * p1)
+                + (3 * u * t * t * p2)
+                + (t * t * t * p3);
+    }
+
+    private double distance(double x1, double y1, double x2, double y2) {
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        return Math.hypot(dx, dy);
     }
 
     private void loadForecastData() throws SQLException {

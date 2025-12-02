@@ -6,15 +6,21 @@ import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Bounds;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -26,6 +32,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
+import javafx.scene.transform.Scale;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -211,7 +218,30 @@ public class DashboardController {
                     data.getNode().setStyle("-fx-bar-fill: #ef4444;");
                 }
             }
+            animateBars(seriesEntrate, seriesUscite);
         });
+    }
+
+    @SafeVarargs
+    private void animateBars(XYChart.Series<String, Number>... seriesList) {
+        for (XYChart.Series<String, Number> series : seriesList) {
+            for (XYChart.Data<String, Number> data : series.getData()) {
+                Node node = data.getNode();
+                if (node == null) {
+                    continue;
+                }
+
+                Bounds bounds = node.getBoundsInLocal();
+                Scale scale = new Scale(1, 0, bounds.getWidth() / 2, bounds.getHeight());
+                node.getTransforms().add(scale);
+
+                Timeline timeline = new Timeline(
+                        new KeyFrame(Duration.ZERO, new KeyValue(scale.yProperty(), 0, Interpolator.EASE_OUT)),
+                        new KeyFrame(Duration.seconds(1), new KeyValue(scale.yProperty(), 1, Interpolator.EASE_OUT))
+                );
+                timeline.play();
+            }
+        }
     }
 
     private Connection getConnection() throws SQLException {
@@ -225,7 +255,7 @@ public class DashboardController {
     private void setupChartAppearance() {
         if (barChartAndamento != null) {
             barChartAndamento.setLegendVisible(true);
-            barChartAndamento.setAnimated(true);
+            barChartAndamento.setAnimated(false);
             barChartAndamento.setBarGap(2);
             barChartAndamento.setCategoryGap(8);
         }
