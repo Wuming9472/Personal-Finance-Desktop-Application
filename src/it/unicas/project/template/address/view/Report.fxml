@@ -74,7 +74,7 @@
                                                                 <ComboBox fx:id="cmbRange" prefWidth="140.0" />
                                                             </children>
                                                         </HBox>
-                                                        <SmoothAreaChart fx:id="lineChartAndamento" animated="true" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" minHeight="400.0" />
+                                                        <SmoothAreaChart fx:id="lineChartAndamento" animated="false" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" minHeight="400.0" />
                                                     </children>
                                                 </VBox>
                                             </children>

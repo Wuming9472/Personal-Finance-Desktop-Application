@@ -2,15 +2,22 @@ package it.unicas.project.template.address.view;
 
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.ParallelTransition;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Path;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
@@ -49,7 +56,7 @@ public class ReportController {
     @FXML
     private void initialize() {
         if (lineChartAndamento != null) {
-            lineChartAndamento.setAnimated(true);
+            lineChartAndamento.setAnimated(false);
             lineChartAndamento.setLegendVisible(true);
             lineChartAndamento.setCreateSymbols(true);
         }
@@ -172,7 +179,6 @@ public class ReportController {
         serieUscite.setName("Uscite");
 
         if (trendData.isEmpty()) {
-            lineChartAndamento.setAnimated(true);
             return;
         }
 
@@ -217,8 +223,54 @@ public class ReportController {
             xAxis.setTickLabelRotation(-45);
         }
 
+        animateLineSeries();
+    }
+
+    private void animateLineSeries() {
         Platform.runLater(() -> {
-            lineChartAndamento.setAnimated(true);
+            if (lineChartAndamento == null || lineChartAndamento.getData().isEmpty()) {
+                return;
+            }
+
+            for (XYChart.Series<String, Number> series : lineChartAndamento.getData()) {
+                Node seriesNode = series.getNode();
+                if (seriesNode == null) continue;
+
+                Node lineNode = seriesNode.lookup(".chart-series-area-line");
+                Node fillNode = seriesNode.lookup(".chart-series-area-fill");
+
+                Timeline lineTimeline = null;
+                if (lineNode instanceof Path path) {
+                    double dashLength = Math.max(path.getBoundsInLocal().getWidth(), path.getBoundsInLocal().getHeight());
+                    if (dashLength <= 0) {
+                        dashLength = 200;
+                    }
+
+                    path.getStrokeDashArray().setAll(dashLength, dashLength);
+                    path.setStrokeDashOffset(dashLength);
+
+                    lineTimeline = new Timeline(
+                            new KeyFrame(Duration.ZERO, new KeyValue(path.strokeDashOffsetProperty(), dashLength, Interpolator.EASE_BOTH)),
+                            new KeyFrame(Duration.seconds(1.2), new KeyValue(path.strokeDashOffsetProperty(), 0, Interpolator.EASE_BOTH))
+                    );
+                }
+
+                Timeline fillTimeline = null;
+                if (fillNode != null) {
+                    fillNode.setOpacity(0);
+                    fillTimeline = new Timeline(
+                            new KeyFrame(Duration.ZERO, new KeyValue(fillNode.opacityProperty(), 0, Interpolator.EASE_BOTH)),
+                            new KeyFrame(Duration.seconds(1.2), new KeyValue(fillNode.opacityProperty(), 0.35, Interpolator.EASE_BOTH))
+                    );
+                }
+
+                if (lineTimeline != null || fillTimeline != null) {
+                    ParallelTransition transition = new ParallelTransition();
+                    if (lineTimeline != null) transition.getChildren().add(lineTimeline);
+                    if (fillTimeline != null) transition.getChildren().add(fillTimeline);
+                    transition.play();
+                }
+            }
         });
     }
 
