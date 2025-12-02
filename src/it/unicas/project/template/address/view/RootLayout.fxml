@@ -160,12 +160,11 @@
             </padding>
         </VBox>
     </left>
-
-    <center>
+   <bottom>
         <StackPane style="-fx-background-color: #f8fafc;" BorderPane.alignment="CENTER">
             <BorderPane.margin>
                 <Insets />
             </BorderPane.margin></StackPane>
-    </center>
+   </bottom>
 
 </BorderPane>
