@@ -43,8 +43,8 @@
                                                         <Region HBox.hgrow="ALWAYS" />
                                                         <StackPane>
                                                             <children>
-                                                                <Circle fill="#3b82f6" radius="20.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                                                                <Label text="€" textFill="WHITE">
+                                                                <Circle fill="#3b82f6" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                                                <Label scaleX="1.5" scaleY="1.5" text="€" textFill="WHITE" translateX="-1.0" StackPane.alignment="CENTER">
                                                                     <font>
                                                                         <Font name="System Bold" size="18.0" />
                                                                     </font>
@@ -78,7 +78,7 @@
                                                         <StackPane>
                                                             <children>
                                                                 <Circle fill="#10b981" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                                                                <SVGPath content="M8 3 L8 13 M5 6 L8 3 L11 6" fill="TRANSPARENT" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.5" />
+                                                                <SVGPath content="M8 3 L8 13 M5 6 L8 3 L11 6" fill="TRANSPARENT" scaleX="1.5" scaleY="1.5" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.0" />
                                                             </children>
                                                         </StackPane>
                                                     </children>
@@ -108,7 +108,7 @@
                                                         <StackPane>
                                                             <children>
                                                                 <Circle fill="#ef4444" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                                                                <SVGPath content="M8 3 L8 13 M5 10 L8 13 L11 10" fill="TRANSPARENT" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.5" />
+                                                                <SVGPath content="M8 3 L8 13 M5 10 L8 13 L11 10" fill="TRANSPARENT" scaleX="1.5" scaleY="1.5" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.0" />
                                                             </children>
                                                         </StackPane>
                                                     </children>
@@ -137,8 +137,8 @@
                                                         <Region HBox.hgrow="ALWAYS" />
                                                         <StackPane>
                                                             <children>
-                                                                <Circle fill="#8b5cf6" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                                                                <SVGPath content="M3 11 L6 8 L9 10 L13 5 M10 5 L13 5 L13 8" fill="TRANSPARENT" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.5" />
+                                                                <Circle fill="#8b5cf6" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" translateX="10.0" />
+                                                                <SVGPath content="M3 11 L6 8 L9 10 L13 5 M10 5 L13 5 L13 8" fill="TRANSPARENT" scaleX="1.5" scaleY="1.5" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.0" translateX="10.0" />
                                                             </children>
                                                         </StackPane>
                                                     </children>
