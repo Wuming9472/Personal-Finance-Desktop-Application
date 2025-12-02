@@ -1,0 +1,41 @@
+/* Menu Left Styles */
+
+/* Hover effect per il bottone hamburger */
+.hamburger-button:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+.hamburger-button:pressed {
+    -fx-background-color: #e2e8f0;
+}
+
+/* Stili per i bottoni del menu */
+.menu-button {
+    -fx-background-color: #ffffff;
+    -fx-cursor: hand;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.03), 4, 0, 0, 2);
+    -fx-transition: all 0.3s ease;
+}
+
+.menu-button:hover {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.3), 8, 0, 0, 4);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.menu-button:pressed {
+    -fx-background-color: #2563eb;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Active state per il bottone selezionato */
+.menu-button-active {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.4), 8, 0, 0, 4);
+}
