@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.paint.Color;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -45,7 +46,8 @@ public class MovimentiController {
 
     // Wrapper per ComboBox Categorie
     private static class CategoryItem {
-        int id; String name;
+        int id;
+        String name;
         public CategoryItem(int id, String name) { this.id = id; this.name = name; }
         @Override public String toString() { return name; }
     }
@@ -260,6 +262,24 @@ public class MovimentiController {
             int currentYear = now.getYear();
 
             List<Budget> budgets = budgetDAO.getBudgetsForMonth(userId, currentMonth, currentYear);
+
+            // 🔁 Prima: per TUTTE le categorie che NON sono più superate,
+            // tolgo il flag "già notificato", così se in futuro risuperano il budget
+            // la notifica potrà riapparire.
+            for (Budget budget : budgets) {
+                if (budget.getCategoryId() == 6) continue; // Ignora Stipendio
+
+                boolean isExceeded = budget.getSpentAmount() > budget.getBudgetAmount()
+                        && budget.getBudgetAmount() > 0;
+
+                if (!isExceeded) {
+                    // La categoria non è più superata → riattivo la notifica
+                    BudgetNotificationPreferences.getInstance()
+                            .unmarkAsNotified(budget.getCategoryId());
+                }
+            }
+
+            // 🔔 Poi controllo SOLO la categoria del movimento appena inserito
             BudgetNotificationHelper.checkAndNotifyForCategory(budgets, categoryId);
 
         } catch (SQLException e) {
@@ -288,7 +308,7 @@ public class MovimentiController {
                 if (budget.getCategoryId() == 6) continue; // Ignora Stipendio
 
                 boolean isExceeded = budget.getSpentAmount() > budget.getBudgetAmount()
-                    && budget.getBudgetAmount() > 0;
+                        && budget.getBudgetAmount() > 0;
 
                 if (!isExceeded) {
                     // La categoria non è più superata, rimuovi la marcatura
