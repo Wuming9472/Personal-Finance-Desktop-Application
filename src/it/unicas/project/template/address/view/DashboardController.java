@@ -339,15 +339,68 @@ public class DashboardController {
 
     private void calculateForecast(float saldoAttuale, float entrate, float uscite, LocalDate now) {
         if (lblPrevisione == null) return;
-        int daysInMonth = now.lengthOfMonth();
-        int currentDay = now.getDayOfMonth();
-        if (currentDay == 0) currentDay = 1;
 
-        float netto = entrate - uscite;
-        float proiezione = (netto / currentDay) * daysInMonth;
-        float previsioneFinale = saldoAttuale + (proiezione - netto);
+        try {
+            int userId = mainApp.getLoggedUser().getUser_id();
+            int daysInMonth = now.lengthOfMonth();
 
-        lblPrevisione.setText(String.format("€ %.2f", previsioneFinale));
+            // Query modificata per includere la data più recente dei movimenti
+            String query = "SELECT " +
+                    "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as totaleEntrate, " +
+                    "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as totaleUscite, " +
+                    "COUNT(DISTINCT DATE(date)) as giorniConMovimenti, " +
+                    "MAX(DATE(date)) as dataRecente " +
+                    "FROM movements " +
+                    "WHERE user_id = ? " +
+                    "AND YEAR(date) = ? " +
+                    "AND MONTH(date) = ?";
+
+            try (Connection conn = getConnection();
+                 PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+                pstmt.setInt(1, userId);
+                pstmt.setInt(2, now.getYear());
+                pstmt.setInt(3, now.getMonthValue());
+
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        double totaleEntrate = rs.getDouble("totaleEntrate");
+                        double totaleUscite = rs.getDouble("totaleUscite");
+                        int giorniConMovimenti = rs.getInt("giorniConMovimenti");
+                        java.sql.Date dataRecenteSQL = rs.getDate("dataRecente");
+
+                        // Se non ci sono dati sufficienti
+                        if (giorniConMovimenti < 3 || dataRecenteSQL == null) {
+                            lblPrevisione.setText("N/A");
+                            return;
+                        }
+
+                        // Usa la data più recente dei movimenti invece della data corrente
+                        LocalDate dataRecente = dataRecenteSQL.toLocalDate();
+                        int currentDay = dataRecente.getDayOfMonth();
+                        int remainingDays = daysInMonth - currentDay;
+
+                        // Calcola la media giornaliera per uscite E entrate
+                        double mediaSpeseGiornaliera = totaleUscite / currentDay;
+                        double mediaEntrateGiornaliera = totaleEntrate / currentDay;
+
+                        // Proietta sia le spese che le entrate
+                        double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
+                        double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
+
+                        // Saldo stimato con entrate proiettate
+                        double saldoStimato = entrateProiettate - speseProiettate;
+
+                        lblPrevisione.setText(String.format("€ %.2f", saldoStimato));
+                    } else {
+                        lblPrevisione.setText("N/A");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            lblPrevisione.setText("Errore");
+        }
     }
 
     private void populateRecentMovements(List<Movimenti> list) {
