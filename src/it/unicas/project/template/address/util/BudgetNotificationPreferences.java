@@ -15,7 +15,8 @@ import java.util.Set;
  */
 public class BudgetNotificationPreferences {
 
-    private static final String PREFERENCES_FILE = "budget_notifications.json";
+    private static final String DEFAULT_PREFERENCES_FILE = "budget_notifications.json";
+    private static String preferencesFile = DEFAULT_PREFERENCES_FILE;
     private static BudgetNotificationPreferences instance;
 
     // Categorie con notifiche disabilitate permanentemente (categoryId)
@@ -36,6 +37,15 @@ public class BudgetNotificationPreferences {
             instance = new BudgetNotificationPreferences();
         }
         return instance;
+    }
+
+    /**
+     * Permette di reimpostare il file di preferenze e l'istanza singleton.
+     * Usato dai test per lavorare su file temporanei senza toccare le preferenze reali.
+     */
+    public static synchronized void resetForTesting(String customFilePath) {
+        preferencesFile = customFilePath != null ? customFilePath : DEFAULT_PREFERENCES_FILE;
+        instance = null;
     }
 
     /**
@@ -121,6 +131,17 @@ public class BudgetNotificationPreferences {
         }
     }
 
+    // Metodi di supporto per i test automatizzati (stessa package visibility)
+    Set<Integer> getDisabledCategoriesSnapshot() {
+        return new HashSet<>(disabledCategories);
+    }
+
+    Map<String, Set<Integer>> getNotifiedExceededCategoriesSnapshot() {
+        Map<String, Set<Integer>> snapshot = new HashMap<>();
+        notifiedExceededCategories.forEach((k, v) -> snapshot.put(k, new HashSet<>(v)));
+        return snapshot;
+    }
+
     /**
      * Ottiene la chiave del mese corrente in formato "YYYY-MM"
      */
@@ -136,7 +157,7 @@ public class BudgetNotificationPreferences {
      * notified.2025-12=2,4
      */
     private void save() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(PREFERENCES_FILE))) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(preferencesFile))) {
             // Salva categorie disabilitate
             if (!disabledCategories.isEmpty()) {
                 writer.print("disabled=");
@@ -161,7 +182,7 @@ public class BudgetNotificationPreferences {
      * Carica le preferenze dal file di testo
      */
     private void load() {
-        File file = new File(PREFERENCES_FILE);
+        File file = new File(preferencesFile);
         if (!file.exists()) {
             return;
         }
