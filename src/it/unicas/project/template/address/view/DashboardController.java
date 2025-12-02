@@ -302,11 +302,10 @@ public class DashboardController {
                 }
             }
 
-            // Applica hover effect unificato
-            for (int i = 0; i < Math.min(entrateNodes.size(), usciteNodes.size()); i++) {
-                String period = seriesEntrate.getData().get(i).getXValue();
-                setupBarHoverEffect(entrateNodes.get(i), usciteNodes.get(i), period);
-            }
+            // Aspetta che il layout sia completato prima di aggiungere le aree di hover
+            Platform.runLater(() -> {
+                addHoverAreas(entrateNodes, usciteNodes, seriesEntrate, entrateFinali, usciteFinali);
+            });
 
             // Avvia animazione delle barre
             animateBars(seriesEntrate, seriesUscite, entrateFinali, usciteFinali);
@@ -314,16 +313,69 @@ public class DashboardController {
     }
 
     /**
-     * Configura l'effetto hover unificato su una coppia di barre (entrate e uscite dello stesso periodo)
+     * Aggiunge aree di hover trasparenti per ogni coppia di barre
      */
-    private void setupBarHoverEffect(Node nodeEntrate, Node nodeUscite, String period) {
-        // Handler per entrambe le barre
-        Runnable onEnter = () -> {
-            // Applica overlay grigio semitrasparente su entrambe le barre
-            nodeEntrate.setStyle("-fx-bar-fill: #10b981; -fx-opacity: 0.7;");
-            nodeUscite.setStyle("-fx-bar-fill: #ef4444; -fx-opacity: 0.7;");
+    private void addHoverAreas(java.util.List<Node> entrateNodes, java.util.List<Node> usciteNodes,
+                                XYChart.Series<String, Number> seriesEntrate,
+                                float[] entrateFinali, float[] usciteFinali) {
 
-            // Scala entrambe le barre
+        // Trova il Pane che contiene le barre (plotContent)
+        Node plotArea = barChartAndamento.lookup(".chart-plot-background");
+        if (plotArea == null || plotArea.getParent() == null) return;
+
+        Pane plotContent = (Pane) plotArea.getParent();
+
+        for (int i = 0; i < Math.min(entrateNodes.size(), usciteNodes.size()); i++) {
+            Node nodeEntrate = entrateNodes.get(i);
+            Node nodeUscite = usciteNodes.get(i);
+            String period = seriesEntrate.getData().get(i).getXValue();
+
+            // Crea area di hover solo se ci sono dati (almeno una colonna non è 0)
+            if (entrateFinali[i] == 0 && usciteFinali[i] == 0) {
+                continue;
+            }
+
+            // Calcola bounds delle due barre
+            double entrateX = nodeEntrate.getBoundsInParent().getMinX();
+            double usciteX = nodeUscite.getBoundsInParent().getMinX();
+            double minX = Math.min(entrateX, usciteX);
+            double maxX = Math.max(
+                nodeEntrate.getBoundsInParent().getMaxX(),
+                nodeUscite.getBoundsInParent().getMaxX()
+            );
+
+            // Crea Rectangle che copre l'intera altezza del grafico
+            Rectangle hoverArea = new Rectangle();
+            hoverArea.setX(minX);
+            hoverArea.setY(0);
+            hoverArea.setWidth(maxX - minX);
+            hoverArea.setHeight(plotArea.getBoundsInLocal().getHeight());
+
+            // Inizialmente trasparente
+            hoverArea.setFill(Color.TRANSPARENT);
+            hoverArea.setStroke(Color.TRANSPARENT);
+
+            // Porta dietro alle barre
+            hoverArea.setMouseTransparent(false);
+            hoverArea.toBack();
+
+            // Applica effetto hover
+            setupHoverAreaEffect(hoverArea, nodeEntrate, nodeUscite, period);
+
+            // Aggiungi al plotContent
+            plotContent.getChildren().add(hoverArea);
+        }
+    }
+
+    /**
+     * Configura l'effetto hover su un'area di hover
+     */
+    private void setupHoverAreaEffect(Rectangle hoverArea, Node nodeEntrate, Node nodeUscite, String period) {
+        hoverArea.setOnMouseEntered(e -> {
+            // Mostra area grigia
+            hoverArea.setFill(Color.rgb(0, 0, 0, 0.05));
+
+            // Scala le barre
             ScaleTransition stEntrate = new ScaleTransition(Duration.millis(150), nodeEntrate);
             stEntrate.setToX(1.05);
             stEntrate.setToY(1.02);
@@ -333,14 +385,16 @@ public class DashboardController {
             stUscite.setToX(1.05);
             stUscite.setToY(1.02);
             stUscite.play();
-        };
 
-        Runnable onExit = () -> {
-            // Ripristina opacità originale
-            nodeEntrate.setStyle("-fx-bar-fill: #10b981;");
-            nodeUscite.setStyle("-fx-bar-fill: #ef4444;");
+            // Mostra tooltip
+            showCustomTooltip(period, e.getScreenX(), e.getScreenY());
+        });
 
-            // Ripristina scala originale
+        hoverArea.setOnMouseExited(e -> {
+            // Nascondi area grigia
+            hoverArea.setFill(Color.TRANSPARENT);
+
+            // Ripristina scala barre
             ScaleTransition stEntrate = new ScaleTransition(Duration.millis(150), nodeEntrate);
             stEntrate.setToX(1.0);
             stEntrate.setToY(1.0);
@@ -353,31 +407,9 @@ public class DashboardController {
 
             // Nascondi tooltip
             customTooltip.hide();
-        };
-
-        // Applica gli handler a entrambe le barre
-        nodeEntrate.setOnMouseEntered(e -> {
-            onEnter.run();
-            showCustomTooltip(period, e.getScreenX(), e.getScreenY());
         });
 
-        nodeUscite.setOnMouseEntered(e -> {
-            onEnter.run();
-            showCustomTooltip(period, e.getScreenX(), e.getScreenY());
-        });
-
-        nodeEntrate.setOnMouseExited(e -> onExit.run());
-        nodeUscite.setOnMouseExited(e -> onExit.run());
-
-        // Aggiorna posizione tooltip durante il movimento
-        nodeEntrate.setOnMouseMoved(e -> {
-            if (customTooltip.isShowing()) {
-                customTooltip.setX(e.getScreenX() + 15);
-                customTooltip.setY(e.getScreenY() - 60);
-            }
-        });
-
-        nodeUscite.setOnMouseMoved(e -> {
+        hoverArea.setOnMouseMoved(e -> {
             if (customTooltip.isShowing()) {
                 customTooltip.setX(e.getScreenX() + 15);
                 customTooltip.setY(e.getScreenY() - 60);
