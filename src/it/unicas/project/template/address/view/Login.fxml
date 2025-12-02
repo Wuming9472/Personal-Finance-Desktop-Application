@@ -9,7 +9,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.shape.SVGPath?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: white;"
+<AnchorPane prefWidth="900.0" style="-fx-background-color: white;"
             xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="it.unicas.project.template.address.view.LoginController">
@@ -76,7 +76,7 @@
                 </VBox>
 
                 <!-- LATO DESTRO: LOGIN + RECUPERO PASSWORD (SCORREVOLE) -->
-                <ScrollPane fitToWidth="true"
+                <ScrollPane fitToHeight="true" fitToWidth="true"
                             hbarPolicy="NEVER"
                             vbarPolicy="AS_NEEDED"
                             HBox.hgrow="ALWAYS"
@@ -85,7 +85,7 @@
                         <VBox alignment="CENTER" prefWidth="500.0" spacing="20.0"
                               style="-fx-background-color: white;">
                             <padding>
-                                <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+                                <Insets bottom="30.0" left="50.0" right="50.0" top="30.0" />
                             </padding>
                             <children>
 
