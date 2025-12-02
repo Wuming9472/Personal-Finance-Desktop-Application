@@ -5231,27 +5231,3 @@ Text {
     -fx-background-color: rgba(148,163,184,0.12);
 }
 
-/* Stile base per i pulsanti del menu */
-.menu-button {
-    -fx-background-color: transparent;
-    -fx-background-radius: 8;
-    -fx-cursor: hand;
-}
-
-.menu-button:hover {
-    -fx-background-color: #f1f5f9;
-}
-
-/* Stile per il pulsante selezionato */
-.menu-button.selected {
-    -fx-background-color: #eff6ff;
-    -fx-text-fill: #3b82f6;
-}
-
-.menu-button.selected .label {
-    -fx-text-fill: #3b82f6;
-}
-
-
-
-
