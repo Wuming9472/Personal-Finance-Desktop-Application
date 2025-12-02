@@ -5,7 +5,10 @@ import it.unicas.project.template.address.model.User;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
+import javafx.animation.ParallelTransition;
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -13,7 +16,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
 
 public class RootLayoutController {
@@ -32,6 +37,10 @@ public class RootLayoutController {
     @FXML private Button btnBudget;
     @FXML private Button btnReport;
     @FXML private Button btnAccount;
+    
+    // Toggle icon components
+    @FXML private StackPane toggleIconContainer;
+    @FXML private SVGPath toggleArrow;
 
     // Menu text labels (to hide when collapsed)
     @FXML private Label lblDashboard;
@@ -41,8 +50,8 @@ public class RootLayoutController {
     @FXML private Label lblAccount;
 
     private boolean isMenuExpanded = true;
-    private static final double EXPANDED_WIDTH = 220.0;
-    private static final double COLLAPSED_WIDTH = 70.0;
+    private static final double EXPANDED_WIDTH = 260.0;
+    private static final double COLLAPSED_WIDTH = 82.0;
     private Button currentActiveButton = null;
 
     @FXML
@@ -137,25 +146,36 @@ public class RootLayoutController {
     @FXML
     private void handleToggleMenu() {
         double targetWidth = isMenuExpanded ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
+        double arrowRotation = isMenuExpanded ? 180.0 : 0.0;
 
         // Create smooth animation for width change
-        Timeline timeline = new Timeline();
-        KeyValue keyValue = new KeyValue(sidebar.prefWidthProperty(), targetWidth);
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(300), keyValue);
-        timeline.getKeyFrames().add(keyFrame);
+        Timeline widthTimeline = new Timeline();
+        KeyValue widthKV = new KeyValue(sidebar.prefWidthProperty(), targetWidth);
+        KeyFrame widthKF = new KeyFrame(Duration.millis(350), widthKV);
+        widthTimeline.getKeyFrames().add(widthKF);
+
+        // Create rotation animation for the arrow
+        RotateTransition rotateTransition = new RotateTransition(Duration.millis(350), toggleArrow);
+        rotateTransition.setToAngle(arrowRotation);
 
         // Animate text visibility
         if (isMenuExpanded) {
-            // Collapsing: hide text immediately for smooth transition
+            // Collapsing: hide text with fade out
             fadeOutLabels();
-            btnToggleMenu.setText("☰");
+            // Add collapsed class for CSS styling
+            if (!sidebar.getStyleClass().contains("collapsed")) {
+                widthTimeline.setOnFinished(e -> sidebar.getStyleClass().add("collapsed"));
+            }
         } else {
-            // Expanding: show text after animation starts
-            timeline.setOnFinished(e -> fadeInLabels());
-            btnToggleMenu.setText("✕");
+            // Expanding: remove collapsed class and show text
+            sidebar.getStyleClass().remove("collapsed");
+            widthTimeline.setOnFinished(e -> fadeInLabels());
         }
 
-        timeline.play();
+        // Play both animations
+        ParallelTransition parallelTransition = new ParallelTransition(widthTimeline, rotateTransition);
+        parallelTransition.play();
+        
         isMenuExpanded = !isMenuExpanded;
     }
 
@@ -165,20 +185,18 @@ public class RootLayoutController {
     private void fadeOutLabels() {
         Label[] labels = {lblDashboard, lblMovimenti, lblBudget, lblReport, lblAccount};
 
-        Timeline fadeTimeline = new Timeline();
         for (Label label : labels) {
             if (label != null) {
-                KeyValue kv = new KeyValue(label.opacityProperty(), 0);
-                KeyFrame kf = new KeyFrame(Duration.millis(150), kv);
-                fadeTimeline.getKeyFrames().add(kf);
+                FadeTransition fade = new FadeTransition(Duration.millis(200), label);
+                fade.setFromValue(1.0);
+                fade.setToValue(0.0);
+                fade.setOnFinished(e -> {
+                    label.setVisible(false);
+                    label.setManaged(false);
+                });
+                fade.play();
             }
         }
-        fadeTimeline.setOnFinished(e -> {
-            for (Label label : labels) {
-                if (label != null) label.setVisible(false);
-            }
-        });
-        fadeTimeline.play();
     }
 
     /**
@@ -187,24 +205,19 @@ public class RootLayoutController {
     private void fadeInLabels() {
         Label[] labels = {lblDashboard, lblMovimenti, lblBudget, lblReport, lblAccount};
 
-        // First make them visible but transparent
         for (Label label : labels) {
             if (label != null) {
                 label.setVisible(true);
+                label.setManaged(true);
                 label.setOpacity(0);
+                
+                FadeTransition fade = new FadeTransition(Duration.millis(250), label);
+                fade.setFromValue(0.0);
+                fade.setToValue(1.0);
+                fade.setDelay(Duration.millis(100)); // Slight delay for smoother effect
+                fade.play();
             }
         }
-
-        // Then fade in
-        Timeline fadeTimeline = new Timeline();
-        for (Label label : labels) {
-            if (label != null) {
-                KeyValue kv = new KeyValue(label.opacityProperty(), 1);
-                KeyFrame kf = new KeyFrame(Duration.millis(200), kv);
-                fadeTimeline.getKeyFrames().add(kf);
-            }
-        }
-        fadeTimeline.play();
     }
 
     /**

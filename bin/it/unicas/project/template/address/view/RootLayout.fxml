@@ -6,7 +6,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="600.0" prefWidth="1024.0" stylesheets="@css/primer-light.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.RootLayoutController">
+<BorderPane prefHeight="600.0" prefWidth="1024.0" stylesheets="@css/primer-light.css,@css/collapsible-menu.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.RootLayoutController">
 
     <top>
         <HBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="200.0" spacing="20.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">
@@ -92,71 +92,199 @@
     </top>
 
     <left>
-        <VBox prefHeight="520.0" prefWidth="220.0" spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #e2e8f0; -fx-border-width: 0 1 0 0;" BorderPane.alignment="CENTER">
+        <VBox fx:id="sidebar" alignment="TOP_CENTER" prefHeight="520.0" prefWidth="260.0" spacing="6.0" styleClass="sidebar-container" BorderPane.alignment="CENTER">
             <children>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowDashboard" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Dashboard" textAlignment="CENTER" textFill="#475569">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
+                <!-- Toggle Button con Freccia -->
+                <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308">
+                    <children>
+                        <Button fx:id="btnToggleMenu" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleToggleMenu" prefHeight="42.0" prefWidth="42.0" styleClass="toggle-button">
+                            <graphic>
+                                <StackPane fx:id="toggleIconContainer" prefHeight="22.0" prefWidth="22.0">
+                                    <children>
+                                        <SVGPath fx:id="toggleArrow" content="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z M21.41 7.41L20 6l-6 6 6 6 1.41-1.41L16.83 12z" fill="#64748b" scaleX="1.1" scaleY="1.1" styleClass="toggle-arrow"/>
+                                    </children>
+                                </StackPane>
+                            </graphic>
+                        </Button>
+                    </children>
                     <padding>
-                        <Insets left="20.0" />
+                        <Insets right="14.0" />
                     </padding>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets bottom="6.0" top="14.0" />
+                    </VBox.margin>
+                </HBox>
+
+                <!-- Separatore sottile -->
+                <HBox alignment="CENTER" maxWidth="1.7976931348623157E308">
+                    <children>
+                        <Region styleClass="menu-separator" HBox.hgrow="ALWAYS">
+                            <HBox.margin>
+                                <Insets left="20.0" right="20.0" />
+                            </HBox.margin>
+                        </Region>
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="10.0" />
+                    </VBox.margin>
+                </HBox>
+
+                <!-- Dashboard Button -->
+                <Button fx:id="btnDashboard" alignment="CENTER_LEFT" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowDashboard" prefHeight="58.0" styleClass="menu-button">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="menu-item-container">
+                            <children>
+                                <!-- Dashboard Icon - Lucide layout-dashboard (stroke) -->
+                                <SVGPath content="M4,3 L9,3 A1,1 0 0,1 10,4 L10,11 A1,1 0 0,1 9,12 L4,12 A1,1 0 0,1 3,11 L3,4 A1,1 0 0,1 4,3 Z M15,3 L20,3 A1,1 0 0,1 21,4 L21,7 A1,1 0 0,1 20,8 L15,8 A1,1 0 0,1 14,7 L14,4 A1,1 0 0,1 15,3 Z M15,12 L20,12 A1,1 0 0,1 21,13 L21,20 A1,1 0 0,1 20,21 L15,21 A1,1 0 0,1 14,20 L14,13 A1,1 0 0,1 15,12 Z M4,16 L9,16 A1,1 0 0,1 10,17 L10,20 A1,1 0 0,1 9,21 L4,21 A1,1 0 0,1 3,20 L3,17 A1,1 0 0,1 4,16 Z" fill="transparent" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.0" styleClass="menu-icon-svg">
+                                    <HBox.margin>
+                                        <Insets left="6.0" />
+                                    </HBox.margin>
+                                </SVGPath>
+                                <Label fx:id="lblDashboard" styleClass="menu-text" text="Dashboard">
+                                    <font>
+                                        <Font name="System Bold" size="17.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="12.0" right="12.0" />
+                            </padding>
+                        </HBox>
+                    </graphic>
+                    <VBox.margin>
+                        <Insets left="14.0" right="14.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowMovements" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Movimenti" textAlignment="CENTER" textFill="#475569">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                    <padding>
-                        <Insets left="20.0" />
-                    </padding>
+                <!-- Movimenti Button -->
+                <Button fx:id="btnMovimenti" alignment="CENTER_LEFT" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowMovements" prefHeight="58.0" styleClass="menu-button">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="menu-item-container">
+                            <children>
+                                <!-- Movimenti Icon - Lucide credit-card (stroke) -->
+                                <SVGPath content="M4,5 L20,5 A2,2 0 0,1 22,7 L22,17 A2,2 0 0,1 20,19 L4,19 A2,2 0 0,1 2,17 L2,7 A2,2 0 0,1 4,5 Z M2,10 L22,10" fill="transparent" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.0" styleClass="menu-icon-svg">
+                                    <HBox.margin>
+                                        <Insets left="6.0" />
+                                    </HBox.margin>
+                                </SVGPath>
+                                <Label fx:id="lblMovimenti" styleClass="menu-text" text="Movimenti">
+                                    <font>
+                                        <Font name="System Bold" size="17.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="12.0" right="12.0" />
+                            </padding>
+                        </HBox>
+                    </graphic>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets left="14.0" right="14.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowBudget" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Budget" textAlignment="CENTER" textFill="#475569">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                    <padding>
-                        <Insets left="20.0" />
-                    </padding>
+                <!-- Budget Button -->
+                <Button fx:id="btnBudget" alignment="CENTER_LEFT" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowBudget" prefHeight="58.0" styleClass="menu-button">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="menu-item-container">
+                            <children>
+                                <!-- Budget Icon - Lucide chart-pie (stroke) -->
+                                <SVGPath content="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z M21.21 15.89A10 10 0 1 1 8 2.83" fill="transparent" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.0" styleClass="menu-icon-svg">
+                                    <HBox.margin>
+                                        <Insets left="6.0" />
+                                    </HBox.margin>
+                                </SVGPath>
+                                <Label fx:id="lblBudget" styleClass="menu-text" text="Budget">
+                                    <font>
+                                        <Font name="System Bold" size="17.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="12.0" right="12.0" />
+                            </padding>
+                        </HBox>
+                    </graphic>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets left="14.0" right="14.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowReport" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Report" textAlignment="CENTER" textFill="#475569">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                    <padding>
-                        <Insets left="20.0" />
-                    </padding>
+                <!-- Report Button -->
+                <Button fx:id="btnReport" alignment="CENTER_LEFT" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowReport" prefHeight="58.0" styleClass="menu-button">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="menu-item-container">
+                            <children>
+                                <!-- Report Icon - Lucide trending-up (stroke) -->
+                                <SVGPath content="M22,7 L13.5,15.5 L8.5,10.5 L2,17 M16,7 L22,7 L22,13" fill="transparent" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.0" styleClass="menu-icon-svg">
+                                    <HBox.margin>
+                                        <Insets left="6.0" />
+                                    </HBox.margin>
+                                </SVGPath>
+                                <Label fx:id="lblReport" styleClass="menu-text" text="Report">
+                                    <font>
+                                        <Font name="System Bold" size="17.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="12.0" right="12.0" />
+                            </padding>
+                        </HBox>
+                    </graphic>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets left="14.0" right="14.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" layoutX="10.0" layoutY="216.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowAccount" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Account" textAlignment="CENTER" textFill="#475569">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                    <padding>
-                        <Insets left="20.0" />
-                    </padding>
+                <!-- Spacer per spingere Account in basso -->
+                <Region VBox.vgrow="ALWAYS" />
+
+                <!-- Separatore prima di Account -->
+                <HBox alignment="CENTER" maxWidth="1.7976931348623157E308">
+                    <children>
+                        <Region styleClass="menu-separator" HBox.hgrow="ALWAYS">
+                            <HBox.margin>
+                                <Insets left="20.0" right="20.0" />
+                            </HBox.margin>
+                        </Region>
+                    </children>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets bottom="10.0" top="10.0" />
+                    </VBox.margin>
+                </HBox>
+
+                <!-- Account Button -->
+                <Button fx:id="btnAccount" alignment="CENTER_LEFT" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowAccount" prefHeight="58.0" styleClass="menu-button">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="menu-item-container">
+                            <children>
+                                <!-- Account Icon - Lucide settings (stroke) -->
+                                <SVGPath content="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z M12,9 A3,3 0 1,0 12,15 A3,3 0 1,0 12,9" fill="transparent" stroke="#64748b" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.0" styleClass="menu-icon-svg">
+                                    <HBox.margin>
+                                        <Insets left="6.0" />
+                                    </HBox.margin>
+                                </SVGPath>
+                                <Label fx:id="lblAccount" styleClass="menu-text" text="Account">
+                                    <font>
+                                        <Font name="System Bold" size="17.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="12.0" right="12.0" />
+                            </padding>
+                        </HBox>
+                    </graphic>
+                    <VBox.margin>
+                        <Insets bottom="20.0" left="14.0" right="14.0" />
                     </VBox.margin>
                 </Button>
+
             </children>
             <padding>
-                <Insets top="20.0" />
+                <Insets top="6.0" />
             </padding>
         </VBox>
     </left>
