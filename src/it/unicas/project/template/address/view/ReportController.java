@@ -223,14 +223,14 @@ public class ReportController {
     private void loadForecastData() throws SQLException {
         LocalDate today = LocalDate.now();
         YearMonth currentMonth = YearMonth.from(today);
-        int currentDay = today.getDayOfMonth();
         int daysInMonth = currentMonth.lengthOfMonth();
-        int remainingDays = daysInMonth - currentDay;
 
+        // Query modificata per includere la data più recente dei movimenti
         String query = "SELECT " +
                 "SUM(CASE WHEN LOWER(type) IN ('entrata') THEN amount ELSE 0 END) as totaleEntrate, " +
                 "SUM(CASE WHEN LOWER(type) IN ('uscita') THEN amount ELSE 0 END) as totaleUscite, " +
-                "COUNT(DISTINCT DATE(date)) as giorniConMovimenti " +
+                "COUNT(DISTINCT DATE(date)) as giorniConMovimenti, " +
+                "MAX(DATE(date)) as dataRecente " +
                 "FROM movements " +
                 "WHERE user_id = ? " +
                 "AND YEAR(date) = ? " +
@@ -248,18 +248,31 @@ public class ReportController {
                     double totaleEntrate = rs.getDouble("totaleEntrate");
                     double totaleUscite = rs.getDouble("totaleUscite");
                     int giorniConMovimenti = rs.getInt("giorniConMovimenti");
+                    Date dataRecenteSQL = rs.getDate("dataRecente");
 
-                    if (giorniConMovimenti < 3) {
+                    if (giorniConMovimenti < 3 || dataRecenteSQL == null) {
                         displayInsufficientDataMessage();
                         return;
                     }
 
-                    double mediaGiornaliera = totaleUscite / currentDay;
-                    double speseProiettate = totaleUscite + (mediaGiornaliera * remainingDays);
-                    double saldoStimato = totaleEntrate - speseProiettate;
+                    // Usa la data più recente dei movimenti invece della data corrente
+                    LocalDate dataRecente = dataRecenteSQL.toLocalDate();
+                    int currentDay = dataRecente.getDayOfMonth();
+                    int remainingDays = daysInMonth - currentDay;
 
-                    updateForecastUI(currentDay, remainingDays, mediaGiornaliera, speseProiettate,
-                            saldoStimato, totaleEntrate, totaleUscite);
+                    // Calcola la media giornaliera per uscite E entrate
+                    double mediaSpeseGiornaliera = totaleUscite / currentDay;
+                    double mediaEntrateGiornaliera = totaleEntrate / currentDay;
+
+                    // Proietta sia le spese che le entrate
+                    double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
+                    double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
+
+                    // Saldo stimato con entrate proiettate
+                    double saldoStimato = entrateProiettate - speseProiettate;
+
+                    updateForecastUI(currentDay, remainingDays, mediaSpeseGiornaliera, speseProiettate,
+                            saldoStimato, totaleEntrate, totaleUscite, mediaEntrateGiornaliera, entrateProiettate);
                 } else {
                     displayInsufficientDataMessage();
                 }
@@ -288,17 +301,20 @@ public class ReportController {
         });
     }
 
-    private void updateForecastUI(int currentDay, int remainingDays, double mediaGiornaliera,
+    private void updateForecastUI(int currentDay, int remainingDays, double mediaSpeseGiornaliera,
                                   double speseProiettate, double saldoStimato,
-                                  double totaleEntrate, double totaleUscite) {
+                                  double totaleEntrate, double totaleUscite,
+                                  double mediaEntrateGiornaliera, double entrateProiettate) {
         Platform.runLater(() -> {
             lblPeriodoCalcolo.setText(String.format("Calcolata sui movimenti reali dal giorno 1 al %d", currentDay));
 
             lblSaldoStimato.setText(String.format("€ %.2f", saldoStimato));
 
             lblGiorniRimanenti.setText(String.format("%d gg", remainingDays));
-            lblMediaSpeseGiornaliera.setText(String.format("€ %.2f", mediaGiornaliera));
-            lblSpeseProiettateTotali.setText(String.format("€ %.2f", speseProiettate));
+            lblMediaSpeseGiornaliera.setText(String.format("€ %.2f/gg (Uscite) | € %.2f/gg (Entrate)",
+                    mediaSpeseGiornaliera, mediaEntrateGiornaliera));
+            lblSpeseProiettateTotali.setText(String.format("€ %.2f (Uscite) | € %.2f (Entrate)",
+                    speseProiettate, entrateProiettate));
 
             String statusIcon;
             String statusTitolo;
