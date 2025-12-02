@@ -291,13 +291,13 @@ public class DashboardController {
             // Applica colori e raccogli i nodi
             for (XYChart.Data<String, Number> data : seriesEntrate.getData()) {
                 if (data.getNode() != null) {
-                    data.getNode().setStyle("-fx-bar-fill: #10b981; -fx-background-radius: 5 5 0 0; -fx-background-insets: 0;");
+                    data.getNode().setStyle("-fx-bar-fill: #10b981;");
                     entrateNodes.add(data.getNode());
                 }
             }
             for (XYChart.Data<String, Number> data : seriesUscite.getData()) {
                 if (data.getNode() != null) {
-                    data.getNode().setStyle("-fx-bar-fill: #ef4444; -fx-background-radius: 5 5 0 0; -fx-background-insets: 0;");
+                    data.getNode().setStyle("-fx-bar-fill: #ef4444;");
                     usciteNodes.add(data.getNode());
                 }
             }
@@ -530,7 +530,7 @@ public class DashboardController {
         if (barChartAndamento != null) {
             barChartAndamento.setLegendVisible(true);
             barChartAndamento.setAnimated(false); // Usiamo animazione custom
-            barChartAndamento.setBarGap(4);
+            barChartAndamento.setBarGap(8);
             barChartAndamento.setCategoryGap(20);
         }
     }
