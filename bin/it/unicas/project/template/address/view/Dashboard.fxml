@@ -144,7 +144,7 @@
                                 </AnchorPane>
 
                                 <!-- PREVISIONE FINE MESE -->
-                                <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="3">
+                                <AnchorPane fx:id="cardPrevisione" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="3">
                                     <children>
                                         <VBox spacing="5.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                                             <children>
@@ -207,11 +207,21 @@
                                                     </font>
                                                 </Label>
                                                 <Region HBox.hgrow="ALWAYS" />
+                                                <Button onAction="#handlePreviousMonth" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 12 8 12; -fx-border-width: 0;" text="◀">
+                                                    <font>
+                                                        <Font name="System Bold" size="14.0" />
+                                                    </font>
+                                                </Button>
                                                 <Label fx:id="lblMeseCorrente" text="" textFill="#64748b">
                                                     <font>
                                                         <Font name="System Bold" size="14.0" />
                                                     </font>
                                                 </Label>
+                                                <Button onAction="#handleNextMonth" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 12 8 12; -fx-border-width: 0;" text="▶">
+                                                    <font>
+                                                        <Font name="System Bold" size="14.0" />
+                                                    </font>
+                                                </Button>
                                             </children>
                                         </HBox>
 
