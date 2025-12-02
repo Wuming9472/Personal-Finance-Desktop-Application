@@ -6,7 +6,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="600.0" prefWidth="1024.0" stylesheets="@css/primer-light.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.RootLayoutController">
+<BorderPane prefHeight="600.0" prefWidth="1024.0" stylesheets="@css/primer-light.css,@css/collapsible-menu.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.RootLayoutController">
 
     <top>
         <HBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="200.0" spacing="20.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">
@@ -92,71 +92,152 @@
     </top>
 
     <left>
-        <VBox prefHeight="520.0" prefWidth="220.0" spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #e2e8f0; -fx-border-width: 0 1 0 0;" BorderPane.alignment="CENTER">
+        <VBox fx:id="sidebar" prefHeight="520.0" prefWidth="220.0" spacing="5.0" style="-fx-background-color: #ffffff; -fx-border-color: #e2e8f0; -fx-border-width: 0 1 0 0;" BorderPane.alignment="CENTER">
             <children>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowDashboard" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Dashboard" textAlignment="CENTER" textFill="#475569">
+                <!-- Hamburger Toggle Button -->
+                <Button fx:id="btnToggleMenu" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleToggleMenu" prefHeight="50.0" styleClass="hamburger-button" text="☰" textAlignment="CENTER">
                     <font>
-                        <Font size="20.0" />
+                        <Font size="24.0" />
                     </font>
-                    <padding>
-                        <Insets left="20.0" />
-                    </padding>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets bottom="10.0" top="10.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowMovements" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Movimenti" textAlignment="CENTER" textFill="#475569">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                    <padding>
-                        <Insets left="20.0" />
-                    </padding>
+                <!-- Dashboard Button -->
+                <Button fx:id="btnDashboard" alignment="CENTER_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowDashboard" prefHeight="55.0" styleClass="menu-button" textAlignment="CENTER">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                            <children>
+                                <Label styleClass="menu-icon" text="◧">
+                                    <font>
+                                        <Font size="24.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblDashboard" styleClass="menu-text" text="Dashboard">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="15.0" />
+                            </padding>
+                        </HBox>
+                    </graphic>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets left="8.0" right="8.0" top="5.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowBudget" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Budget" textAlignment="CENTER" textFill="#475569">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                    <padding>
-                        <Insets left="20.0" />
-                    </padding>
+                <!-- Movimenti Button -->
+                <Button fx:id="btnMovimenti" alignment="CENTER_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowMovements" prefHeight="55.0" styleClass="menu-button" textAlignment="CENTER">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                            <children>
+                                <Label styleClass="menu-icon" text="⇄">
+                                    <font>
+                                        <Font size="24.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblMovimenti" styleClass="menu-text" text="Movimenti">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="15.0" />
+                            </padding>
+                        </HBox>
+                    </graphic>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets left="8.0" right="8.0" top="5.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowReport" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Report" textAlignment="CENTER" textFill="#475569">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                    <padding>
-                        <Insets left="20.0" />
-                    </padding>
+                <!-- Budget Button -->
+                <Button fx:id="btnBudget" alignment="CENTER_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowBudget" prefHeight="55.0" styleClass="menu-button" textAlignment="CENTER">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                            <children>
+                                <Label styleClass="menu-icon" text="€">
+                                    <font>
+                                        <Font size="24.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblBudget" styleClass="menu-text" text="Budget">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="15.0" />
+                            </padding>
+                        </HBox>
+                    </graphic>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets left="8.0" right="8.0" top="5.0" />
                     </VBox.margin>
                 </Button>
 
-                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" layoutX="10.0" layoutY="216.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowAccount" prefHeight="45.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Account" textAlignment="CENTER" textFill="#475569">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                    <padding>
-                        <Insets left="20.0" />
-                    </padding>
+                <!-- Report Button -->
+                <Button fx:id="btnReport" alignment="CENTER_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowReport" prefHeight="55.0" styleClass="menu-button" textAlignment="CENTER">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                            <children>
+                                <Label styleClass="menu-icon" text="📊">
+                                    <font>
+                                        <Font size="22.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblReport" styleClass="menu-text" text="Report">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="15.0" />
+                            </padding>
+                        </HBox>
+                    </graphic>
                     <VBox.margin>
-                        <Insets top="35.0" />
+                        <Insets left="8.0" right="8.0" top="5.0" />
                     </VBox.margin>
                 </Button>
+
+                <!-- Account Button -->
+                <Button fx:id="btnAccount" alignment="CENTER_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowAccount" prefHeight="55.0" styleClass="menu-button" textAlignment="CENTER">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                            <children>
+                                <Label styleClass="menu-icon" text="⚙">
+                                    <font>
+                                        <Font size="24.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblAccount" styleClass="menu-text" text="Account">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="15.0" />
+                            </padding>
+                        </HBox>
+                    </graphic>
+                    <VBox.margin>
+                        <Insets left="8.0" right="8.0" top="5.0" />
+                    </VBox.margin>
+                </Button>
+
             </children>
             <padding>
-                <Insets top="20.0" />
+                <Insets top="15.0" />
             </padding>
         </VBox>
     </left>
