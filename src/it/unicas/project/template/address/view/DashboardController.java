@@ -142,7 +142,7 @@ public class DashboardController {
                 lblMeseCorrente.setText(nomeMese.substring(0, 1).toUpperCase() + nomeMese.substring(1) + " " + selectedYear);
             }
 
-            List<Movimenti> recent = dao.selectLastByUser(userId, 5);
+            List<Movimenti> recent = dao.selectLastByUser(userId, 20);
             populateRecentMovements(recent);
 
             populateBudgetStatus(userId, selectedMonth, selectedYear);

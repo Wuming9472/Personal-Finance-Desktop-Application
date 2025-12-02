@@ -77,7 +77,7 @@
                                                         <Region HBox.hgrow="ALWAYS" />
                                                         <StackPane>
                                                             <children>
-                                                                <Circle fill="#10b981" radius="19.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                                                <Circle fill="#10b981" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
                                                                 <SVGPath content="M8 3 L8 13 M5 6 L8 3 L11 6" fill="TRANSPARENT" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.5" />
                                                             </children>
                                                         </StackPane>
@@ -107,7 +107,7 @@
                                                         <Region HBox.hgrow="ALWAYS" />
                                                         <StackPane>
                                                             <children>
-                                                                <Circle fill="#ef4444" radius="20.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                                                <Circle fill="#ef4444" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
                                                                 <SVGPath content="M8 3 L8 13 M5 10 L8 13 L11 10" fill="TRANSPARENT" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.5" />
                                                             </children>
                                                         </StackPane>
@@ -137,7 +137,7 @@
                                                         <Region HBox.hgrow="ALWAYS" />
                                                         <StackPane>
                                                             <children>
-                                                                <Circle fill="#8b5cf6" radius="20.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                                                                <Circle fill="#8b5cf6" radius="24.0" stroke="TRANSPARENT" strokeType="INSIDE" />
                                                                 <SVGPath content="M3 11 L6 8 L9 10 L13 5 M10 5 L13 5 L13 8" fill="TRANSPARENT" stroke="WHITE" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeWidth="2.5" />
                                                             </children>
                                                         </StackPane>
