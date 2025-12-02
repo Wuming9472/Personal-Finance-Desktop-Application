@@ -52,6 +52,8 @@ public class DashboardController {
     @FXML private VBox boxUltimiMovimenti;
     @FXML private GridPane gridBudgetList;
 
+    @FXML private AnchorPane cardPrevisione;
+
     private MainApp mainApp;
 
     // Mappa per memorizzare i valori per ogni periodo (per il tooltip combinato)
@@ -60,6 +62,10 @@ public class DashboardController {
     // Popup per tooltip custom
     private Popup customTooltip;
     private VBox tooltipContent;
+
+    // Variabili per la navigazione tra i mesi
+    private int selectedMonth;
+    private int selectedYear;
 
     @FXML
     private void initialize() {
@@ -92,6 +98,10 @@ public class DashboardController {
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
+        // Inizializza con il mese corrente
+        LocalDate now = LocalDate.now();
+        this.selectedMonth = now.getMonthValue();
+        this.selectedYear = now.getYear();
         setupChartAppearance();
         refreshDashboardData();
     }
@@ -104,11 +114,12 @@ public class DashboardController {
 
         int userId = mainApp.getLoggedUser().getUser_id();
         LocalDate now = LocalDate.now();
+        LocalDate selectedDate = LocalDate.of(selectedYear, selectedMonth, 1);
         MovimentiDAOMySQLImpl dao = new MovimentiDAOMySQLImpl();
 
         try {
-            float totalEntrate = dao.getSumByMonth(userId, now.getMonthValue(), now.getYear(), "Entrata");
-            float totalUscite = dao.getSumByMonth(userId, now.getMonthValue(), now.getYear(), "Uscita");
+            float totalEntrate = dao.getSumByMonth(userId, selectedMonth, selectedYear, "Entrata");
+            float totalUscite = dao.getSumByMonth(userId, selectedMonth, selectedYear, "Uscita");
             float saldo = totalEntrate - totalUscite;
 
             lblEntrate.setText(String.format("€ %.2f", totalEntrate));
@@ -116,24 +127,58 @@ public class DashboardController {
             lblSaldo.setText(String.format("€ %.2f", saldo));
             lblSaldo.setStyle(saldo >= 0 ? "-fx-text-fill: #10b981;" : "-fx-text-fill: #ef4444;");
 
-            calculateForecast(saldo, totalEntrate, totalUscite, now);
+            // Calcola la previsione solo se è il mese corrente
+            boolean isCurrentMonth = (selectedMonth == now.getMonthValue() && selectedYear == now.getYear());
+            if (cardPrevisione != null) {
+                cardPrevisione.setVisible(isCurrentMonth);
+                cardPrevisione.setManaged(isCurrentMonth);
+            }
+            if (isCurrentMonth) {
+                calculateForecast(saldo, totalEntrate, totalUscite, now);
+            }
 
             if (lblMeseCorrente != null) {
-                String nomeMese = now.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
-                lblMeseCorrente.setText(nomeMese.substring(0, 1).toUpperCase() + nomeMese.substring(1) + " " + now.getYear());
+                String nomeMese = selectedDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALIAN);
+                lblMeseCorrente.setText(nomeMese.substring(0, 1).toUpperCase() + nomeMese.substring(1) + " " + selectedYear);
             }
 
             List<Movimenti> recent = dao.selectLastByUser(userId, 5);
             populateRecentMovements(recent);
 
-            populateBudgetStatus(userId, now.getMonthValue(), now.getYear());
+            populateBudgetStatus(userId, selectedMonth, selectedYear);
 
-            populateBarChart(userId, now.getMonthValue(), now.getYear());
+            populateBarChart(userId, selectedMonth, selectedYear);
 
         } catch (Exception e) {
             e.printStackTrace();
             lblSaldo.setText("Err DB");
         }
+    }
+
+    /**
+     * Naviga al mese precedente
+     */
+    @FXML
+    private void handlePreviousMonth() {
+        selectedMonth--;
+        if (selectedMonth < 1) {
+            selectedMonth = 12;
+            selectedYear--;
+        }
+        refreshDashboardData();
+    }
+
+    /**
+     * Naviga al mese successivo
+     */
+    @FXML
+    private void handleNextMonth() {
+        selectedMonth++;
+        if (selectedMonth > 12) {
+            selectedMonth = 1;
+            selectedYear++;
+        }
+        refreshDashboardData();
     }
 
     /**
