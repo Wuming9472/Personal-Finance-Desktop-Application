@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import it.unicas.project.template.address.view.SmoothAreaChart?>
+<?import it.unicas.project.template.address.view.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
@@ -34,7 +34,7 @@
                             </columnConstraints>
                             <rowConstraints>
                                 <!-- Unica riga che si espande -->
-                                <RowConstraints vgrow="ALWAYS" minHeight="500.0" />
+                                <RowConstraints minHeight="500.0" vgrow="ALWAYS" />
                             </rowConstraints>
                             <children>
 
@@ -48,7 +48,7 @@
                                                         <Font name="System Bold" size="18.0" />
                                                     </font>
                                                 </Label>
-                                                <PieChart fx:id="pieChart" legendSide="BOTTOM" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" minHeight="400.0" />
+                                                <PieChart fx:id="pieChart" legendSide="BOTTOM" minHeight="400.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" />
                                             </children>
                                         </VBox>
                                     </children>
@@ -74,7 +74,7 @@
                                                                 <ComboBox fx:id="cmbRange" prefWidth="140.0" />
                                                             </children>
                                                         </HBox>
-                                                        <SmoothAreaChart fx:id="lineChartAndamento" animated="false" createSymbols="true" legendVisible="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" minHeight="400.0" />
+                                                        <SmoothAreaChart fx:id="lineChartAndamento" animated="false" createSymbols="true" legendVisible="true" minHeight="400.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" />
                                                     </children>
                                                 </VBox>
                                             </children>
@@ -92,7 +92,7 @@
                                 <!-- Titolo Sezione -->
                                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                                     <children>
-                                        <Label text="📈" style="-fx-font-size: 24px;" />
+                                        <Label style="-fx-font-size: 24px;" />
                                         <Label text="Previsioni &amp; Analisi" textFill="#1e293b">
                                             <font>
                                                 <Font name="System Bold" size="24.0" />
@@ -149,7 +149,7 @@
                                                     <children>
                                                         <HBox alignment="CENTER_LEFT" spacing="15.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="15.0">
                                                             <children>
-                                                                <Label fx:id="lblStatusIcon" text="📈" style="-fx-font-size: 28px;" />
+                                                                <Label fx:id="lblStatusIcon" style="-fx-font-size: 28px;" text="📈" />
                                                                 <VBox spacing="3.0" HBox.hgrow="ALWAYS">
                                                                     <children>
                                                                         <Label fx:id="lblStatusTitolo" text="Situazione Stabile" textFill="#065f46">
@@ -184,7 +184,7 @@
                                                         <!-- Giorni Rimanenti -->
                                                         <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="0">
                                                             <children>
-                                                                <Label text="📅" style="-fx-font-size: 20px;" />
+                                                                <Label style="-fx-font-size: 20px;" text="📅" />
                                                                 <VBox spacing="3.0">
                                                                     <children>
                                                                         <Label text="Giorni rimanenti" textFill="#64748b">
@@ -205,7 +205,7 @@
                                                         <!-- Media Movimenti Giornaliera -->
                                                         <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1">
                                                             <children>
-                                                                <Label text="💰" style="-fx-font-size: 20px;" />
+                                                                <Label style="-fx-font-size: 20px;" text="💰" />
                                                                 <VBox spacing="3.0">
                                                                     <children>
                                                                         <Label text="Media giornaliera" textFill="#64748b">
@@ -231,7 +231,7 @@
                                                         <!-- Proiezioni Fine Mese -->
                                                         <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="2">
                                                             <children>
-                                                                <Label text="💸" style="-fx-font-size: 20px;" />
+                                                                <Label style="-fx-font-size: 20px;" text="💸" />
                                                                 <VBox spacing="3.0">
                                                                     <children>
                                                                         <Label text="Proiezioni fine mese" textFill="#64748b">
@@ -260,7 +260,7 @@
                                                 <!-- Disclaimer -->
                                                 <HBox alignment="CENTER_LEFT" spacing="8.0" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-padding: 12;">
                                                     <children>
-                                                        <Label text="ℹ️" style="-fx-font-size: 14px;" />
+                                                        <Label style="-fx-font-size: 14px;" text="ⓘ" />
                                                         <Label fx:id="lblDisclaimer" text="Il calcolo si basa sulla data più recente dei movimenti registrati e proietta sia entrate che uscite fino a fine mese. Non include movimenti ricorrenti futuri non ancora contabilizzati." textFill="#475569" wrapText="true">
                                                             <font>
                                                                 <Font size="12.0" />
