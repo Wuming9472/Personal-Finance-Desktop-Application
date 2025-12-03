@@ -9,6 +9,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
 import javafx.scene.chart.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -178,7 +180,7 @@ public class ReportController {
     /**
      * Configura l'interazione per ogni fetta del grafico a torta:
      * - Tooltip con categoria, importo e percentuale
-     * - Animazione hover che fa uscire e ingrandisce la fetta
+     * - Animazione hover delicata che evidenzia la fetta
      */
     private void setupSliceInteraction(Node node, PieChart.Data data, double totalAmount) {
         // Calcola la percentuale
@@ -193,40 +195,43 @@ public class ReportController {
         tooltip.setStyle("-fx-font-size: 13px; -fx-padding: 8px;");
         Tooltip.install(node, tooltip);
 
-        // Animazione hover: ingrandisce e fa uscire la fetta
+        // Crea l'effetto ombra per il sollevamento
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(15);
+        dropShadow.setOffsetY(3);
+        dropShadow.setColor(Color.rgb(0, 0, 0, 0.3));
+
+        // Animazione hover: leggero ingrandimento e ombra
         node.setOnMouseEntered(e -> {
-            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(200), node);
-            scaleUp.setToX(1.08);
-            scaleUp.setToY(1.08);
+            // Salva la scala originale se non è già salvata
+            if (node.getUserData() == null) {
+                node.setUserData(new double[]{node.getScaleX(), node.getScaleY()});
+            }
+
+            // Effetto ombra per dare profondità
+            node.setEffect(dropShadow);
+
+            // Leggero ingrandimento (solo 3%)
+            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(150), node);
+            scaleUp.setToX(1.03);
+            scaleUp.setToY(1.03);
             scaleUp.setInterpolator(Interpolator.EASE_OUT);
-
-            // Aggiungi un leggero effetto di traslazione per far "uscire" la fetta
-            TranslateTransition translate = new TranslateTransition(Duration.millis(200), node);
-            translate.setByX(3);
-            translate.setByY(3);
-            translate.setInterpolator(Interpolator.EASE_OUT);
-
-            ParallelTransition parallel = new ParallelTransition(scaleUp, translate);
-            parallel.play();
+            scaleUp.play();
 
             // Cambia il cursore per indicare che è interattivo
             node.setCursor(javafx.scene.Cursor.HAND);
         });
 
         node.setOnMouseExited(e -> {
-            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(200), node);
+            // Rimuovi l'ombra
+            node.setEffect(null);
+
+            // Ripristina la dimensione originale
+            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(150), node);
             scaleDown.setToX(1.0);
             scaleDown.setToY(1.0);
             scaleDown.setInterpolator(Interpolator.EASE_IN);
-
-            // Riporta la fetta nella posizione originale
-            TranslateTransition translate = new TranslateTransition(Duration.millis(200), node);
-            translate.setToX(0);
-            translate.setToY(0);
-            translate.setInterpolator(Interpolator.EASE_IN);
-
-            ParallelTransition parallel = new ParallelTransition(scaleDown, translate);
-            parallel.play();
+            scaleDown.play();
 
             // Ripristina il cursore
             node.setCursor(javafx.scene.Cursor.DEFAULT);
