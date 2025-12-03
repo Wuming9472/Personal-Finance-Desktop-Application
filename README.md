@@ -640,17 +640,6 @@ Visibile solo se ci sono abbastanza dati (min 3 giorni di movimenti):
   - Numero movimenti totali
   - Data registrazione (se disponibile)
 
-**Cambio Tema**
-- ComboBox con 8 temi disponibili:
-  - Cupertino Light
-  - Cupertino Dark
-  - Nord Light
-  - Nord Dark
-  - Primer Light
-  - Primer Dark
-  - Dracula
-  - Default
-- Applicazione dinamica del CSS senza riavvio
 
 **Impostazioni Database**
 - Modifica credenziali connessione
