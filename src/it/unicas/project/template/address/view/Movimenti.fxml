@@ -125,7 +125,7 @@
                                             </font>
                                         </Label>
                                         <Region HBox.hgrow="ALWAYS" />
-                                        <Button mnemonicParsing="false" onAction="#handleEditTransaction" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-weight: bold;" text="✏️ Modifica">
+                                        <Button mnemonicParsing="false" onAction="#handleEditTransaction" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-weight: bold;" text="Modifica" translateX="-5.0">
                                             <effect>
                                                 <DropShadow height="10.0" radius="4.5" width="10.0">
                                                     <color>
@@ -134,7 +134,7 @@
                                                 </DropShadow>
                                             </effect>
                                         </Button>
-                                        <Button mnemonicParsing="false" onAction="#handleDeleteTransaction" style="-fx-background-color: white; -fx-border-color: #ef4444; -fx-text-fill: #ef4444; -fx-border-radius: 6; -fx-cursor: hand;" text="🗑️ Elimina Selezionati" />
+                                        <Button mnemonicParsing="false" onAction="#handleDeleteTransaction" style="-fx-background-color: white; -fx-border-color: #ef4444; -fx-text-fill: #ef4444; -fx-border-radius: 6; -fx-cursor: hand;" text="Elimina Selezionati" />
                                     </children>
                                 </HBox>
 
