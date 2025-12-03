@@ -117,7 +117,7 @@
                         <!-- ============================================= -->
                         <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                             <children>
-                                <HBox alignment="CENTER_LEFT">
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
                                     <children>
                                         <Label text="Storico Transazioni" textFill="#1e293b">
                                             <font>
@@ -125,7 +125,16 @@
                                             </font>
                                         </Label>
                                         <Region HBox.hgrow="ALWAYS" />
-                                        <Button mnemonicParsing="false" onAction="#handleDeleteTransaction" style="-fx-background-color: white; -fx-border-color: #ef4444; -fx-text-fill: #ef4444; -fx-border-radius: 6; -fx-cursor: hand;" text="Elimina Selezionati" />
+                                        <Button mnemonicParsing="false" onAction="#handleEditTransaction" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-weight: bold;" text="✏️ Modifica">
+                                            <effect>
+                                                <DropShadow height="10.0" radius="4.5" width="10.0">
+                                                    <color>
+                                                        <Color red="0.23" green="0.5" blue="0.96" opacity="0.25" />
+                                                    </color>
+                                                </DropShadow>
+                                            </effect>
+                                        </Button>
+                                        <Button mnemonicParsing="false" onAction="#handleDeleteTransaction" style="-fx-background-color: white; -fx-border-color: #ef4444; -fx-text-fill: #ef4444; -fx-border-radius: 6; -fx-cursor: hand;" text="🗑️ Elimina Selezionati" />
                                     </children>
                                 </HBox>
 

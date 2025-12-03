@@ -351,6 +351,27 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
         return data;
     }
 
+    // --- UPDATE ---
+    public static void update(Movimenti m, int categoryId) throws DAOException, SQLException {
+        MovimentiDAOMySQLImpl dao = new MovimentiDAOMySQLImpl();
+        dao.updateInternal(m, categoryId);
+    }
+
+    private void updateInternal(Movimenti m, int categoryId) throws SQLException {
+        String query = "UPDATE movements SET type = ?, date = ?, amount = ?, title = ?, payment_method = ?, category_id = ? WHERE movement_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, m.getType());
+            pstmt.setDate(2, Date.valueOf(m.getDate()));
+            pstmt.setFloat(3, m.getAmount());
+            pstmt.setString(4, m.getTitle());
+            pstmt.setString(5, m.getPayment_method());
+            pstmt.setInt(6, categoryId);
+            pstmt.setInt(7, m.getMovement_id());
+            pstmt.executeUpdate();
+        }
+    }
+
     // Metodi dell'interfaccia DAO generica (non usati direttamente qui ma richiesti)
     @Override public List<Movimenti> select(Movimenti m) throws DAOException { return null; }
     @Override public void update(Movimenti m) throws DAOException {}
