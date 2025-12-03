@@ -134,6 +134,41 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
         return lista;
     }
 
+    public List<Movimenti> selectByUserAndMonthYear(int userId, int month, int year) throws SQLException {
+        ArrayList<Movimenti> lista = new ArrayList<>();
+        String query = "SELECT m.*, c.name as cat_name FROM movements m " +
+                "LEFT JOIN categories c ON m.category_id = c.category_id " +
+                "WHERE m.user_id = ? AND MONTH(m.date) = ? AND YEAR(m.date) = ? " +
+                "ORDER BY m.date DESC";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, month);
+            pstmt.setInt(3, year);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Movimenti mov = new Movimenti(
+                            rs.getInt("movement_id"),
+                            rs.getString("type"),
+                            rs.getDate("date").toLocalDate(),
+                            rs.getFloat("amount"),
+                            rs.getString("title"),
+                            rs.getString("payment_method")
+                    );
+
+                    mov.setCategoryId(rs.getInt("category_id"));
+                    mov.setCategoryName(rs.getString("cat_name"));
+
+                    lista.add(mov);
+                }
+            }
+        }
+        return lista;
+    }
+
     public float getSumByMonth(int userId, int month, int year, String type) throws SQLException {
         float total = 0f;
         String query = "SELECT SUM(amount) FROM movements " +
