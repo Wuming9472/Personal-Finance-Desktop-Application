@@ -56,13 +56,13 @@ public class RootLayoutController {
 
     @FXML
     private void initialize() {
-        // Set initial active button
+        // Setup tooltips for collapsed menu
+        setupTooltips();
+
+        // Set initial active button (must be after tooltips setup)
         if (btnDashboard != null) {
             setActiveButton(btnDashboard);
         }
-
-        // Setup tooltips for collapsed menu
-        setupTooltips();
     }
 
     /**
@@ -227,14 +227,50 @@ public class RootLayoutController {
         // Remove active style from previous button
         if (currentActiveButton != null) {
             currentActiveButton.getStyleClass().remove("menu-button-active");
+            // Reset text color to default (dark)
+            resetButtonTextColor(currentActiveButton);
         }
 
         // Add active style to new button
         if (button != null && !button.getStyleClass().contains("menu-button-active")) {
             button.getStyleClass().add("menu-button-active");
+            // Set text color to white
+            setButtonTextColor(button, "#FFFFFF");
         }
 
         currentActiveButton = button;
+    }
+
+    /**
+     * Set text color for a menu button's label
+     */
+    private void setButtonTextColor(Button button, String color) {
+        Label label = getButtonLabel(button);
+        if (label != null) {
+            label.setStyle("-fx-text-fill: " + color + ";");
+        }
+    }
+
+    /**
+     * Reset text color for a menu button's label
+     */
+    private void resetButtonTextColor(Button button) {
+        Label label = getButtonLabel(button);
+        if (label != null) {
+            label.setStyle(""); // Remove inline style to use CSS default
+        }
+    }
+
+    /**
+     * Get the label associated with a menu button
+     */
+    private Label getButtonLabel(Button button) {
+        if (button == btnDashboard) return lblDashboard;
+        if (button == btnMovimenti) return lblMovimenti;
+        if (button == btnBudget) return lblBudget;
+        if (button == btnReport) return lblReport;
+        if (button == btnAccount) return lblAccount;
+        return null;
     }
 
     @FXML
