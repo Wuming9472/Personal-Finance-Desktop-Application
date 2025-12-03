@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<DialogPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="it.unicas.project.template.address.view.EditMovimentoDialogController"
+            style="-fx-background-color: #f8fafc;">
+
+    <content>
+        <VBox spacing="18.0" prefWidth="480.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 30;">
+            <children>
+                <!-- HEADER -->
+                <HBox alignment="CENTER_LEFT" spacing="12.0">
+                    <children>
+                        <Label text="✏️" style="-fx-font-size: 24px;" />
+                        <VBox>
+                            <children>
+                                <Label text="Modifica Movimento" textFill="#1e293b">
+                                    <font>
+                                        <Font name="System Bold" size="22.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Aggiorna i dettagli della transazione" textFill="#94a3b8" style="-fx-font-size: 13px;" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <Separator style="-fx-background-color: #e2e8f0;" />
+
+                <!-- IMPORTO (Grande e Centrale) -->
+                <VBox spacing="8.0">
+                    <children>
+                        <Label text="Importo (€)" textFill="#64748b">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font>
+                        </Label>
+                        <TextField fx:id="amountField" promptText="0.00"
+                                   style="-fx-background-color: #f1f5f9; -fx-background-radius: 10; -fx-font-size: 20px; -fx-font-weight: bold; -fx-alignment: CENTER-RIGHT; -fx-padding: 12;">
+                            <effect>
+                                <InnerShadow color="#0000000d" />
+                            </effect>
+                        </TextField>
+                    </children>
+                </VBox>
+
+                <!-- TIPO E DATA (Side by Side) -->
+                <HBox spacing="12.0">
+                    <children>
+                        <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Tipo" textFill="#64748b">
+                                    <font>
+                                        <Font name="System Bold" size="12.0" />
+                                    </font>
+                                </Label>
+                                <ComboBox fx:id="typeField" maxWidth="1.7976931348623157E308"
+                                         style="-fx-background-color: #f1f5f9; -fx-background-radius: 10; -fx-padding: 8;">
+                                    <effect>
+                                        <InnerShadow color="#0000000d" />
+                                    </effect>
+                                </ComboBox>
+                            </children>
+                        </VBox>
+                        <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Data" textFill="#64748b">
+                                    <font>
+                                        <Font name="System Bold" size="12.0" />
+                                    </font>
+                                </Label>
+                                <DatePicker fx:id="dateField" maxWidth="1.7976931348623157E308"
+                                           style="-fx-background-color: #f1f5f9; -fx-background-radius: 10; -fx-padding: 6 10;">
+                                    <effect>
+                                        <InnerShadow color="#0000000d" />
+                                    </effect>
+                                </DatePicker>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <!-- CATEGORIA -->
+                <VBox spacing="8.0">
+                    <children>
+                        <Label text="Categoria" textFill="#64748b">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font>
+                        </Label>
+                        <ComboBox fx:id="categoryField" maxWidth="1.7976931348623157E308"
+                                 promptText="Seleziona categoria..."
+                                 style="-fx-background-color: #f1f5f9; -fx-background-radius: 10; -fx-padding: 8;">
+                            <effect>
+                                <InnerShadow color="#0000000d" />
+                            </effect>
+                        </ComboBox>
+                    </children>
+                </VBox>
+
+                <!-- METODO PAGAMENTO -->
+                <VBox spacing="8.0">
+                    <children>
+                        <Label text="Metodo Pagamento" textFill="#64748b">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font>
+                        </Label>
+                        <ComboBox fx:id="methodField" editable="true" maxWidth="1.7976931348623157E308"
+                                 promptText="Contanti, Bancomat, ecc..."
+                                 style="-fx-background-color: #f1f5f9; -fx-background-radius: 10; -fx-padding: 8;">
+                            <effect>
+                                <InnerShadow color="#0000000d" />
+                            </effect>
+                        </ComboBox>
+                    </children>
+                </VBox>
+
+                <!-- DESCRIZIONE -->
+                <VBox spacing="8.0">
+                    <children>
+                        <HBox alignment="CENTER_LEFT">
+                            <children>
+                                <Label text="Titolo / Note" textFill="#64748b">
+                                    <font>
+                                        <Font name="System Bold" size="12.0" />
+                                    </font>
+                                </Label>
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="charCountLabel" text="0/100" textFill="#cbd5e1" style="-fx-font-size: 10px;" />
+                            </children>
+                        </HBox>
+                        <TextArea fx:id="descArea" prefHeight="70.0" wrapText="true"
+                                 promptText="Aggiungi una descrizione..."
+                                 style="-fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-background-radius: 10; -fx-padding: 10;">
+                            <effect>
+                                <InnerShadow color="#0000000d" />
+                            </effect>
+                        </TextArea>
+                    </children>
+                </VBox>
+
+            </children>
+        </VBox>
+    </content>
+
+    <buttonTypes>
+        <ButtonType fx:constant="CANCEL" buttonData="CANCEL_CLOSE" text="Annulla" />
+        <ButtonType fx:constant="OK" buttonData="OK_DONE" text="Salva Modifiche" />
+    </buttonTypes>
+
+</DialogPane>
