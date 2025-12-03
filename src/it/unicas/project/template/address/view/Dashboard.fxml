@@ -232,7 +232,7 @@
                                                     </children>
                                                 </HBox>
 
-                                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="300.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0;" vbarPolicy="AS_NEEDED">
+                                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="300.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0 10 0 0;" vbarPolicy="AS_NEEDED">
                                                     <content>
                                                         <GridPane fx:id="gridBudgetList" hgap="15.0" vgap="15.0">
                                                             <columnConstraints>
@@ -260,7 +260,7 @@
                                                     </font>
                                                 </Label>
 
-                                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="300.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0;" vbarPolicy="AS_NEEDED">
+                                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="300.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0 12 0 0;" vbarPolicy="AS_NEEDED">
                                                     <content>
                                                         <VBox fx:id="boxUltimiMovimenti" spacing="15.0" />
                                                     </content>
