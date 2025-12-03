@@ -143,7 +143,7 @@
                                 </SVGPath>
                                 <Label fx:id="lblDashboard" styleClass="menu-text" text="Dashboard">
                                     <font>
-                                        <Font name="System Bold" size="17.0" />
+                                        <Font name="System Bold" size="22.0" />
                                     </font>
                                 </Label>
                             </children>
@@ -170,7 +170,7 @@
                                 </SVGPath>
                                 <Label fx:id="lblMovimenti" styleClass="menu-text" text="Movimenti">
                                     <font>
-                                        <Font name="System Bold" size="17.0" />
+                                        <Font name="System Bold" size="22.0" />
                                     </font>
                                 </Label>
                             </children>
@@ -197,7 +197,7 @@
                                 </SVGPath>
                                 <Label fx:id="lblBudget" styleClass="menu-text" text="Budget">
                                     <font>
-                                        <Font name="System Bold" size="17.0" />
+                                        <Font name="System Bold" size="22.0" />
                                     </font>
                                 </Label>
                             </children>
@@ -224,7 +224,7 @@
                                 </SVGPath>
                                 <Label fx:id="lblReport" styleClass="menu-text" text="Report">
                                     <font>
-                                        <Font name="System Bold" size="17.0" />
+                                        <Font name="System Bold" size="22.0" />
                                     </font>
                                 </Label>
                             </children>
@@ -268,7 +268,7 @@
                                 </SVGPath>
                                 <Label fx:id="lblAccount" styleClass="menu-text" text="Account">
                                     <font>
-                                        <Font name="System Bold" size="17.0" />
+                                        <Font name="System Bold" size="22.0" />
                                     </font>
                                 </Label>
                             </children>

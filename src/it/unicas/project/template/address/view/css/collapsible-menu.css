@@ -76,6 +76,7 @@
 .menu-text {
     -fx-text-fill: #334155;
     -fx-font-weight: 600;
+    -fx-font-size: 22px;
 }
 
 .menu-button:hover .menu-text {
@@ -131,8 +132,26 @@
 .menu-button-active:focused .menu-text,
 .menu-button-active:pressed .menu-text,
 .menu-button-active:hover:focused .menu-text {
-    -fx-text-fill: white;
+    -fx-text-fill: #FFFFFF;
     -fx-font-weight: 600;
+    -fx-font-size: 22px;
+}
+
+/* Regola specifica per Label dentro bottoni attivi (maggiore specificità) */
+.menu-button-active .menu-item-container .menu-text {
+    -fx-text-fill: #FFFFFF;
+}
+
+.menu-button-active:hover .menu-item-container .menu-text {
+    -fx-text-fill: #FFFFFF;
+}
+
+.menu-button-active:focused .menu-item-container .menu-text {
+    -fx-text-fill: #FFFFFF;
+}
+
+.menu-button-active:pressed .menu-item-container .menu-text {
+    -fx-text-fill: #FFFFFF;
 }
 
 /* ============= MENU ITEM CONTAINER ============= */
