@@ -230,8 +230,11 @@ public class ReportController {
                     return;
                 }
 
-                Node plotArea = findPlotArea(plotBackground);
+                Node plotArea = lineChartAndamento.lookup(".plot-content");
                 // Limitiamo il clip solo all'area del grafico, non agli assi
+                if (plotArea == null) {
+                    plotArea = findPlotArea(plotBackground);
+                }
                 if (plotArea == null) {
                     plotArea = plotBackground;
                 }
