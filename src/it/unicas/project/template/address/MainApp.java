@@ -209,7 +209,7 @@ public class MainApp extends Application {
             this.budgetController = controller;
 
             if (rootController != null) {
-                rootController.setPageTitle("Pianificazione Budget");
+                rootController.setPageTitle("Budget");
             }
 
         } catch (IOException e) {
