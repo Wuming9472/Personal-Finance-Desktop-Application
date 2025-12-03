@@ -7,6 +7,7 @@ import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.animation.*;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -67,10 +68,17 @@ public class DashboardController {
     private int selectedMonth;
     private int selectedYear;
 
+    private XYChart.Series<String, Number> currentSeriesEntrate;
+    private XYChart.Series<String, Number> currentSeriesUscite;
+    private float[] currentEntrateFinali;
+    private float[] currentUsciteFinali;
+    private boolean hoverResizeListenerInitialized = false;
+
     @FXML
     private void initialize() {
         resetLabels("...");
         setupCustomTooltip();
+        setupHoverAreaResizeListener();
     }
 
     private void setupCustomTooltip() {
@@ -282,30 +290,28 @@ public class DashboardController {
         yAxis.setUpperBound(Math.max(10, maxValue + padding));
         yAxis.setTickUnit(yAxis.getUpperBound() / 5);
 
+        currentSeriesEntrate = seriesEntrate;
+        currentSeriesUscite = seriesUscite;
+        currentEntrateFinali = entrateFinali;
+        currentUsciteFinali = usciteFinali;
+
         // Applica stili e tooltip dopo che i nodi sono stati creati
         Platform.runLater(() -> {
             // Crea liste dei nodi per l'hover unificato
-            java.util.List<Node> entrateNodes = new java.util.ArrayList<>();
-            java.util.List<Node> usciteNodes = new java.util.ArrayList<>();
 
             // Applica colori e raccogli i nodi
             for (XYChart.Data<String, Number> data : seriesEntrate.getData()) {
                 if (data.getNode() != null) {
                     data.getNode().setStyle("-fx-bar-fill: #10b981;");
-                    entrateNodes.add(data.getNode());
                 }
             }
             for (XYChart.Data<String, Number> data : seriesUscite.getData()) {
                 if (data.getNode() != null) {
                     data.getNode().setStyle("-fx-bar-fill: #ef4444;");
-                    usciteNodes.add(data.getNode());
                 }
             }
 
-            // Aspetta che il layout sia completato prima di aggiungere le aree di hover
-            Platform.runLater(() -> {
-                addHoverAreas(entrateNodes, usciteNodes, seriesEntrate, entrateFinali, usciteFinali);
-            });
+            refreshHoverAreas();
 
             // Avvia animazione delle barre
             animateBars(seriesEntrate, seriesUscite, entrateFinali, usciteFinali);
@@ -367,6 +373,8 @@ public class DashboardController {
             // Porta dietro alle barre
             hoverArea.setMouseTransparent(false);
             hoverArea.toBack();
+
+            hoverArea.getStyleClass().add("hover-area");
 
             // Applica effetto hover
             setupHoverAreaEffect(hoverArea, nodeEntrate, nodeUscite, period);
@@ -529,6 +537,70 @@ public class DashboardController {
             barChartAndamento.setBarGap(8);
             barChartAndamento.setCategoryGap(20);
         }
+    }
+
+    private void setupHoverAreaResizeListener() {
+        if (barChartAndamento == null || hoverResizeListenerInitialized) {
+            return;
+        }
+
+        hoverResizeListenerInitialized = true;
+
+        ChangeListener<Number> chartSizeListener = (obs, oldVal, newVal) -> refreshHoverAreas();
+        barChartAndamento.widthProperty().addListener(chartSizeListener);
+        barChartAndamento.heightProperty().addListener(chartSizeListener);
+
+        Platform.runLater(() -> {
+            Node plotArea = barChartAndamento.lookup(".chart-plot-background");
+            if (plotArea != null) {
+                plotArea.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> refreshHoverAreas());
+            }
+        });
+    }
+
+    private Pane getPlotContent() {
+        Node plotArea = barChartAndamento.lookup(".chart-plot-background");
+        if (plotArea == null || plotArea.getParent() == null) return null;
+        return (Pane) plotArea.getParent();
+    }
+
+    private void clearHoverAreas(Pane plotContent) {
+        plotContent.getChildren().removeIf(node -> node instanceof Rectangle && node.getStyleClass().contains("hover-area"));
+    }
+
+    private void refreshHoverAreas() {
+        if (currentSeriesEntrate == null || currentSeriesUscite == null
+                || currentEntrateFinali == null || currentUsciteFinali == null) {
+            return;
+        }
+
+        Platform.runLater(() -> {
+            Pane plotContent = getPlotContent();
+            if (plotContent == null) {
+                return;
+            }
+
+            clearHoverAreas(plotContent);
+
+            java.util.List<Node> entrateNodes = new java.util.ArrayList<>();
+            java.util.List<Node> usciteNodes = new java.util.ArrayList<>();
+
+            for (XYChart.Data<String, Number> data : currentSeriesEntrate.getData()) {
+                if (data.getNode() != null) {
+                    entrateNodes.add(data.getNode());
+                }
+            }
+
+            for (XYChart.Data<String, Number> data : currentSeriesUscite.getData()) {
+                if (data.getNode() != null) {
+                    usciteNodes.add(data.getNode());
+                }
+            }
+
+            if (!entrateNodes.isEmpty() && !usciteNodes.isEmpty()) {
+                addHoverAreas(entrateNodes, usciteNodes, currentSeriesEntrate, currentEntrateFinali, currentUsciteFinali);
+            }
+        });
     }
 
     private void populateBudgetStatus(int userId, int month, int year) {
