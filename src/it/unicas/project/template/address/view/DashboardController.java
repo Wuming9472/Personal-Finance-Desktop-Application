@@ -320,10 +320,11 @@ public class DashboardController {
                                 float[] entrateFinali, float[] usciteFinali) {
 
         // Trova il Pane che contiene le barre (plotContent)
-        Node plotArea = barChartAndamento.lookup(".chart-plot-background");
-        if (plotArea == null || plotArea.getParent() == null) return;
+        Node plotBackground = barChartAndamento.lookup(".chart-plot-background");
+        if (plotBackground == null || plotBackground.getParent() == null) return;
 
-        Pane plotContent = (Pane) plotArea.getParent();
+        Pane plotContent = (Pane) plotBackground.getParent();
+        javafx.geometry.Bounds plotBounds = plotBackground.getBoundsInParent();
 
         for (int i = 0; i < Math.min(entrateNodes.size(), usciteNodes.size()); i++) {
             Node nodeEntrate = entrateNodes.get(i);
@@ -355,9 +356,9 @@ public class DashboardController {
             // Crea Rectangle che copre l'intera altezza del grafico
             Rectangle hoverArea = new Rectangle();
             hoverArea.setX(minX);
-            hoverArea.setY(0);
+            hoverArea.setY(plotBounds.getMinY());
             hoverArea.setWidth(maxX - minX);
-            hoverArea.setHeight(plotContent.getBoundsInLocal().getHeight());
+            hoverArea.setHeight(plotBounds.getHeight());
 
             // Inizialmente trasparente
             hoverArea.setFill(Color.TRANSPARENT);
