@@ -92,7 +92,7 @@
     </top>
 
     <left>
-        <VBox fx:id="sidebar" alignment="TOP_CENTER" prefHeight="520.0" prefWidth="260.0" spacing="6.0" styleClass="sidebar-container" BorderPane.alignment="CENTER">
+        <VBox fx:id="sidebar" alignment="TOP_CENTER" prefHeight="520.0" prefWidth="227.0" spacing="6.0" styleClass="sidebar-container" BorderPane.alignment="CENTER">
             <children>
 
                 <!-- Toggle Button con Freccia -->
@@ -102,7 +102,7 @@
                             <graphic>
                                 <StackPane fx:id="toggleIconContainer" prefHeight="22.0" prefWidth="22.0">
                                     <children>
-                                        <SVGPath fx:id="toggleArrow" content="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z M21.41 7.41L20 6l-6 6 6 6 1.41-1.41L16.83 12z" fill="#64748b" scaleX="1.1" scaleY="1.1" styleClass="toggle-arrow"/>
+                                        <SVGPath fx:id="toggleArrow" content="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z M21.41 7.41L20 6l-6 6 6 6 1.41-1.41L16.83 12z" fill="#64748b" scaleX="1.1" scaleY="1.1" styleClass="toggle-arrow" />
                                     </children>
                                 </StackPane>
                             </graphic>
@@ -149,7 +149,7 @@
                         </HBox>
                     </graphic>
                     <VBox.margin>
-                        <Insets left="14.0" right="14.0" />
+                        <Insets left="14.0" right="14.0" top="10.0" />
                     </VBox.margin>
                 </Button>
 
@@ -172,7 +172,7 @@
                         </HBox>
                     </graphic>
                     <VBox.margin>
-                        <Insets left="14.0" right="14.0" />
+                        <Insets left="14.0" right="14.0" top="10.0" />
                     </VBox.margin>
                 </Button>
 
@@ -195,7 +195,7 @@
                         </HBox>
                     </graphic>
                     <VBox.margin>
-                        <Insets left="14.0" right="14.0" />
+                        <Insets left="14.0" right="14.0" top="10.0" />
                     </VBox.margin>
                 </Button>
 
@@ -218,7 +218,7 @@
                         </HBox>
                     </graphic>
                     <VBox.margin>
-                        <Insets left="14.0" right="14.0" />
+                        <Insets left="14.0" right="14.0" top="10.0" />
                     </VBox.margin>
                 </Button>
 

@@ -76,7 +76,7 @@
 .menu-text {
     -fx-text-fill: #334155;
     -fx-font-family: "System Bold";
-    -fx-font-weight: bold;
+    -fx-font-weight: normal;
     -fx-font-size: 22px;
 }
 
@@ -135,7 +135,7 @@
 .menu-button-active:hover:focused .menu-text {
     -fx-text-fill: #FFFFFF !important;
     -fx-font-family: "System Bold";
-    -fx-font-weight: bold;
+    -fx-font-weight: normal;
     -fx-font-size: 22px;
 }
 
