@@ -231,8 +231,9 @@ public class ReportController {
                 }
 
                 Node plotArea = findPlotArea(plotBackground);
+                // Limitiamo il clip solo all'area del grafico, non agli assi
                 if (plotArea == null) {
-                    plotArea = plotBackground.getParent();
+                    plotArea = plotBackground;
                 }
 
                 Rectangle clip = new Rectangle();
