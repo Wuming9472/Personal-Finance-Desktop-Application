@@ -151,8 +151,8 @@
     </content>
 
     <buttonTypes>
-        <ButtonType fx:constant="CANCEL" buttonData="CANCEL_CLOSE" text="Annulla" />
-        <ButtonType fx:constant="OK" buttonData="OK_DONE" text="Salva Modifiche" />
+        <ButtonType text="Annulla" buttonData="CANCEL_CLOSE"/>
+        <ButtonType text="Salva Modifiche" buttonData="OK_DONE"/>
     </buttonTypes>
 
 </DialogPane>
