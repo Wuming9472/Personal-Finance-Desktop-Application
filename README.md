@@ -19,7 +19,7 @@ Un'applicazione desktop moderna e intuitiva per la gestione delle finanze person
 - [Esecuzione](#-esecuzione)
 - [Struttura del Database](#-struttura-del-database)
 - [Funzionalità Dettagliate](#-funzionalità-dettagliate)
-- [Testing](#-testing)
+- [](#-testing)
 - [Contribuire](#-contribuire)
 - [Licenza](#-licenza)
 
@@ -693,57 +693,6 @@ java -cp out/test-classes TestRunner
 - **DAO Layer**: Testing manuale con DB di test
 - **Controller Layer**: Testing manuale tramite UI
 
-Per maggiori dettagli, vedi [TESTING.md](TESTING.md).
-
-## 📚 Documentazione Aggiuntiva
-
-- **[User Manual](docs/user_manual.md)**: Guida utente completa con screenshot e tutorial
-- **[TESTING.md](TESTING.md)**: Guida dettagliata per esecuzione test
-
-## 🤝 Contribuire
-
-Contributi, segnalazioni di bug e richieste di funzionalità sono benvenuti!
-
-### Come Contribuire
-
-1. **Fork** il repository
-2. **Crea un branch** per la tua feature:
-   ```bash
-   git checkout -b feature/AmazingFeature
-   ```
-3. **Commit** le tue modifiche:
-   ```bash
-   git commit -m 'Add some AmazingFeature'
-   ```
-4. **Push** sul branch:
-   ```bash
-   git push origin feature/AmazingFeature
-   ```
-5. **Apri una Pull Request**
-
-### Linee Guida
-
-- Segui lo stile di codice esistente
-- Commenta il codice complesso
-- Aggiungi test per nuove funzionalità
-- Aggiorna la documentazione se necessario
-- Usa commit message descrittivi
-
-### Segnalazione Bug
-
-Apri una [Issue](https://github.com/Wuming9472/Personal-Finance-Desktop-Application/issues) includendo:
-- Descrizione dettagliata del problema
-- Passi per riprodurre il bug
-- Comportamento atteso vs comportamento effettivo
-- Screenshot (se applicabile)
-- Versione Java, OS, JavaFX
-
-### Richiesta Feature
-
-Apri una [Issue](https://github.com/Wuming9472/Personal-Finance-Desktop-Application/issues) con label "enhancement" includendo:
-- Descrizione chiara della feature
-- Motivazione e casi d'uso
-- Mockup o esempi (se applicabile)
 
 ## 🔮 Roadmap Future
 
@@ -772,7 +721,7 @@ Questo progetto è rilasciato sotto licenza **MIT**. Vedi il file [LICENSE](LICE
 ```
 MIT License
 
-Copyright (c) 2024 Wuming9472
+Copyright (c) 2024 Wuming9472, ingridcristiano
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -796,33 +745,5 @@ SOFTWARE.
 ## 👥 Autori
 
 - **Wuming9472** - [GitHub Profile](https://github.com/Wuming9472)
+- **ingridcristiano** - [GitHub Profile](https://github.com/ingridcristiano)
 
-## 🙏 Riconoscimenti
-
-- **JavaFX Team** - Per il framework UI moderno
-- **MySQL** - Per il database robusto e affidabile
-- **Oracle Java** - Per la piattaforma di sviluppo
-- **JUnit Team** - Per il framework di testing
-- **Open Source Community** - Per ispirazione e supporto
-
----
-
-## 📞 Supporto
-
-Per domande, supporto o segnalazioni:
-
-- **Issues**: [GitHub Issues](https://github.com/Wuming9472/Personal-Finance-Desktop-Application/issues)
-- **Email**: [Contatta su GitHub](https://github.com/Wuming9472)
-- **Discussions**: [GitHub Discussions](https://github.com/Wuming9472/Personal-Finance-Desktop-Application/discussions)
-
----
-
-<div align="center">
-
-**⭐ Se questo progetto ti è stato utile, lascia una stella! ⭐**
-
-Fatto con ❤️ e ☕ da [Wuming9472](https://github.com/Wuming9472)
-
-[🏠 Torna su](#-balancesuite---personal-finance-desktop-application)
-
-</div>
