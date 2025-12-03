@@ -299,7 +299,7 @@ public class ReportController {
         if (data == null || data.isEmpty()) return;
 
         Platform.runLater(() -> {
-            final double delayIncrement = 120; // ms tra una fetta e l'altra
+            final double delayIncrement = 90; // ms tra una fetta e l'altra
 
             for (int i = 0; i < data.size(); i++) {
                 PieChart.Data slice = data.get(i);
@@ -321,44 +321,34 @@ public class ReportController {
     }
 
     private void playSliceAnimation(Node node, double delayMs) {
-        node.setScaleX(0);
-        node.setScaleY(0);
+        node.setScaleX(0.92);
+        node.setScaleY(0.92);
         node.setOpacity(0);
-        node.setRotate(0);
 
-        ScaleTransition pop = new ScaleTransition(Duration.millis(520), node);
-        pop.setFromX(0);
-        pop.setFromY(0);
-        pop.setToX(1.08);
-        pop.setToY(1.08);
-        pop.setInterpolator(Interpolator.EASE_OUT);
+        ScaleTransition grow = new ScaleTransition(Duration.millis(420), node);
+        grow.setFromX(0.92);
+        grow.setFromY(0.92);
+        grow.setToX(1.02);
+        grow.setToY(1.02);
+        grow.setInterpolator(Interpolator.EASE_BOTH);
 
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(450), node);
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(420), node);
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
-        fadeIn.setInterpolator(Interpolator.EASE_OUT);
+        fadeIn.setInterpolator(Interpolator.EASE_BOTH);
 
-        ScaleTransition settle = new ScaleTransition(Duration.millis(220), node);
-        settle.setFromX(1.08);
-        settle.setFromY(1.08);
+        ScaleTransition settle = new ScaleTransition(Duration.millis(180), node);
+        settle.setFromX(1.02);
+        settle.setFromY(1.02);
         settle.setToX(1.0);
         settle.setToY(1.0);
-        settle.setInterpolator(Interpolator.EASE_IN);
-
-        RotateTransition wobble = new RotateTransition(Duration.millis(600), node);
-        wobble.setFromAngle(-8);
-        wobble.setToAngle(8);
-        wobble.setAutoReverse(true);
-        wobble.setCycleCount(2);
-        wobble.setInterpolator(Interpolator.EASE_BOTH);
+        settle.setInterpolator(Interpolator.EASE_OUT);
 
         SequentialTransition sequence = new SequentialTransition(
                 new PauseTransition(Duration.millis(delayMs)),
-                new ParallelTransition(pop, fadeIn),
-                settle,
-                wobble
+                new ParallelTransition(grow, fadeIn),
+                settle
         );
-        sequence.setOnFinished(e -> node.setRotate(0));
         sequence.play();
     }
 
