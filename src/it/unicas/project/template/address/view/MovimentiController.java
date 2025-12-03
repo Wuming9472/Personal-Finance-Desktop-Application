@@ -11,14 +11,17 @@ import it.unicas.project.template.address.util.BudgetNotificationPreferences;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.paint.Color;
 
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MovimentiController {
 
@@ -246,6 +249,72 @@ public class MovimentiController {
         }
     }
 
+    @FXML
+    private void handleEditTransaction() {
+        Movimenti selectedMovement = transactionTable.getSelectionModel().getSelectedItem();
+
+        if (selectedMovement == null) {
+            showError("Seleziona un movimento da modificare.");
+            return;
+        }
+
+        // Verifica che sia selezionato solo un movimento
+        if (transactionTable.getSelectionModel().getSelectedItems().size() > 1) {
+            showError("Puoi modificare un solo movimento alla volta.\nSeleziona un unico movimento.");
+            return;
+        }
+
+        try {
+            // Carica il dialog FXML
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("EditMovimentoDialog.fxml"));
+            DialogPane dialogPane = loader.load();
+
+            // Ottieni il controller e passa i dati
+            EditMovimentoDialogController controller = loader.getController();
+            controller.setMovimento(selectedMovement);
+
+            // Crea e mostra il dialog
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setDialogPane(dialogPane);
+            dialog.setTitle("Modifica Movimento");
+
+            // Gestisci il risultato
+            Optional<ButtonType> result = dialog.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // Valida e salva le modifiche
+                if (controller.validateAndSave()) {
+                    Movimenti updatedMovement = controller.getMovimento();
+                    int categoryId = controller.getSelectedCategoryId();
+
+                    // Salva nel database
+                    MovimentiDAOMySQLImpl.update(updatedMovement, categoryId);
+
+                    // Ricarica i dati
+                    loadMovementsForCurrentUser();
+
+                    // Controlla il budget dopo la modifica
+                    checkBudgetAfterTransaction(categoryId);
+
+                    // Aggiorna i dati del report e della dashboard
+                    refreshReportData();
+                    refreshDashboardData();
+
+                    // Mostra un messaggio di successo
+                    showSuccess("Movimento modificato con successo!");
+                }
+            }
+
+        } catch (IOException e) {
+            showError("Errore nel caricamento del dialog: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            showError("Errore nella modifica: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Controlla il budget del mese corrente per una specifica categoria e mostra una notifica se è stato superato.
      * Viene chiamato dopo l'inserimento di un movimento.
@@ -343,6 +412,14 @@ public class MovimentiController {
 
     private void showError(String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
+
+    private void showSuccess(String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Successo");
         alert.setHeaderText(null);
         alert.setContentText(msg);
         alert.showAndWait();
