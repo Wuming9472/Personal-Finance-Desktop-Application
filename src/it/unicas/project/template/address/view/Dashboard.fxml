@@ -260,7 +260,11 @@
                                                     </font>
                                                 </Label>
 
-                                                <VBox fx:id="boxUltimiMovimenti" spacing="15.0" />
+                                                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="300.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0;" vbarPolicy="AS_NEEDED">
+                                                    <content>
+                                                        <VBox fx:id="boxUltimiMovimenti" spacing="15.0" />
+                                                    </content>
+                                                </ScrollPane>
                                             </children>
                                         </VBox>
                                     </children>
