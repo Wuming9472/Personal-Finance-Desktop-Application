@@ -3,6 +3,7 @@ package it.unicas.project.template.address.view;
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.animation.*;
+import javafx.scene.Cursor;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -132,6 +133,7 @@ public class ReportController {
                 "ORDER BY totale DESC";
 
         ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
+        double totalAmount = 0.0;
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -143,16 +145,92 @@ public class ReportController {
                     String categoria = rs.getString("name");
                     double totale = rs.getDouble("totale");
                     pieData.add(new PieChart.Data(categoria, totale));
+                    totalAmount += totale;
                 }
             }
         }
 
         if (pieData.isEmpty()) {
             pieData.add(new PieChart.Data("Nessuna spesa", 1));
+            totalAmount = 1.0;
         }
 
         pieChart.setData(pieData);
+
+        // Aggiungi tooltip e animazione hover per ogni fetta
+        final double total = totalAmount;
+        for (PieChart.Data data : pieData) {
+            Node node = data.getNode();
+            if (node != null) {
+                setupSliceInteraction(node, data, total);
+            } else {
+                data.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                    if (newNode != null) {
+                        setupSliceInteraction(newNode, data, total);
+                    }
+                });
+            }
+        }
+
         animatePieChart();
+    }
+
+    /**
+     * Configura l'interazione per ogni fetta del grafico a torta:
+     * - Tooltip con categoria, importo e percentuale
+     * - Animazione hover che fa uscire e ingrandisce la fetta
+     */
+    private void setupSliceInteraction(Node node, PieChart.Data data, double totalAmount) {
+        // Calcola la percentuale
+        double percentage = (data.getPieValue() / totalAmount) * 100;
+
+        // Crea il tooltip con importo e percentuale
+        Tooltip tooltip = new Tooltip(String.format("%s\n€ %.2f (%.1f%%)",
+                data.getName(),
+                data.getPieValue(),
+                percentage));
+        tooltip.setShowDelay(Duration.millis(100));
+        tooltip.setStyle("-fx-font-size: 13px; -fx-padding: 8px;");
+        Tooltip.install(node, tooltip);
+
+        // Animazione hover: ingrandisce e fa uscire la fetta
+        node.setOnMouseEntered(e -> {
+            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(200), node);
+            scaleUp.setToX(1.08);
+            scaleUp.setToY(1.08);
+            scaleUp.setInterpolator(Interpolator.EASE_OUT);
+
+            // Aggiungi un leggero effetto di traslazione per far "uscire" la fetta
+            TranslateTransition translate = new TranslateTransition(Duration.millis(200), node);
+            translate.setByX(3);
+            translate.setByY(3);
+            translate.setInterpolator(Interpolator.EASE_OUT);
+
+            ParallelTransition parallel = new ParallelTransition(scaleUp, translate);
+            parallel.play();
+
+            // Cambia il cursore per indicare che è interattivo
+            node.setCursor(javafx.scene.Cursor.HAND);
+        });
+
+        node.setOnMouseExited(e -> {
+            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(200), node);
+            scaleDown.setToX(1.0);
+            scaleDown.setToY(1.0);
+            scaleDown.setInterpolator(Interpolator.EASE_IN);
+
+            // Riporta la fetta nella posizione originale
+            TranslateTransition translate = new TranslateTransition(Duration.millis(200), node);
+            translate.setToX(0);
+            translate.setToY(0);
+            translate.setInterpolator(Interpolator.EASE_IN);
+
+            ParallelTransition parallel = new ParallelTransition(scaleDown, translate);
+            parallel.play();
+
+            // Ripristina il cursore
+            node.setCursor(javafx.scene.Cursor.DEFAULT);
+        });
     }
 
     private void loadLineChartData() throws SQLException {
