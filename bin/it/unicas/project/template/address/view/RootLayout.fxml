@@ -141,11 +141,7 @@
                                         <Insets left="6.0" />
                                     </HBox.margin>
                                 </SVGPath>
-                                <Label fx:id="lblDashboard" styleClass="menu-text" text="Dashboard">
-                                    <font>
-                                        <Font name="System Bold" size="22.0" />
-                                    </font>
-                                </Label>
+                                <Label fx:id="lblDashboard" styleClass="menu-text" text="Dashboard" />
                             </children>
                             <padding>
                                 <Insets left="12.0" right="12.0" />
@@ -168,11 +164,7 @@
                                         <Insets left="6.0" />
                                     </HBox.margin>
                                 </SVGPath>
-                                <Label fx:id="lblMovimenti" styleClass="menu-text" text="Movimenti">
-                                    <font>
-                                        <Font name="System Bold" size="22.0" />
-                                    </font>
-                                </Label>
+                                <Label fx:id="lblMovimenti" styleClass="menu-text" text="Movimenti" />
                             </children>
                             <padding>
                                 <Insets left="12.0" right="12.0" />
@@ -195,11 +187,7 @@
                                         <Insets left="6.0" />
                                     </HBox.margin>
                                 </SVGPath>
-                                <Label fx:id="lblBudget" styleClass="menu-text" text="Budget">
-                                    <font>
-                                        <Font name="System Bold" size="22.0" />
-                                    </font>
-                                </Label>
+                                <Label fx:id="lblBudget" styleClass="menu-text" text="Budget" />
                             </children>
                             <padding>
                                 <Insets left="12.0" right="12.0" />
@@ -222,11 +210,7 @@
                                         <Insets left="6.0" />
                                     </HBox.margin>
                                 </SVGPath>
-                                <Label fx:id="lblReport" styleClass="menu-text" text="Report">
-                                    <font>
-                                        <Font name="System Bold" size="22.0" />
-                                    </font>
-                                </Label>
+                                <Label fx:id="lblReport" styleClass="menu-text" text="Report" />
                             </children>
                             <padding>
                                 <Insets left="12.0" right="12.0" />
@@ -266,11 +250,7 @@
                                         <Insets left="6.0" />
                                     </HBox.margin>
                                 </SVGPath>
-                                <Label fx:id="lblAccount" styleClass="menu-text" text="Account">
-                                    <font>
-                                        <Font name="System Bold" size="22.0" />
-                                    </font>
-                                </Label>
+                                <Label fx:id="lblAccount" styleClass="menu-text" text="Account" />
                             </children>
                             <padding>
                                 <Insets left="12.0" right="12.0" />

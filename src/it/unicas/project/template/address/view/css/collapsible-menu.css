@@ -75,7 +75,8 @@
 /* ============= MENU TEXT - BASE ============= */
 .menu-text {
     -fx-text-fill: #334155;
-    -fx-font-weight: 600;
+    -fx-font-family: "System Bold";
+    -fx-font-weight: bold;
     -fx-font-size: 22px;
 }
 
@@ -132,26 +133,27 @@
 .menu-button-active:focused .menu-text,
 .menu-button-active:pressed .menu-text,
 .menu-button-active:hover:focused .menu-text {
-    -fx-text-fill: #FFFFFF;
-    -fx-font-weight: 600;
+    -fx-text-fill: #FFFFFF !important;
+    -fx-font-family: "System Bold";
+    -fx-font-weight: bold;
     -fx-font-size: 22px;
 }
 
 /* Regola specifica per Label dentro bottoni attivi (maggiore specificità) */
 .menu-button-active .menu-item-container .menu-text {
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: #FFFFFF !important;
 }
 
 .menu-button-active:hover .menu-item-container .menu-text {
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: #FFFFFF !important;
 }
 
 .menu-button-active:focused .menu-item-container .menu-text {
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: #FFFFFF !important;
 }
 
 .menu-button-active:pressed .menu-item-container .menu-text {
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: #FFFFFF !important;
 }
 
 /* ============= MENU ITEM CONTAINER ============= */
