@@ -68,8 +68,8 @@ public class BudgetNotificationHelper {
         }
 
         // Il budget è superato: controlla se mostrare la notifica
-        if (prefs.isNotificationDisabled(categoryId)) {
-            // Notifiche disabilitate per questa categoria
+        if (prefs.isNotificationDismissedForCurrentMonth(categoryId, categoryBudget.getBudgetAmount())) {
+            // L'utente ha scelto "Non mostrare più" per questo budget nel mese corrente
             return false;
         }
 
@@ -218,8 +218,9 @@ public class BudgetNotificationHelper {
         // Gestione click
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == disableButton) {
-            // L'utente ha scelto "Non mostrare più"
-            BudgetNotificationPreferences.getInstance().disableNotificationForCategory(budget.getCategoryId());
+            // L'utente ha scelto "Non mostrare più" per il mese corrente
+            BudgetNotificationPreferences.getInstance()
+                .dismissNotificationForCurrentMonth(budget.getCategoryId(), budget.getBudgetAmount());
         }
     }
 

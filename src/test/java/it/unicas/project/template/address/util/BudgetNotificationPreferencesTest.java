@@ -20,15 +20,25 @@ public class BudgetNotificationPreferencesTest {
     }
 
     @Test
-    public void canEnableAndDisableNotificationsPerCategory() throws IOException {
+    public void dismissalsAreScopedToMonthAndBudgetAmount() throws IOException {
         BudgetNotificationPreferences prefs = newPreferencesWithTempFile();
+        YearMonth current = YearMonth.now();
 
-        Assertions.assertFalse(prefs.isNotificationDisabled(3));
-        prefs.disableNotificationForCategory(3);
-        Assertions.assertTrue(prefs.isNotificationDisabled(3));
+        prefs.dismissNotificationForCurrentMonth(3, 200.0);
+        Assertions.assertTrue(prefs.isNotificationDismissedForCurrentMonth(3, 200.0));
 
-        prefs.enableNotificationForCategory(3);
-        Assertions.assertFalse(prefs.isNotificationDisabled(3));
+        // Limite aumentato: la dismissione viene rimossa
+        Assertions.assertFalse(prefs.isNotificationDismissedForCurrentMonth(3, 250.0));
+        Assertions.assertFalse(prefs.getDismissedNotificationsSnapshot().containsKey(current.toString()));
+
+        // Dati di un mese precedente non interferiscono con il mese corrente
+        Path tempFile = Files.createTempFile("prefs-stored", ".txt");
+        String lastMonth = YearMonth.now().minusMonths(1).toString();
+        Files.write(tempFile, ("dismissed." + lastMonth + "=3:300.0\n").getBytes());
+
+        BudgetNotificationPreferences.resetForTesting(tempFile.toString());
+        BudgetNotificationPreferences reloaded = BudgetNotificationPreferences.getInstance();
+        Assertions.assertFalse(reloaded.isNotificationDismissedForCurrentMonth(3, 200.0));
     }
 
     @Test
@@ -47,16 +57,21 @@ public class BudgetNotificationPreferencesTest {
     public void cleansOldMonthsWhenLoadingPreferences() throws IOException {
         Path tempFile = Files.createTempFile("prefs", ".txt");
         String staleMonth = YearMonth.now().minusMonths(4).toString();
+        String recentMonth = YearMonth.now().minusMonths(1).toString();
         Files.write(tempFile, (
                 "notified." + staleMonth + "=2,4\n" +
-                "disabled=9\n").getBytes());
+                "dismissed." + staleMonth + "=1:100.0\n" +
+                "dismissed." + recentMonth + "=2:200.0\n"
+        ).getBytes());
 
         BudgetNotificationPreferences.resetForTesting(tempFile.toString());
         BudgetNotificationPreferences prefs = BudgetNotificationPreferences.getInstance();
 
-        Map<String, Set<Integer>> snapshot = prefs.getNotifiedExceededCategoriesSnapshot();
-        Assertions.assertTrue(snapshot.isEmpty(), "I mesi più vecchi di 3 mesi devono essere rimossi");
-        Assertions.assertTrue(prefs.getDisabledCategoriesSnapshot().contains(9), "Le preferenze valide devono restare");
+        Map<String, Set<Integer>> notifiedSnapshot = prefs.getNotifiedExceededCategoriesSnapshot();
+        Map<String, Map<Integer, Double>> dismissedSnapshot = prefs.getDismissedNotificationsSnapshot();
+
+        Assertions.assertTrue(notifiedSnapshot.isEmpty(), "I mesi più vecchi di 3 mesi devono essere rimossi");
+        Assertions.assertTrue(dismissedSnapshot.containsKey(recentMonth), "I mesi recenti devono essere mantenuti");
     }
 
     @Test
@@ -65,14 +80,14 @@ public class BudgetNotificationPreferencesTest {
         BudgetNotificationPreferences.resetForTesting(tempFile.toString());
         BudgetNotificationPreferences prefs = BudgetNotificationPreferences.getInstance();
 
-        prefs.disableNotificationForCategory(12);
+        prefs.dismissNotificationForCurrentMonth(12, 150.0);
         prefs.markAsNotified(5);
 
         // Forza il reload dal file
         BudgetNotificationPreferences.resetForTesting(tempFile.toString());
         BudgetNotificationPreferences reloaded = BudgetNotificationPreferences.getInstance();
 
-        Assertions.assertTrue(reloaded.isNotificationDisabled(12));
+        Assertions.assertTrue(reloaded.isNotificationDismissedForCurrentMonth(12, 150.0));
         Assertions.assertTrue(reloaded.wasAlreadyNotifiedThisMonth(5));
     }
 }

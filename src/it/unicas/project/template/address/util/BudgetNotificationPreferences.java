@@ -2,16 +2,13 @@ package it.unicas.project.template.address.util;
 
 import java.io.*;
 import java.time.YearMonth;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Gestisce le preferenze per le notifiche di budget superato.
  * Tiene traccia di:
- * - Categorie con notifiche disabilitate permanentemente
  * - Categorie già notificate come superate nel mese corrente
+ * - Categorie per cui l'utente ha scelto "Non mostrare più" per il mese corrente
  */
 public class BudgetNotificationPreferences {
 
@@ -19,16 +16,16 @@ public class BudgetNotificationPreferences {
     private static String preferencesFile = DEFAULT_PREFERENCES_FILE;
     private static BudgetNotificationPreferences instance;
 
-    // Categorie con notifiche disabilitate permanentemente (categoryId)
-    private Set<Integer> disabledCategories;
-
-    // Mappa: mese-anno -> set di categoryId già notificati come superati
+    // Mappa: mese-anno -> set di categoryId già notificate come superate
     // Esempio: "2025-11" -> {1, 3, 5}
     private Map<String, Set<Integer>> notifiedExceededCategories;
 
+    // Mappa: mese-anno -> mappa categoria -> budgetAmount al momento del "Non mostrare più"
+    private Map<String, Map<Integer, Double>> dismissedNotifications;
+
     private BudgetNotificationPreferences() {
-        this.disabledCategories = new HashSet<>();
         this.notifiedExceededCategories = new HashMap<>();
+        this.dismissedNotifications = new HashMap<>();
         load();
     }
 
@@ -46,29 +43,6 @@ public class BudgetNotificationPreferences {
     public static synchronized void resetForTesting(String customFilePath) {
         preferencesFile = customFilePath != null ? customFilePath : DEFAULT_PREFERENCES_FILE;
         instance = null;
-    }
-
-    /**
-     * Verifica se una categoria ha le notifiche disabilitate permanentemente
-     */
-    public boolean isNotificationDisabled(int categoryId) {
-        return disabledCategories.contains(categoryId);
-    }
-
-    /**
-     * Disabilita permanentemente le notifiche per una categoria
-     */
-    public void disableNotificationForCategory(int categoryId) {
-        disabledCategories.add(categoryId);
-        save();
-    }
-
-    /**
-     * Riabilita le notifiche per una categoria
-     */
-    public void enableNotificationForCategory(int categoryId) {
-        disabledCategories.remove(categoryId);
-        save();
     }
 
     /**
@@ -106,13 +80,53 @@ public class BudgetNotificationPreferences {
     }
 
     /**
+     * Verifica se per il mese corrente l'utente ha scelto "Non mostrare più" per una categoria
+     * con il limite indicato. Se il limite è stato aumentato rispetto a quello salvato, la
+     * dismissione viene rimossa per permettere di notificare nuovamente.
+     */
+    public boolean isNotificationDismissedForCurrentMonth(int categoryId, double currentBudgetAmount) {
+        String currentMonth = getCurrentMonthKey();
+        Map<Integer, Double> dismissedThisMonth = dismissedNotifications.get(currentMonth);
+        if (dismissedThisMonth == null) {
+            return false;
+        }
+
+        Double dismissedAmount = dismissedThisMonth.get(categoryId);
+        if (dismissedAmount == null) {
+            return false;
+        }
+
+        if (currentBudgetAmount > dismissedAmount) {
+            // Il limite è stato alzato: annulla la dismissione
+            dismissedThisMonth.remove(categoryId);
+            if (dismissedThisMonth.isEmpty()) {
+                dismissedNotifications.remove(currentMonth);
+            }
+            save();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Registra la scelta "Non mostrare più" per il mese corrente includendo il limite attuale.
+     */
+    public void dismissNotificationForCurrentMonth(int categoryId, double budgetAmount) {
+        String currentMonth = getCurrentMonthKey();
+        dismissedNotifications.computeIfAbsent(currentMonth, k -> new HashMap<>())
+            .put(categoryId, budgetAmount);
+        save();
+    }
+
+    /**
      * Pulisce le notifiche di mesi vecchi (mantiene solo gli ultimi 3 mesi)
      */
     public void cleanOldMonths() {
         YearMonth current = YearMonth.now();
         Set<String> toRemove = new HashSet<>();
 
-        for (String monthKey : notifiedExceededCategories.keySet()) {
+        for (String monthKey : new HashSet<>(notifiedExceededCategories.keySet())) {
             try {
                 YearMonth monthYear = YearMonth.parse(monthKey);
                 // Rimuovi se più vecchio di 3 mesi
@@ -126,19 +140,22 @@ public class BudgetNotificationPreferences {
         }
 
         toRemove.forEach(notifiedExceededCategories::remove);
+        toRemove.forEach(dismissedNotifications::remove);
         if (!toRemove.isEmpty()) {
             save();
         }
     }
 
     // Metodi di supporto per i test automatizzati (stessa package visibility)
-    Set<Integer> getDisabledCategoriesSnapshot() {
-        return new HashSet<>(disabledCategories);
-    }
-
     Map<String, Set<Integer>> getNotifiedExceededCategoriesSnapshot() {
         Map<String, Set<Integer>> snapshot = new HashMap<>();
         notifiedExceededCategories.forEach((k, v) -> snapshot.put(k, new HashSet<>(v)));
+        return snapshot;
+    }
+
+    Map<String, Map<Integer, Double>> getDismissedNotificationsSnapshot() {
+        Map<String, Map<Integer, Double>> snapshot = new HashMap<>();
+        dismissedNotifications.forEach((month, map) -> snapshot.put(month, new HashMap<>(map)));
         return snapshot;
     }
 
@@ -152,25 +169,28 @@ public class BudgetNotificationPreferences {
     /**
      * Salva le preferenze su file di testo
      * Formato:
-     * disabled=1,3,5
      * notified.2025-11=1,3,5
      * notified.2025-12=2,4
+     * dismissed.2025-12=3:400.0,4:250.0
      */
     private void save() {
         try (PrintWriter writer = new PrintWriter(new FileWriter(preferencesFile))) {
-            // Salva categorie disabilitate
-            if (!disabledCategories.isEmpty()) {
-                writer.print("disabled=");
-                writer.println(String.join(",",
-                    disabledCategories.stream().map(String::valueOf).toArray(String[]::new)));
-            }
-
             // Salva categorie notificate per mese
             for (Map.Entry<String, Set<Integer>> entry : notifiedExceededCategories.entrySet()) {
                 if (!entry.getValue().isEmpty()) {
                     writer.print("notified." + entry.getKey() + "=");
                     writer.println(String.join(",",
                         entry.getValue().stream().map(String::valueOf).toArray(String[]::new)));
+                }
+            }
+
+            // Salva categorie dismesse per mese con il relativo limite
+            for (Map.Entry<String, Map<Integer, Double>> entry : dismissedNotifications.entrySet()) {
+                if (!entry.getValue().isEmpty()) {
+                    writer.print("dismissed." + entry.getKey() + "=");
+                    List<String> values = new ArrayList<>();
+                    entry.getValue().forEach((catId, amount) -> values.add(catId + ":" + amount));
+                    writer.println(String.join(",", values));
                 }
             }
         } catch (IOException e) {
@@ -203,19 +223,7 @@ public class BudgetNotificationPreferences {
                 String key = line.substring(0, equalsIndex);
                 String value = line.substring(equalsIndex + 1);
 
-                if (key.equals("disabled")) {
-                    // Carica categorie disabilitate
-                    if (!value.isEmpty()) {
-                        String[] ids = value.split(",");
-                        for (String id : ids) {
-                            try {
-                                disabledCategories.add(Integer.parseInt(id.trim()));
-                            } catch (NumberFormatException e) {
-                                // Ignora valori non validi
-                            }
-                        }
-                    }
-                } else if (key.startsWith("notified.")) {
+                if (key.startsWith("notified.")) {
                     // Carica categorie notificate per mese
                     String monthKey = key.substring("notified.".length());
                     if (!value.isEmpty()) {
@@ -230,6 +238,28 @@ public class BudgetNotificationPreferences {
                         }
                         if (!categoryIds.isEmpty()) {
                             notifiedExceededCategories.put(monthKey, categoryIds);
+                        }
+                    }
+                } else if (key.startsWith("dismissed.")) {
+                    String monthKey = key.substring("dismissed.".length());
+                    if (!value.isEmpty()) {
+                        Map<Integer, Double> dismissedForMonth = new HashMap<>();
+                        String[] parts = value.split(",");
+                        for (String part : parts) {
+                            String[] pair = part.split(":");
+                            if (pair.length != 2) {
+                                continue;
+                            }
+                            try {
+                                int categoryId = Integer.parseInt(pair[0].trim());
+                                double amount = Double.parseDouble(pair[1].trim());
+                                dismissedForMonth.put(categoryId, amount);
+                            } catch (NumberFormatException e) {
+                                // Ignora valori non validi
+                            }
+                        }
+                        if (!dismissedForMonth.isEmpty()) {
+                            dismissedNotifications.put(monthKey, dismissedForMonth);
                         }
                     }
                 }
