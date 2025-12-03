@@ -252,7 +252,7 @@
 
                                 <AnchorPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" GridPane.columnIndex="1">
                                     <children>
-                                        <VBox spacing="15.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
+                                        <VBox spacing="15.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="25.0">
                                             <children>
                                                 <Label text="Ultimi Movimenti" textFill="#1e293b">
                                                     <font>
