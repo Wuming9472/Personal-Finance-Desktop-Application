@@ -152,6 +152,7 @@ public class ReportController {
         }
 
         pieChart.setData(pieData);
+        animatePieChart();
     }
 
     private void loadLineChartData() throws SQLException {
@@ -230,9 +231,13 @@ public class ReportController {
                     return;
                 }
 
-                Node plotArea = findPlotArea(plotBackground);
+                Node plotArea = lineChartAndamento.lookup(".plot-content");
+                // Limitiamo il clip solo all'area del grafico, non agli assi
                 if (plotArea == null) {
-                    plotArea = plotBackground.getParent();
+                    plotArea = findPlotArea(plotBackground);
+                }
+                if (plotArea == null) {
+                    plotArea = plotBackground;
                 }
 
                 Rectangle clip = new Rectangle();
@@ -281,6 +286,80 @@ public class ReportController {
             current = current.getParent();
         }
         return null;
+    }
+
+    /**
+     * Anima il grafico a torta facendo "sbocciare" ogni fetta con un leggero rimbalzo
+     * e una piccola oscillazione per dare un effetto fiera.
+     */
+    private void animatePieChart() {
+        if (pieChart == null) return;
+
+        ObservableList<PieChart.Data> data = pieChart.getData();
+        if (data == null || data.isEmpty()) return;
+
+        Platform.runLater(() -> {
+            final double delayIncrement = 120; // ms tra una fetta e l'altra
+
+            for (int i = 0; i < data.size(); i++) {
+                PieChart.Data slice = data.get(i);
+                double delay = i * delayIncrement;
+
+                Node node = slice.getNode();
+                if (node == null) {
+                    final int index = i;
+                    slice.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                        if (newNode != null) {
+                            playSliceAnimation(newNode, index * delayIncrement);
+                        }
+                    });
+                } else {
+                    playSliceAnimation(node, delay);
+                }
+            }
+        });
+    }
+
+    private void playSliceAnimation(Node node, double delayMs) {
+        node.setScaleX(0);
+        node.setScaleY(0);
+        node.setOpacity(0);
+        node.setRotate(0);
+
+        ScaleTransition pop = new ScaleTransition(Duration.millis(520), node);
+        pop.setFromX(0);
+        pop.setFromY(0);
+        pop.setToX(1.08);
+        pop.setToY(1.08);
+        pop.setInterpolator(Interpolator.EASE_OUT);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(450), node);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.setInterpolator(Interpolator.EASE_OUT);
+
+        ScaleTransition settle = new ScaleTransition(Duration.millis(220), node);
+        settle.setFromX(1.08);
+        settle.setFromY(1.08);
+        settle.setToX(1.0);
+        settle.setToY(1.0);
+        settle.setInterpolator(Interpolator.EASE_IN);
+
+        RotateTransition wobble = new RotateTransition(Duration.millis(600), node);
+        wobble.setFromAngle(-8);
+        wobble.setToAngle(8);
+        wobble.setAutoReverse(true);
+        wobble.setCycleCount(2);
+        wobble.setInterpolator(Interpolator.EASE_BOTH);
+
+        SequentialTransition sequence = new SequentialTransition(
+                new PauseTransition(Duration.millis(delayMs)),
+                new ParallelTransition(pop, fadeIn),
+                settle,
+                wobble
+        );
+        sequence.setOnFinished(e -> node.setRotate(0));
+        sequence.play();
     }
 
     private void loadForecastData() throws SQLException {
