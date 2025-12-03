@@ -325,11 +325,12 @@ public class DashboardController {
                                 XYChart.Series<String, Number> seriesEntrate,
                                 float[] entrateFinali, float[] usciteFinali) {
 
-        Pane plotContent = getPlotContent();
-        if (plotContent == null) return;
+        // Trova il Pane che contiene le barre (plotContent)
+        Node plotBackground = barChartAndamento.lookup(".chart-plot-background");
+        if (plotBackground == null || plotBackground.getParent() == null) return;
 
-        Pane plotContent = (Pane) plotArea.getParent();
-        javafx.geometry.Bounds plotBounds = plotArea.getBoundsInParent();
+        Pane plotContent = (Pane) plotBackground.getParent();
+        javafx.geometry.Bounds plotBounds = plotBackground.getBoundsInParent();
 
         for (int i = 0; i < Math.min(entrateNodes.size(), usciteNodes.size()); i++) {
             Node nodeEntrate = entrateNodes.get(i);
