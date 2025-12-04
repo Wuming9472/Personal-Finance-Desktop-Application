@@ -1,4 +1,4 @@
-# 💰 BalanceSuite - Personal Finance Desktop Application
+<img width="1920" height="993" alt="Screenshot (8)" src="https://github.com/user-attachments/assets/3647fcee-46d0-4785-abdb-01f0381a28ba" /># 💰 BalanceSuite - Personal Finance Desktop Application
 
 [![Java](https://img.shields.io/badge/Java-14+-orange.svg)](https://www.oracle.com/java/)
 [![JavaFX](https://img.shields.io/badge/JavaFX-UI-blue.svg)](https://openjfx.io/)
@@ -81,7 +81,7 @@ Un'applicazione desktop moderna e intuitiva per la gestione delle finanze person
 
 <img width="1920" height="1000" alt="Screenshot (1)" src="https://github.com/user-attachments/assets/a85edb41-05d0-4f64-ac71-f85fb530ed01" />
 <img width="1920" height="1004" alt="Screenshot (3)" src="https://github.com/user-attachments/assets/e62f108e-9624-4a94-ae5b-4a8f7b0293a0" />
-<img width="1920" height="997" alt="Screenshot (5)" src="https://github.com/user-attachments/assets/fb4d2e8f-d957-4144-bf00-0a43afd7e9a9" />
+<img width="1920" height="993" alt="Screenshot (8)" src="https://github.com/user-attachments/assets/91632d5e-70c7-4eba-9398-f34b41fe28a8" />
 <img width="1920" height="1003" alt="Screenshot (6)" src="https://github.com/user-attachments/assets/6d853eb1-2d47-43b3-8eba-056e4cc0cca2" />
 <img width="1920" height="453" alt="Screenshot (7)" src="https://github.com/user-attachments/assets/a40a8b57-22ce-4a90-8c75-136d4f811f50" />
 
