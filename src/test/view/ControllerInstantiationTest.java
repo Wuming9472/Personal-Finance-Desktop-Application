@@ -1,8 +1,8 @@
-package it.unicas.project.template.address.view;
+package test.view;
 
+import it.unicas.project.template.address.view.*;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ControllerInstantiationTest {
 

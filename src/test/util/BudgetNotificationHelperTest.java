@@ -1,9 +1,15 @@
-package it.unicas.project.template.address.util;
+package test.util;
 
 import it.unicas.project.template.address.model.Budget;
+import it.unicas.project.template.address.util.BudgetNotificationHelper;
+import it.unicas.project.template.address.util.BudgetNotificationPreferences;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,7 +17,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BudgetNotificationHelperTest {
 

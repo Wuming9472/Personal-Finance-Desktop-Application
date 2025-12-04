@@ -1,4 +1,4 @@
-package it.unicas.project.template.address.view;
+package test.view;
 
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Budget;
@@ -7,6 +7,7 @@ import it.unicas.project.template.address.model.User;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
+import it.unicas.project.template.address.view.DashboardController;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -22,15 +23,12 @@ import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import static org.junit.jupiter.api.Assertions.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;

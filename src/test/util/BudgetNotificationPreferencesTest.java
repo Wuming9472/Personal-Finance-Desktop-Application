@@ -1,5 +1,6 @@
-package it.unicas.project.template.address.util;
+package test.util;
 
+import it.unicas.project.template.address.util.BudgetNotificationPreferences;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class BudgetNotificationPreferencesTest {

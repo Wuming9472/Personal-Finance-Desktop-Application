@@ -1,8 +1,9 @@
-package it.unicas.project.template.address.view;
+package test.view;
 
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.User;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
+import it.unicas.project.template.address.view.LoginController;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -11,13 +12,10 @@ import javafx.scene.layout.VBox;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 

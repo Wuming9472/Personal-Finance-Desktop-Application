@@ -1,5 +1,6 @@
-package it.unicas.project.template.address.util;
+package test.util;
 
+import it.unicas.project.template.address.util.ForecastCalculator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

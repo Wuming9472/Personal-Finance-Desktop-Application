@@ -1,22 +1,21 @@
-package it.unicas.project.template.address.view;
+package test.view;
 
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.User;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
+import it.unicas.project.template.address.view.MovimentiController;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
