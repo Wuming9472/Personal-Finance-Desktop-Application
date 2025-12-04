@@ -671,7 +671,7 @@ Visibile solo se ci sono abbastanza dati (almeno **3 giorni diversi** con movime
 
 ## 🧪 Testing
 
-Il progetto include test unitari per le classi di utilità.
+Il progetto include test unitari per le classi di utilità (escluso `DateUtil`) e test di smoke sui controller.
 
 ### Eseguire i Test
 
@@ -701,10 +701,16 @@ referenza manuale quando si vuole verificare il parsing/formattazione delle date
 impattare la copertura automatica degli altri helper.
 
 **BudgetNotificationPreferencesTest**
-- `testIsNotificationEnabled()`: Controllo stato notifiche
-- `testDisableNotification()`: Disabilitazione notifica categoria
-- `testEnableNotification()`: Riabilitazione notifica
-- `testPersistence()`: Salvataggio su file JSON
+- Gestione marcatura notifiche, dismissione e pulizia mesi obsoleti
+
+**ForecastCalculatorTest**
+- Calcolo delle previsioni e classificazione stato
+
+**SummaryCalculatorTest**
+- Calcolo riepilogo mensile e aggregazioni per periodo
+
+**ControllerInstantiationTest**
+- Istanziazione dei controller principali in `view`
 
 ### Copertura Test
 - **Utility Classes**: 90%+ (focalizzata su helper diversi da `DateUtil`, ora archiviato)
