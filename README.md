@@ -178,7 +178,7 @@ Personal-Finance-Desktop-Application/
 │   │   │       ├── dracula.css
 │   │   │       └── collapsible-menu.css
 │   │   │
-│   │   └── util/                            # Classi di utilità
+│   │   └── test.util/                            # Classi di utilità
 │   │       ├── DateUtil.java               # Gestione e formattazione date
 │   │       ├── BudgetNotificationHelper.java       # Logica notifiche budget
 │   │       └── BudgetNotificationPreferences.java  # Preferenze notifiche
@@ -187,7 +187,7 @@ Personal-Finance-Desktop-Application/
 │       └── java/
 │           ├── TestRunner.java             # Runner custom per test
 │           ├── org/junit/jupiter/api/      # Annotazioni JUnit 5
-│           └── it/unicas/project/template/address/util/
+│           └── it/unicas/project/template/address/test.util/
 │               ├── DateUtilTest.java
 │               └── BudgetNotificationPreferencesTest.java
 │
@@ -682,9 +682,9 @@ Il progetto include test unitari per le classi di utilità.
 # Compila i test
 javac -d out/test-classes \
   src/test/java/org/junit/jupiter/api/*.java \
-  src/it/unicas/project/template/address/util/BudgetNotificationPreferences.java \
-  src/it/unicas/project/template/address/util/DateUtil.java \
-  src/test/java/it/unicas/project/template/address/util/*.java \
+  src/it/unicas/project/template/address/test.util/BudgetNotificationPreferences.java \
+  src/it/unicas/project/template/address/test.util/DateUtil.java \
+  src/test/java/it/unicas/project/template/address/test.util/*.java \
   src/test/java/TestRunner.java
 
 # Esegui i test

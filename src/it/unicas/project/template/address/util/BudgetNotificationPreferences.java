@@ -147,13 +147,13 @@ public class BudgetNotificationPreferences {
     }
 
     // Metodi di supporto per i test automatizzati (stessa package visibility)
-    Map<String, Set<Integer>> getNotifiedExceededCategoriesSnapshot() {
+    public Map<String, Set<Integer>> getNotifiedExceededCategoriesSnapshot() {
         Map<String, Set<Integer>> snapshot = new HashMap<>();
         notifiedExceededCategories.forEach((k, v) -> snapshot.put(k, new HashSet<>(v)));
         return snapshot;
     }
 
-    Map<String, Map<Integer, Double>> getDismissedNotificationsSnapshot() {
+    public Map<String, Map<Integer, Double>> getDismissedNotificationsSnapshot() {
         Map<String, Map<Integer, Double>> snapshot = new HashMap<>();
         dismissedNotifications.forEach((month, map) -> snapshot.put(month, new HashMap<>(map)));
         return snapshot;
