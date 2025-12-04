@@ -1,5 +1,6 @@
-package it.unicas.project.template.address.model;
+package test.java.it.unicas.project.template.address.model;
 
+import it.unicas.project.template.address.model.Budget;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
