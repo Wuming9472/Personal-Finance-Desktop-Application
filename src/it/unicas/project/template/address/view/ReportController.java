@@ -498,7 +498,7 @@ public class ReportController {
 
             lblStatusTitolo.setText("Dati Insufficienti");
             lblStatusMessaggio.setText("Inserisci almeno 3 giorni di movimenti per visualizzare una previsione affidabile.");
-            lblStatusIcon.setText("⚠");
+            lblStatusIcon.setText("⚠️");
 
             paneStatus.setStyle("-fx-background-color: #fef3c7; -fx-background-radius: 12; " +
                     "-fx-border-color: #f59e0b; -fx-border-radius: 12; -fx-border-width: 2;");

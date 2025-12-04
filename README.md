@@ -204,7 +204,8 @@ Personal-Finance-Desktop-Application/
 ├── build/                                   # Build configuration
 │   └── build.fxbuild.xml                   # Configurazione JavaFX build
 │
-├
+├── docs/                                    # Documentazione
+│   └── user_manual.md                      # Manuale utente
 │
 ├── bin/                                     # File compilati (output)
 ├── out/                                     # Artifact di build
@@ -212,6 +213,7 @@ Personal-Finance-Desktop-Application/
 ├── PersonalFinanceDB.sql                   # Script creazione database
 ├── PersonalFinanceDB.mwb                   # MySQL Workbench model
 ├── budget_notifications.json               # Preferenze notifiche (runtime)
+├── TESTING.md                              # Guida testing
 ├── BalanceSuite.iml                        # Configurazione modulo IntelliJ
 └── README.md                               # Questo file
 ```
