@@ -261,7 +261,7 @@
                                                 <HBox alignment="CENTER_LEFT" spacing="8.0" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-padding: 12;">
                                                     <children>
                                                         <Label style="-fx-font-size: 14px;" text="ⓘ" />
-                                                        <Label fx:id="lblDisclaimer" text="La previsione utilizza i movimenti del mese corrente dal giorno 1 fino a oggi. Sulla base della media giornaliera di entrate e uscite stima il saldo a fine mese e non considera movimenti futuri non ancora registrati." textFill="#475569" wrapText="true">
+                                                        <Label fx:id="lblDisclaimer" text="La previsione utilizza i movimenti del mese corrente dal giorno 1 fino a oggi. Sulla base della media giornaliera di entrate e uscite stima il saldo a fine mese e non considera movimenti futuri non ancora registrati." textFill="#475569" wrapText="true" HBox.hgrow="ALWAYS">
                                                             <font>
                                                                 <Font size="12.0" />
                                                             </font>
