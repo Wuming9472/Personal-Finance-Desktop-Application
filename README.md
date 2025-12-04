@@ -619,18 +619,30 @@ GROUP BY b.budget_id;
   - Tutto (dall'inizio)
 - Refresh automatico dei grafici alla selezione
 
-**Pannello Previsione (Forecast)**
-Visibile solo se ci sono abbastanza dati (min 3 giorni di movimenti):
+**Pannello Previsione (Forecast)**  
+Visibile solo se ci sono abbastanza dati (almeno **3 giorni diversi** con movimenti nel **mese corrente**).
 
-- **Periodo di Calcolo**: Range date considerato
-- **Saldo Stimato**: Proiezione a fine mese
-- **Giorni Rimanenti**: Giorni fino alla fine del mese
-- **Media Spese Giornaliera**: `TotaleUscite / GiorniTrascorsi`
-- **Media Entrate Giornaliera**: `TotaleEntrate / GiorniTrascorsi`
-- **Spese Proiettate Totali**: `SpeseSostenute + (MediaSpese * GiorniRimanenti)`
-- **Entrate Proiettate Totali**: `EntrateRicevute + (MediaEntrate * GiorniRimanenti)`
-- **Status Badge**: Indicatore visivo (verde = ok, rosso = critico)
-- **Disclaimer**: Nota che la previsione è basata su trend passati
+- **Periodo di Calcolo**: dal giorno **1** del mese corrente **fino a oggi**  
+- **Saldo Stimato**: saldo previsto a fine mese  
+  `SaldoStimato = EntrateProiettateTotali − SpeseProiettateTotali`
+- **Giorni Trascorsi**: numero di giorni di calendario dall’inizio del mese a oggi  
+  `GiorniTrascorsi = giorno_corrente_del_mese`
+- **Giorni Rimanenti**: giorni di calendario dalla data odierna fino alla fine del mese  
+  `GiorniRimanenti = GiorniNelMese − GiorniTrascorsi`
+- **Media Spese Giornaliera**: spesa media giornaliera del mese corrente  
+  `MediaSpeseGiornaliera = TotaleUscite / GiorniTrascorsi`
+- **Media Entrate Giornaliera**: entrata media giornaliera del mese corrente  
+  `MediaEntrateGiornaliera = TotaleEntrate / GiorniTrascorsi`
+- **Spese Proiettate Totali**: spese stimate a fine mese  
+  `SpeseProiettateTotali = TotaleUscite + (MediaSpeseGiornaliera * GiorniRimanenti)`
+- **Entrate Proiettate Totali**: entrate stimate a fine mese  
+  `EntrateProiettateTotali = TotaleEntrate + (MediaEntrateGiornaliera * GiorniRimanenti)`
+- **Status Badge**: indicatore visivo dello stato previsto del saldo a fine mese  
+  - verde = situazione stabile (saldoStimato > 200)  
+  - giallo = attenzione (−100 ≤ saldoStimato ≤ 200)  
+  - rosso = situazione critica (saldoStimato < −100)
+- **Disclaimer**: la previsione è una stima basata sull’andamento medio delle entrate e uscite **del mese corrente fino a oggi** e **non considera movimenti futuri non ancora registrati**.
+
 
 **Categoria Critica**
 - Identifica la categoria con più spese nel periodo
