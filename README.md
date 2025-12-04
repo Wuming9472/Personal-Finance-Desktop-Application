@@ -1,4 +1,4 @@
-<img width="1920" height="993" alt="Screenshot (8)" src="https://github.com/user-attachments/assets/3647fcee-46d0-4785-abdb-01f0381a28ba" /># 💰 BalanceSuite - Personal Finance Desktop Application
+💰 BalanceSuite - Personal Finance Desktop Application
 
 [![Java](https://img.shields.io/badge/Java-14+-orange.svg)](https://www.oracle.com/java/)
 [![JavaFX](https://img.shields.io/badge/JavaFX-UI-blue.svg)](https://openjfx.io/)
