@@ -188,7 +188,6 @@ Personal-Finance-Desktop-Application/
 │           ├── TestRunner.java             # Runner custom per test
 │           ├── org/junit/jupiter/api/      # Annotazioni JUnit 5
 │           └── it/unicas/project/template/address/test.util/
-│               ├── DateUtilTest.java
 │               └── BudgetNotificationPreferencesTest.java
 │
 ├── lib/                                     # Librerie esterne
@@ -683,8 +682,7 @@ Il progetto include test unitari per le classi di utilità.
 javac -d out/test-classes \
   src/test/java/org/junit/jupiter/api/*.java \
   src/it/unicas/project/template/address/test.util/BudgetNotificationPreferences.java \
-  src/it/unicas/project/template/address/test.util/DateUtil.java \
-  src/test/java/it/unicas/project/template/address/test.util/*.java \
+  src/test/java/it/unicas/project/template/address/test.util/BudgetNotificationPreferencesTest.java \
   src/test/java/TestRunner.java
 
 # Esegui i test
@@ -698,9 +696,9 @@ java -cp out/test-classes TestRunner
 ### Test Inclusi
 
 **DateUtilTest**
-- `testParseValidDate()`: Parsing date valide
-- `testParseInvalidDate()`: Gestione date invalide
-- `testFormatDate()`: Formattazione corretta
+Spostato in `archived-tests/` per non essere eseguito dal build principale; resta come
+referenza manuale quando si vuole verificare il parsing/formattazione delle date senza
+impattare la copertura automatica degli altri helper.
 
 **BudgetNotificationPreferencesTest**
 - `testIsNotificationEnabled()`: Controllo stato notifiche
@@ -709,7 +707,7 @@ java -cp out/test-classes TestRunner
 - `testPersistence()`: Salvataggio su file JSON
 
 ### Copertura Test
-- **Utility Classes**: 90%+
+- **Utility Classes**: 90%+ (focalizzata su helper diversi da `DateUtil`, ora archiviato)
 - **DAO Layer**: Testing manuale con DB di test
 - **Controller Layer**: Testing manuale tramite UI
 
