@@ -39,6 +39,16 @@ public final class Assertions {
         assertEquals(expected, actual, "Values are not equal");
     }
 
+    public static void assertEquals(double expected, double actual, double delta, String message) {
+        if (Math.abs(expected - actual) > delta) {
+            throw new AssertionError(message + " (expected: " + expected + ", actual: " + actual + ")");
+        }
+    }
+
+    public static void assertEquals(double expected, double actual, double delta) {
+        assertEquals(expected, actual, delta, "Values are not equal within delta " + delta);
+    }
+
     public static void assertNull(Object value, String message) {
         if (value != null) {
             throw new AssertionError(message + " (was: " + value + ")");
