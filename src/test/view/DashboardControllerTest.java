@@ -19,8 +19,6 @@ import javafx.scene.layout.VBox;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +29,7 @@ import java.time.LocalDate;
 import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,41 +84,40 @@ class DashboardControllerTest {
         budget.setBudgetAmount(200f);
         budget.setSpentAmount(50f);
 
-        try (MockedConstruction<MovimentiDAOMySQLImpl> movimentiMock = mockConstruction(MovimentiDAOMySQLImpl.class, (mock, context) -> {
-                    when(mock.getSumByMonth(anyInt(), anyInt(), anyInt(), eq("Entrata"))).thenReturn(200f);
-                    when(mock.getSumByMonth(anyInt(), anyInt(), anyInt(), eq("Uscita"))).thenReturn(50f);
-                    when(mock.selectByUserAndMonthYear(anyInt(), anyInt(), anyInt())).thenReturn(List.of(movement));
-                });
-             MockedConstruction<BudgetDAOMySQLImpl> budgetMock = mockConstruction(BudgetDAOMySQLImpl.class, (mock, context) ->
-                     when(mock.getBudgetsForMonth(anyInt(), anyInt(), anyInt())).thenReturn(List.of(budget)));
-             MockedStatic<DAOMySQLSettings> settingsMock = mockStatic(DAOMySQLSettings.class);
-             MockedStatic<java.sql.DriverManager> driverManagerMock = mockStatic(java.sql.DriverManager.class)) {
+        MovimentiDAOMySQLImpl movimentiDAO = mock(MovimentiDAOMySQLImpl.class);
+        when(movimentiDAO.getSumByMonth(anyInt(), anyInt(), anyInt(), eq("Entrata"))).thenReturn(200f);
+        when(movimentiDAO.getSumByMonth(anyInt(), anyInt(), anyInt(), eq("Uscita"))).thenReturn(50f);
+        when(movimentiDAO.selectByUserAndMonthYear(anyInt(), anyInt(), anyInt())).thenReturn(List.of(movement));
 
-            DAOMySQLSettings settings = new DAOMySQLSettings();
-            settingsMock.when(DAOMySQLSettings::getCurrentDAOMySQLSettings).thenReturn(settings);
+        BudgetDAOMySQLImpl budgetDAO = mock(BudgetDAOMySQLImpl.class);
+        when(budgetDAO.getBudgetsForMonth(anyInt(), anyInt(), anyInt())).thenReturn(List.of(budget));
 
-            Connection connection = mock(Connection.class);
-            PreparedStatement statement = mock(PreparedStatement.class);
-            ResultSet resultSet = mock(ResultSet.class);
-            when(resultSet.next()).thenReturn(true);
-            when(resultSet.getDouble("totaleEntrate")).thenReturn(200d);
-            when(resultSet.getDouble("totaleUscite")).thenReturn(50d);
-            when(resultSet.getInt("giorniConMovimenti")).thenReturn(5);
-            when(resultSet.getDate("dataRecente")).thenReturn(java.sql.Date.valueOf(LocalDate.now()));
+        DAOMySQLSettings settings = new DAOMySQLSettings();
+        Connection connection = mock(Connection.class);
+        PreparedStatement statement = mock(PreparedStatement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getDouble("totaleEntrate")).thenReturn(200d);
+        when(resultSet.getDouble("totaleUscite")).thenReturn(50d);
+        when(resultSet.getInt("giorniConMovimenti")).thenReturn(5);
+        when(resultSet.getDate("dataRecente")).thenReturn(java.sql.Date.valueOf(LocalDate.now()));
 
-            when(statement.executeQuery()).thenReturn(resultSet);
-            when(connection.prepareStatement(any())).thenReturn(statement);
-            driverManagerMock.when(() -> java.sql.DriverManager.getConnection(any(String.class))).thenReturn(connection);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(connection.prepareStatement(any())).thenReturn(statement);
 
-            controller.setMainApp(mainApp);
+        controller.setMovimentiDAO(movimentiDAO);
+        controller.setBudgetDAO(budgetDAO);
+        controller.setSettingsSupplier(() -> settings);
+        controller.setConnectionFactory(url -> connection);
 
-            assertEquals("€ 200.00", ((Label) getField(controller, "lblEntrate")).getText());
-            assertEquals("€ 50.00", ((Label) getField(controller, "lblUscite")).getText());
-            assertEquals("€ 150.00", ((Label) getField(controller, "lblSaldo")).getText());
-            assertEquals("€ 150.00", ((Label) getField(controller, "lblPrevisione")).getText());
-            assertEquals(1, ((VBox) getField(controller, "boxUltimiMovimenti")).getChildren().size());
-            assertTrue(((GridPane) getField(controller, "gridBudgetList")).getChildren().size() > 0);
-        }
+        controller.setMainApp(mainApp);
+
+        assertEquals("€ 200.00", ((Label) getField(controller, "lblEntrate")).getText());
+        assertEquals("€ 50.00", ((Label) getField(controller, "lblUscite")).getText());
+        assertEquals("€ 150.00", ((Label) getField(controller, "lblSaldo")).getText());
+        assertEquals("€ 150.00", ((Label) getField(controller, "lblPrevisione")).getText());
+        assertEquals(1, ((VBox) getField(controller, "boxUltimiMovimenti")).getChildren().size());
+        assertTrue(((GridPane) getField(controller, "gridBudgetList")).getChildren().size() > 0);
     }
 
     @Test

@@ -23,6 +23,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class MovimentiController {
 
@@ -47,6 +49,9 @@ public class MovimentiController {
     private MainApp mainApp;
     private final ObservableList<Movimenti> movementData = FXCollections.observableArrayList();
     private final BudgetDAOMySQLImpl budgetDAO = new BudgetDAOMySQLImpl();
+    private MovimentiGateway movimentiGateway = new StaticMovimentiGateway();
+    private Supplier<DAOMySQLSettings> settingsSupplier = DAOMySQLSettings::getCurrentDAOMySQLSettings;
+    private Function<String, Connection> connectionFactory = url -> DriverManager.getConnection(url);
 
     // Wrapper per ComboBox Categorie
     private static class CategoryItem {
@@ -115,15 +120,27 @@ public class MovimentiController {
         loadMovementsForCurrentUser();
     }
 
+    public void setMovimentiGateway(MovimentiGateway movimentiGateway) {
+        this.movimentiGateway = movimentiGateway;
+    }
+
+    public void setSettingsSupplier(Supplier<DAOMySQLSettings> settingsSupplier) {
+        this.settingsSupplier = settingsSupplier;
+    }
+
+    public void setConnectionFactory(Function<String, Connection> connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
+
     private void loadCategories() {
-        DAOMySQLSettings settings = DAOMySQLSettings.getCurrentDAOMySQLSettings();
+        DAOMySQLSettings settings = settingsSupplier.get();
         String url = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
                 + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
 
         // Ordine per ID ASC come richiesto
         String sql = "SELECT category_id, name FROM categories ORDER BY category_id ASC";
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = connectionFactory.apply(url);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -141,7 +158,7 @@ public class MovimentiController {
     private void loadMovementsForCurrentUser() {
         if (mainApp == null || mainApp.getLoggedUser() == null) return;
         try {
-            movementData.setAll(MovimentiDAOMySQLImpl.findByUser(mainApp.getLoggedUser().getUser_id()));
+            movementData.setAll(movimentiGateway.findByUser(mainApp.getLoggedUser().getUser_id()));
             transactionTable.refresh();
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,7 +201,7 @@ public class MovimentiController {
             Movimenti m = new Movimenti(null, type, date, amount, desc, method);
 
             // Insert DB
-            MovimentiDAOMySQLImpl.insert(m, userId, categoryId);
+            movimentiGateway.insert(m, userId, categoryId);
 
             loadMovementsForCurrentUser();
 
@@ -232,7 +249,7 @@ public class MovimentiController {
             List<Movimenti> toDelete = new ArrayList<>(selectedItems);
 
             for (Movimenti movement : toDelete) {
-                MovimentiDAOMySQLImpl.delete(movement.getMovement_id());
+                movimentiGateway.delete(movement.getMovement_id());
             }
 
             // Ricarica i dati
@@ -290,7 +307,7 @@ public class MovimentiController {
                     int categoryId = controller.getSelectedCategoryId();
 
                     // Salva nel database
-                    MovimentiDAOMySQLImpl.update(updatedMovement, categoryId);
+                    movimentiGateway.update(updatedMovement, categoryId);
 
                     // Ricarica i dati
                     loadMovementsForCurrentUser();
@@ -424,5 +441,37 @@ public class MovimentiController {
         alert.setHeaderText(null);
         alert.setContentText(msg);
         alert.showAndWait();
+    }
+
+    public interface MovimentiGateway {
+        List<Movimenti> findByUser(int userId) throws DAOException, SQLException;
+
+        void insert(Movimenti m, int userId, int categoryId) throws DAOException, SQLException;
+
+        void delete(int movementId) throws DAOException, SQLException;
+
+        void update(Movimenti m, int categoryId) throws DAOException, SQLException;
+    }
+
+    private static class StaticMovimentiGateway implements MovimentiGateway {
+        @Override
+        public List<Movimenti> findByUser(int userId) throws DAOException, SQLException {
+            return MovimentiDAOMySQLImpl.findByUser(userId);
+        }
+
+        @Override
+        public void insert(Movimenti m, int userId, int categoryId) throws DAOException, SQLException {
+            MovimentiDAOMySQLImpl.insert(m, userId, categoryId);
+        }
+
+        @Override
+        public void delete(int movementId) throws DAOException, SQLException {
+            MovimentiDAOMySQLImpl.delete(movementId);
+        }
+
+        @Override
+        public void update(Movimenti m, int categoryId) throws DAOException, SQLException {
+            MovimentiDAOMySQLImpl.update(m, categoryId);
+        }
     }
 }
