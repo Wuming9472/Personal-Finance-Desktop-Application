@@ -5,7 +5,6 @@ import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
-import it.unicas.project.template.address.util.ForecastCalculator;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -170,7 +169,7 @@ public class DashboardController {
                 cardPrevisione.setManaged(isCurrentMonth);
             }
             if (isCurrentMonth) {
-                displayForecastFromReport();
+                calculateForecast(saldo, totalEntrate, totalUscite, now);
             }
 
             if (lblMeseCorrente != null) {
@@ -735,19 +734,64 @@ public class DashboardController {
         }
     }
 
-    private void displayForecastFromReport() {
-        if (lblPrevisione == null || mainApp == null) {
-            return;
+    private void calculateForecast(float saldoAttuale, float entrate, float uscite, LocalDate now) {
+        if (lblPrevisione == null) return;
+
+        try {
+            int userId = mainApp.getLoggedUser().getUser_id();
+            int daysInMonth = now.lengthOfMonth();
+
+            String query = "SELECT " +
+                    "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as totaleEntrate, " +
+                    "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as totaleUscite, " +
+                    "COUNT(DISTINCT DATE(date)) as giorniConMovimenti, " +
+                    "MAX(DATE(date)) as dataRecente " +
+                    "FROM movements " +
+                    "WHERE user_id = ? " +
+                    "AND YEAR(date) = ? " +
+                    "AND MONTH(date) = ?";
+
+            try (Connection conn = getConnection();
+                 PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+                pstmt.setInt(1, userId);
+                pstmt.setInt(2, now.getYear());
+                pstmt.setInt(3, now.getMonthValue());
+
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        double totaleEntrate = rs.getDouble("totaleEntrate");
+                        double totaleUscite = rs.getDouble("totaleUscite");
+                        int giorniConMovimenti = rs.getInt("giorniConMovimenti");
+                        java.sql.Date dataRecenteSQL = rs.getDate("dataRecente");
+
+                        if (giorniConMovimenti < 3 || dataRecenteSQL == null) {
+                            lblPrevisione.setText("N/A");
+                            return;
+                        }
+
+                        LocalDate dataRecente = dataRecenteSQL.toLocalDate();
+                        int currentDay = dataRecente.getDayOfMonth();
+                        int remainingDays = daysInMonth - currentDay;
+
+                        double mediaSpeseGiornaliera = totaleUscite / currentDay;
+                        double mediaEntrateGiornaliera = totaleEntrate / currentDay;
+
+                        double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
+                        double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
+
+                        double saldoStimato = entrateProiettate - speseProiettate;
+
+                        lblPrevisione.setText(String.format("€ %.2f", saldoStimato));
+                    } else {
+                        lblPrevisione.setText("N/A");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            lblPrevisione.setText("Errore");
         }
-
-        ForecastCalculator.ForecastResult result = mainApp.getLatestForecastResult();
-
-        if (result == null || !result.isValid()) {
-            lblPrevisione.setText("N/A");
-            return;
-        }
-
-        lblPrevisione.setText(String.format("€ %.2f", result.getEstimatedBalance()));
     }
 
     private void populateRecentMovements(List<Movimenti> list) {
