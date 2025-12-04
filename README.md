@@ -672,7 +672,7 @@ Visibile solo se ci sono abbastanza dati (almeno **3 giorni diversi** con movime
 
 ## 🧪 Testing
 
-Il progetto include test unitari per le classi di utilità.
+Il progetto include test unitari per le classi di utilità (escluso `DateUtil`) e test di smoke sui controller.
 
 ### Eseguire i Test
 
@@ -681,14 +681,12 @@ Il progetto include test unitari per le classi di utilità.
 ```bash
 # Compila i test
 javac -d out/test-classes \
-  src/test/java/org/junit/jupiter/api/*.java \
-  src/it/unicas/project/template/address/test.util/BudgetNotificationPreferences.java \
-  src/it/unicas/project/template/address/test.util/DateUtil.java \
-  src/test/java/it/unicas/project/template/address/test.util/*.java \
-  src/test/java/TestRunner.java
+  -cp "lib/*" \
+  $(find src/test/java -name "*.java")
 
-# Esegui i test
-java -cp out/test-classes TestRunner
+# Esegui i test di suite
+java -cp "out/test-classes:lib/*" org.junit.platform.console.ConsoleLauncher \
+  --select-class it.unicas.project.template.address.TestSuite
 ```
 
 #### Da IDE
@@ -697,16 +695,17 @@ java -cp out/test-classes TestRunner
 
 ### Test Inclusi
 
-**DateUtilTest**
-- `testParseValidDate()`: Parsing date valide
-- `testParseInvalidDate()`: Gestione date invalide
-- `testFormatDate()`: Formattazione corretta
-
 **BudgetNotificationPreferencesTest**
-- `testIsNotificationEnabled()`: Controllo stato notifiche
-- `testDisableNotification()`: Disabilitazione notifica categoria
-- `testEnableNotification()`: Riabilitazione notifica
-- `testPersistence()`: Salvataggio su file JSON
+- Gestione marcatura notifiche, dismissione e pulizia mesi obsoleti
+
+**ForecastCalculatorTest**
+- Calcolo delle previsioni e classificazione stato
+
+**SummaryCalculatorTest**
+- Calcolo riepilogo mensile e aggregazioni per periodo
+
+**ControllerInstantiationTest**
+- Istanziazione dei controller principali in `view`
 
 ### Copertura Test
 - **Utility Classes**: 90%+
