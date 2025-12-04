@@ -65,6 +65,17 @@ class FinancialCalculatorsTest {
             assertFalse(result.isValid());
             assertEquals(ForecastCalculator.ForecastStatus.INSUFFICIENT_DATA, result.getStatus());
         }
+
+        @Test
+        @DisplayName("should decline when incomes/expenses are negative")
+        void negativeInputs() {
+            ForecastCalculator.ForecastResult result = forecastCalculator.calculateForecast(
+                -100, -50, 5, 10, 30);
+
+            assertFalse(result.isValid());
+            assertEquals(ForecastCalculator.ForecastStatus.INSUFFICIENT_DATA, result.getStatus());
+            assertTrue(result.getErrorMessage().toLowerCase().contains("valori"));
+        }
     }
 
     @Nested
@@ -142,6 +153,21 @@ class FinancialCalculatorsTest {
                 summary.getTotalIncome(), summary.getTotalExpenses()));
 
             assertEquals(0.0, summaryCalculator.calculateSavingsRate(0, 100));
+        }
+
+        @Test
+        @DisplayName("should handle empty inputs gracefully")
+        void emptyInputs() {
+            SummaryCalculator.MonthlySummary summary = summaryCalculator.calculateMonthlySummary(Collections.emptyList());
+            assertEquals(0.0, summary.getTotalIncome());
+            assertEquals(0.0, summary.getTotalExpenses());
+            assertEquals(0.0, summary.getBalance());
+            assertEquals(0, summary.getTransactionCount());
+
+            SummaryCalculator.PeriodAggregate[] aggregates = summaryCalculator.aggregateByPeriod(Collections.emptyList(), 5, 10);
+            assertEquals(2, aggregates.length);
+            assertEquals(0.0, aggregates[0].getIncome());
+            assertEquals(0.0, aggregates[0].getExpenses());
         }
     }
 }
