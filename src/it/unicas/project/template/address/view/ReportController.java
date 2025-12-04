@@ -465,8 +465,8 @@ public class ReportController {
                     double totaleUscite = rs.getDouble("totaleUscite");
                     int giorniConMovimenti = rs.getInt("giorniConMovimenti");
 
-                    // almeno 3 GIORNI diversi con movimenti
-                    if (giorniConMovimenti < 5) {
+                    // almeno 10 GIORNI diversi con movimenti
+                    if (giorniConMovimenti < 10) {
                         displayInsufficientDataMessage();
                         return;
                     }
@@ -515,7 +515,7 @@ public class ReportController {
             lblSaldoStimato.setStyle("-fx-text-fill: #64748b;");
 
             lblStatusTitolo.setText("Dati Insufficienti");
-            lblStatusMessaggio.setText("Inserisci almeno 5 giorni di movimenti per visualizzare una previsione affidabile.");
+            lblStatusMessaggio.setText("Inserisci almeno 7 giorni di movimenti per visualizzare una previsione affidabile.");
             lblStatusIcon.setText("⚠");
 
             paneStatus.setStyle("-fx-background-color: #fef3c7; -fx-background-radius: 12; " +
