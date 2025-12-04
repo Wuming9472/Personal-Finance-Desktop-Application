@@ -4,13 +4,12 @@ import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.User;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
-import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
+import it.unicas.project.template.address.view.MovimentiController.MovimentiGateway;
 import it.unicas.project.template.address.view.MovimentiController;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -50,22 +49,18 @@ class MovimentiControllerTest {
     void initializeShouldPrepareDefaultInputs() throws Exception {
         MovimentiController controller = buildControllerWithUi();
 
-        try (MockedStatic<DAOMySQLSettings> settingsMock = mockStatic(DAOMySQLSettings.class);
-             MockedStatic<java.sql.DriverManager> driverMock = mockStatic(java.sql.DriverManager.class)) {
+        DAOMySQLSettings settings = new DAOMySQLSettings();
+        Connection connection = mock(Connection.class);
+        Statement statement = mock(Statement.class);
+        ResultSet resultSet = mock(ResultSet.class);
 
-            DAOMySQLSettings settings = new DAOMySQLSettings();
-            settingsMock.when(DAOMySQLSettings::getCurrentDAOMySQLSettings).thenReturn(settings);
+        controller.setSettingsSupplier(() -> settings);
+        controller.setConnectionFactory(url -> connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(anyString())).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
 
-            Connection connection = mock(Connection.class);
-            Statement statement = mock(Statement.class);
-            ResultSet resultSet = mock(ResultSet.class);
-            driverMock.when(() -> java.sql.DriverManager.getConnection(anyString())).thenReturn(connection);
-            when(connection.createStatement()).thenReturn(statement);
-            when(statement.executeQuery(anyString())).thenReturn(resultSet);
-            when(resultSet.next()).thenReturn(false);
-
-            invokePrivate(controller, "initialize");
-        }
+        invokePrivate(controller, "initialize");
 
         ComboBox<String> typeField = getField(controller, "typeField");
         Label charCountLabel = getField(controller, "charCountLabel");
@@ -89,10 +84,10 @@ class MovimentiControllerTest {
         movimento.setPayment_method("Carta");
         movimento.setTitle("Spesa");
 
-        try (MockedStatic<MovimentiDAOMySQLImpl> daoMock = mockStatic(MovimentiDAOMySQLImpl.class)) {
-            daoMock.when(() -> MovimentiDAOMySQLImpl.findByUser(7)).thenReturn(List.of(movimento));
-            controller.setMainApp(mainApp);
-        }
+        MovimentiGateway gateway = mock(MovimentiGateway.class);
+        when(gateway.findByUser(7)).thenReturn(List.of(movimento));
+        controller.setMovimentiGateway(gateway);
+        controller.setMainApp(mainApp);
 
         TableView<Movimenti> table = getField(controller, "transactionTable");
         assertEquals(1, table.getItems().size());

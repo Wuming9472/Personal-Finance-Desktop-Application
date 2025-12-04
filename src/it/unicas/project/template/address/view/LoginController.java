@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.function.Supplier;
 
 public class LoginController {
 
@@ -32,6 +33,8 @@ public class LoginController {
     private MainApp mainApp;
     private User loggedUser;
 
+    private Supplier<Connection> connectionSupplier = DAOMySQLSettings::getConnection;
+
     // dati per il reset
     private int resetUserId = -1;
     private String expectedA1;
@@ -40,6 +43,10 @@ public class LoginController {
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
+    }
+
+    public void setConnectionSupplier(Supplier<Connection> connectionSupplier) {
+        this.connectionSupplier = connectionSupplier;
     }
 
     @FXML
@@ -92,7 +99,7 @@ public class LoginController {
 
         String sql = "SELECT user_id, username, password FROM Users WHERE username = ? AND password = ? LIMIT 1";
 
-        try (Connection connection = DAOMySQLSettings.getConnection();
+        try (Connection connection = connectionSupplier.get();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, user.trim());
@@ -130,7 +137,7 @@ public class LoginController {
             return;
         }
 
-        try (Connection conn = DAOMySQLSettings.getConnection()) {
+        try (Connection conn = connectionSupplier.get()) {
 
             // 1) prendo user_id
             String sqlUser = "SELECT user_id FROM Users WHERE username = ?";

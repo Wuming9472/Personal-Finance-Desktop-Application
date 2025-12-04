@@ -38,6 +38,8 @@ import java.time.format.TextStyle;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.Map;
 
 public class DashboardController {
@@ -56,6 +58,11 @@ public class DashboardController {
     @FXML private AnchorPane cardPrevisione;
 
     private MainApp mainApp;
+    private MovimentiDAOMySQLImpl movimentiDAO = new MovimentiDAOMySQLImpl();
+    private BudgetDAOMySQLImpl budgetDAO = new BudgetDAOMySQLImpl();
+    private Supplier<it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings> settingsSupplier =
+            it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings::getCurrentDAOMySQLSettings;
+    private Function<String, Connection> connectionFactory = DriverManager::getConnection;
 
     // Mappa per memorizzare i valori per ogni periodo (per il tooltip combinato)
     private Map<String, float[]> periodData = new HashMap<>();
@@ -114,6 +121,22 @@ public class DashboardController {
         refreshDashboardData();
     }
 
+    public void setMovimentiDAO(MovimentiDAOMySQLImpl movimentiDAO) {
+        this.movimentiDAO = movimentiDAO;
+    }
+
+    public void setBudgetDAO(BudgetDAOMySQLImpl budgetDAO) {
+        this.budgetDAO = budgetDAO;
+    }
+
+    public void setSettingsSupplier(Supplier<it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings> settingsSupplier) {
+        this.settingsSupplier = settingsSupplier;
+    }
+
+    public void setConnectionFactory(Function<String, Connection> connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
+
     public void refreshDashboardData() {
         if (mainApp == null || mainApp.getLoggedUser() == null) {
             resetLabels("-");
@@ -123,11 +146,9 @@ public class DashboardController {
         int userId = mainApp.getLoggedUser().getUser_id();
         LocalDate now = LocalDate.now();
         LocalDate selectedDate = LocalDate.of(selectedYear, selectedMonth, 1);
-        MovimentiDAOMySQLImpl dao = new MovimentiDAOMySQLImpl();
-
         try {
-            float totalEntrate = dao.getSumByMonth(userId, selectedMonth, selectedYear, "Entrata");
-            float totalUscite = dao.getSumByMonth(userId, selectedMonth, selectedYear, "Uscita");
+            float totalEntrate = movimentiDAO.getSumByMonth(userId, selectedMonth, selectedYear, "Entrata");
+            float totalUscite = movimentiDAO.getSumByMonth(userId, selectedMonth, selectedYear, "Uscita");
             float saldo = totalEntrate - totalUscite;
 
             lblEntrate.setText(String.format("€ %.2f", totalEntrate));
@@ -150,7 +171,7 @@ public class DashboardController {
                 lblMeseCorrente.setText(nomeMese.substring(0, 1).toUpperCase() + nomeMese.substring(1) + " " + selectedYear);
             }
 
-            List<Movimenti> monthlyMovements = dao.selectByUserAndMonthYear(userId, selectedMonth, selectedYear);
+            List<Movimenti> monthlyMovements = movimentiDAO.selectByUserAndMonthYear(userId, selectedMonth, selectedYear);
             populateRecentMovements(monthlyMovements);
 
             populateBudgetStatus(userId, selectedMonth, selectedYear);
@@ -523,11 +544,10 @@ public class DashboardController {
     }
 
     private Connection getConnection() throws SQLException {
-        it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings settings =
-                it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings.getCurrentDAOMySQLSettings();
+        it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings settings = settingsSupplier.get();
         String connectionString = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
                 + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
-        return DriverManager.getConnection(connectionString);
+        return connectionFactory.apply(connectionString);
     }
 
     private void setupChartAppearance() {
@@ -607,11 +627,10 @@ public class DashboardController {
         if (gridBudgetList == null) return;
         gridBudgetList.getChildren().clear();
 
-        BudgetDAOMySQLImpl budgetDao = new BudgetDAOMySQLImpl();
         List<Budget> budgetList;
 
         try {
-            budgetList = budgetDao.getBudgetsForMonth(userId, month, year);
+            budgetList = budgetDAO.getBudgetsForMonth(userId, month, year);
         } catch (SQLException e) {
             e.printStackTrace();
             gridBudgetList.add(new Label("Errore DB"), 0, 0);

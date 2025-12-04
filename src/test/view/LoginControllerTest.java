@@ -11,7 +11,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -60,21 +59,19 @@ class LoginControllerTest {
         setField(controller, "passwordField", password);
         setField(controller, "errorLabel", errorLabel);
 
-        try (MockedStatic<DAOMySQLSettings> settingsMock = mockStatic(DAOMySQLSettings.class)) {
-            Connection connection = mock(Connection.class);
-            PreparedStatement statement = mock(PreparedStatement.class);
-            ResultSet resultSet = mock(ResultSet.class);
+        Connection connection = mock(Connection.class);
+        PreparedStatement statement = mock(PreparedStatement.class);
+        ResultSet resultSet = mock(ResultSet.class);
 
-            settingsMock.when(DAOMySQLSettings::getConnection).thenReturn(connection);
-            when(connection.prepareStatement(anyString())).thenReturn(statement);
-            when(statement.executeQuery()).thenReturn(resultSet);
-            when(resultSet.next()).thenReturn(true);
-            when(resultSet.getInt("user_id")).thenReturn(99);
-            when(resultSet.getString("username")).thenReturn("john");
-            when(resultSet.getString("password")).thenReturn("secret");
+        controller.setConnectionSupplier(() -> connection);
+        when(connection.prepareStatement(anyString())).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt("user_id")).thenReturn(99);
+        when(resultSet.getString("username")).thenReturn("john");
+        when(resultSet.getString("password")).thenReturn("secret");
 
-            invokePrivate(controller, "handleLogin");
-        }
+        invokePrivate(controller, "handleLogin");
 
         verify(mainApp).setLoggedUser(any(User.class));
         verify(mainApp).initRootLayout();
