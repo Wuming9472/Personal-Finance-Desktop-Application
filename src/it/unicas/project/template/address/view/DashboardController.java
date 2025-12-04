@@ -765,7 +765,7 @@ public class DashboardController {
                         int giorniConMovimenti = rs.getInt("giorniConMovimenti");
                         java.sql.Date dataRecenteSQL = rs.getDate("dataRecente");
 
-                        if (giorniConMovimenti < 3 || dataRecenteSQL == null) {
+                        if (giorniConMovimenti < 7 || dataRecenteSQL == null) {
                             lblPrevisione.setText("N/A");
                             return;
                         }
@@ -774,13 +774,13 @@ public class DashboardController {
                         int currentDay = dataRecente.getDayOfMonth();
                         int remainingDays = daysInMonth - currentDay;
 
-                        double mediaSpeseGiornaliera = totaleUscite / currentDay;
-                        double mediaEntrateGiornaliera = totaleEntrate / currentDay;
+                        double mediaSpeseGiornaliera = totaleUscite / currentDay; //50
+                        double mediaEntrateGiornaliera = totaleEntrate / currentDay; //200
 
-                        double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
-                        double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
+                        double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays); // 50 + (50 * 20) = 1050
+                        double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays); // 200 + (200 * 20) = 4200
 
-                        double saldoStimato = entrateProiettate - speseProiettate;
+                        double saldoStimato = entrateProiettate - speseProiettate; // 4200 - 1050 = 3150
 
                         lblPrevisione.setText(String.format("€ %.2f", saldoStimato));
                     } else {

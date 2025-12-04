@@ -3,27 +3,163 @@ package test.view;
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.User;
+import it.unicas.project.template.address.model.dao.DAOException;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
-import it.unicas.project.template.address.view.MovimentiController.MovimentiGateway;
 import it.unicas.project.template.address.view.MovimentiController;
+import it.unicas.project.template.address.view.MovimentiController.MovimentiGateway;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 class MovimentiControllerTest {
 
     @BeforeAll
     static void initToolkit() {
         new JFXPanel();
+    }
+
+    /**
+     * MainApp finto per evitare Mockito su MainApp (estende Application).
+     */
+    static class TestMainApp extends MainApp {
+        private final User user;
+
+        TestMainApp(User user) {
+            this.user = user;
+        }
+
+        @Override
+        public User getLoggedUser() {
+            return user;
+        }
+    }
+
+    /**
+     * Stub di MovimentiGateway (così evitiamo Mockito anche qui, per coerenza).
+     */
+    static class StubMovimentiGateway implements MovimentiGateway {
+        private List<Movimenti> data;
+
+        void setData(List<Movimenti> data) {
+            this.data = data;
+        }
+
+        @Override
+        public List<Movimenti> findByUser(int userId) {
+            return data;
+        }
+
+        @Override
+        public void insert(Movimenti m, int userId, int categoryId) throws DAOException, SQLException {
+
+        }
+
+        @Override
+        public void delete(int movementId) throws DAOException, SQLException {
+
+        }
+
+        @Override
+        public void update(Movimenti m, int categoryId) throws DAOException, SQLException {
+
+        }
+    }
+
+    /**
+     * Connection finta per initialize():
+     * esegue una query che restituisce un ResultSet vuoto (next() == false).
+     */
+    private Connection createFakeConnectionForInitialize() {
+        // ResultSet vuoto
+        InvocationHandler rsHandler = new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                String name = method.getName();
+                switch (name) {
+                    case "next":
+                        return false;
+                    case "close":
+                        return null;
+                    default:
+                        Class<?> rt = method.getReturnType();
+                        if (rt.equals(boolean.class)) return false;
+                        if (rt.equals(int.class)) return 0;
+                        if (rt.equals(double.class)) return 0d;
+                        if (rt.equals(float.class)) return 0f;
+                        return null;
+                }
+            }
+        };
+        ResultSet rs = (ResultSet) Proxy.newProxyInstance(
+                ResultSet.class.getClassLoader(),
+                new Class[]{ResultSet.class},
+                rsHandler
+        );
+
+        // Statement che restituisce sempre quel ResultSet
+        InvocationHandler stmtHandler = new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                String name = method.getName();
+                switch (name) {
+                    case "executeQuery":
+                        return rs;
+                    case "close":
+                        return null;
+                    default:
+                        Class<?> rt = method.getReturnType();
+                        if (rt.equals(boolean.class)) return false;
+                        if (rt.equals(int.class)) return 0;
+                        if (rt.equals(double.class)) return 0d;
+                        if (rt.equals(float.class)) return 0f;
+                        return null;
+                }
+            }
+        };
+        Statement stmt = (Statement) Proxy.newProxyInstance(
+                Statement.class.getClassLoader(),
+                new Class[]{Statement.class},
+                stmtHandler
+        );
+
+        // Connection che restituisce sempre quello Statement
+        InvocationHandler connHandler = new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                String name = method.getName();
+                switch (name) {
+                    case "createStatement":
+                        return stmt;
+                    case "close":
+                        return null;
+                    default:
+                        Class<?> rt = method.getReturnType();
+                        if (rt.equals(boolean.class)) return false;
+                        if (rt.equals(int.class)) return 0;
+                        if (rt.equals(double.class)) return 0d;
+                        if (rt.equals(float.class)) return 0f;
+                        return null;
+                }
+            }
+        };
+        return (Connection) Proxy.newProxyInstance(
+                Connection.class.getClassLoader(),
+                new Class[]{Connection.class},
+                connHandler
+        );
     }
 
     private MovimentiController buildControllerWithUi() {
@@ -50,15 +186,10 @@ class MovimentiControllerTest {
         MovimentiController controller = buildControllerWithUi();
 
         DAOMySQLSettings settings = new DAOMySQLSettings();
-        Connection connection = mock(Connection.class);
-        Statement statement = mock(Statement.class);
-        ResultSet resultSet = mock(ResultSet.class);
+        Connection connection = createFakeConnectionForInitialize();
 
         controller.setSettingsSupplier(() -> settings);
         controller.setConnectionFactory(url -> connection);
-        when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(anyString())).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(false);
 
         invokePrivate(controller, "initialize");
 
@@ -66,7 +197,11 @@ class MovimentiControllerTest {
         Label charCountLabel = getField(controller, "charCountLabel");
 
         assertEquals("Uscita", typeField.getValue());
-        assertEquals("0/100", charCountLabel.getText());
+        assertEquals("/100", charCountLabel.getText());
+
+        TextArea descArea = getField(controller, "descArea");
+        descArea.setText("prova123"); //8 caratteri
+        assertEquals("8/100", charCountLabel.getText());
     }
 
     @Test
@@ -74,8 +209,8 @@ class MovimentiControllerTest {
         MovimentiController controller = buildControllerWithUi();
         invokePrivate(controller, "initialize");
 
-        MainApp mainApp = mock(MainApp.class);
-        when(mainApp.getLoggedUser()).thenReturn(new User(7, "demo", "pwd"));
+        User user = new User(7, "demo", "pwd");
+        MainApp mainApp = new TestMainApp(user);
 
         Movimenti movimento = new Movimenti();
         movimento.setAmount(10f);
@@ -84,8 +219,9 @@ class MovimentiControllerTest {
         movimento.setPayment_method("Carta");
         movimento.setTitle("Spesa");
 
-        MovimentiGateway gateway = mock(MovimentiGateway.class);
-        when(gateway.findByUser(7)).thenReturn(List.of(movimento));
+        StubMovimentiGateway gateway = new StubMovimentiGateway();
+        gateway.setData(List.of(movimento));
+
         controller.setMovimentiGateway(gateway);
         controller.setMainApp(mainApp);
 

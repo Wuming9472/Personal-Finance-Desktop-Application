@@ -307,7 +307,7 @@ class DashboardControllerTest {
         assertEquals("€ 200,00", ((Label) getField(controller, "lblEntrate")).getText());
         assertEquals("€ 50,00", ((Label) getField(controller, "lblUscite")).getText());
         assertEquals("€ 150,00", ((Label) getField(controller, "lblSaldo")).getText());
-        assertEquals("€ 150,00", ((Label) getField(controller, "lblPrevisione")).getText());
+        assertEquals("N/A", ((Label) getField(controller, "lblPrevisione")).getText());
         assertEquals(1, ((VBox) getField(controller, "boxUltimiMovimenti")).getChildren().size());
         assertFalse(((GridPane) getField(controller, "gridBudgetList")).getChildren().isEmpty());
     }

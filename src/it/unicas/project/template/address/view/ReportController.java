@@ -465,8 +465,8 @@ public class ReportController {
                     double totaleUscite = rs.getDouble("totaleUscite");
                     int giorniConMovimenti = rs.getInt("giorniConMovimenti");
 
-                    // almeno 10 GIORNI diversi con movimenti
-                    if (giorniConMovimenti < 10) {
+                    // almeno 7 GIORNI diversi con movimenti
+                    if (giorniConMovimenti < 7) {
                         displayInsufficientDataMessage();
                         return;
                     }

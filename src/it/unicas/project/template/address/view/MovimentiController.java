@@ -101,6 +101,7 @@ public class MovimentiController {
         // 2. SETUP INPUT FIELDS
         typeField.getItems().addAll("Entrata", "Uscita");
         typeField.setValue("Uscita");
+        charCountLabel.setText("/100");
         dateField.setValue(LocalDate.now());
 
         // Metodi di Pagamento (Ordine Richiesto)
