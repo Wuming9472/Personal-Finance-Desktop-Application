@@ -5,6 +5,7 @@ import java.io.IOException;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.view.*;
 import it.unicas.project.template.address.model.User;
+import it.unicas.project.template.address.util.ForecastCalculator;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -23,6 +24,8 @@ public class MainApp extends Application {
     private RootLayoutController rootController;
 
     private User loggedUser;
+
+    private ForecastCalculator.ForecastResult latestForecastResult;
 
     private BudgetController budgetController;
     private ReportController reportController;
@@ -323,6 +326,14 @@ public class MainApp extends Application {
 
     public DashboardController getDashboardController() {
         return dashboardController;
+    }
+
+    public void setLatestForecastResult(ForecastCalculator.ForecastResult latestForecastResult) {
+        this.latestForecastResult = latestForecastResult;
+    }
+
+    public ForecastCalculator.ForecastResult getLatestForecastResult() {
+        return latestForecastResult;
     }
 
 }
