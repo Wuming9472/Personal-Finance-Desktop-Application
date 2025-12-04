@@ -440,55 +440,73 @@ public class ReportController {
         YearMonth currentMonth = YearMonth.from(today);
         int daysInMonth = currentMonth.lengthOfMonth();
 
+        // Dal 1 del mese fino a oggi (esclude i movimenti futuri)
+        LocalDate startOfMonth = currentMonth.atDay(1);
+
         String query = "SELECT " +
                 "SUM(CASE WHEN LOWER(type) IN ('entrata') THEN amount ELSE 0 END) as totaleEntrate, " +
                 "SUM(CASE WHEN LOWER(type) IN ('uscita') THEN amount ELSE 0 END) as totaleUscite, " +
-                "COUNT(DISTINCT DATE(date)) as giorniConMovimenti, " +
-                "MAX(DATE(date)) as dataRecente " +
+                "COUNT(DISTINCT DATE(date)) as giorniConMovimenti " +
                 "FROM movements " +
                 "WHERE user_id = ? " +
-                "AND YEAR(date) = ? " +
-                "AND MONTH(date) = ?";
+                "AND date >= ? " +
+                "AND date <= ?";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setInt(1, currentUserId);
-            pstmt.setInt(2, today.getYear());
-            pstmt.setInt(3, today.getMonthValue());
+            pstmt.setDate(2, Date.valueOf(startOfMonth));
+            pstmt.setDate(3, Date.valueOf(today));
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     double totaleEntrate = rs.getDouble("totaleEntrate");
                     double totaleUscite = rs.getDouble("totaleUscite");
                     int giorniConMovimenti = rs.getInt("giorniConMovimenti");
-                    Date dataRecenteSQL = rs.getDate("dataRecente");
 
-                    if (giorniConMovimenti < 3 || dataRecenteSQL == null) {
+                    // almeno 3 GIORNI diversi con movimenti
+                    if (giorniConMovimenti < 3) {
                         displayInsufficientDataMessage();
                         return;
                     }
 
-                    LocalDate dataRecente = dataRecenteSQL.toLocalDate();
-                    int currentDay = dataRecente.getDayOfMonth();
-                    int remainingDays = daysInMonth - currentDay;
+                    int currentDay = today.getDayOfMonth();      // giorni trascorsi nel mese
+                    int remainingDays = daysInMonth - currentDay; // giorni rimanenti alla fine del mese
 
-                    double mediaSpeseGiornaliera = totaleUscite / currentDay;
-                    double mediaEntrateGiornaliera = totaleEntrate / currentDay;
+                    int giorniTrascorsi = currentDay;
+
+                    double mediaSpeseGiornaliera = giorniTrascorsi > 0
+                            ? totaleUscite / giorniTrascorsi
+                            : 0.0;
+
+                    double mediaEntrateGiornaliera = giorniTrascorsi > 0
+                            ? totaleEntrate / giorniTrascorsi
+                            : 0.0;
 
                     double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
                     double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
 
                     double saldoStimato = entrateProiettate - speseProiettate;
 
-                    updateForecastUI(currentDay, remainingDays, mediaSpeseGiornaliera, speseProiettate,
-                            saldoStimato, totaleEntrate, totaleUscite, mediaEntrateGiornaliera, entrateProiettate);
+                    updateForecastUI(
+                            currentDay,
+                            remainingDays,
+                            mediaSpeseGiornaliera,
+                            speseProiettate,
+                            saldoStimato,
+                            totaleEntrate,
+                            totaleUscite,
+                            mediaEntrateGiornaliera,
+                            entrateProiettate
+                    );
                 } else {
                     displayInsufficientDataMessage();
                 }
             }
         }
     }
+
 
     private void displayInsufficientDataMessage() {
         Platform.runLater(() -> {
