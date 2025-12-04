@@ -188,7 +188,6 @@ Personal-Finance-Desktop-Application/
 │           ├── TestRunner.java             # Runner custom per test
 │           ├── org/junit/jupiter/api/      # Annotazioni JUnit 5
 │           └── it/unicas/project/template/address/test.util/
-│               ├── DateUtilTest.java
 │               └── BudgetNotificationPreferencesTest.java
 │
 ├── lib/                                     # Librerie esterne
@@ -681,12 +680,13 @@ Il progetto include test unitari per le classi di utilità (escluso `DateUtil`) 
 ```bash
 # Compila i test
 javac -d out/test-classes \
-  -cp "lib/*" \
-  $(find src/test/java -name "*.java")
+  src/test/java/org/junit/jupiter/api/*.java \
+  src/it/unicas/project/template/address/test.util/BudgetNotificationPreferences.java \
+  src/test/java/it/unicas/project/template/address/test.util/BudgetNotificationPreferencesTest.java \
+  src/test/java/TestRunner.java
 
-# Esegui i test di suite
-java -cp "out/test-classes:lib/*" org.junit.platform.console.ConsoleLauncher \
-  --select-class it.unicas.project.template.address.TestSuite
+# Esegui i test
+java -cp out/test-classes TestRunner
 ```
 
 #### Da IDE
@@ -694,6 +694,11 @@ java -cp "out/test-classes:lib/*" org.junit.platform.console.ConsoleLauncher \
 - Eclipse: Right-click su `TestRunner.java` → Run As → Java Application
 
 ### Test Inclusi
+
+**DateUtilTest**
+Spostato in `archived-tests/` per non essere eseguito dal build principale; resta come
+referenza manuale quando si vuole verificare il parsing/formattazione delle date senza
+impattare la copertura automatica degli altri helper.
 
 **BudgetNotificationPreferencesTest**
 - Gestione marcatura notifiche, dismissione e pulizia mesi obsoleti
@@ -708,7 +713,7 @@ java -cp "out/test-classes:lib/*" org.junit.platform.console.ConsoleLauncher \
 - Istanziazione dei controller principali in `view`
 
 ### Copertura Test
-- **Utility Classes**: 90%+
+- **Utility Classes**: 90%+ (focalizzata su helper diversi da `DateUtil`, ora archiviato)
 - **DAO Layer**: Testing manuale con DB di test
 - **Controller Layer**: Testing manuale tramite UI
 
