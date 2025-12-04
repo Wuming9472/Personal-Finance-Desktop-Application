@@ -36,5 +36,7 @@
     <orderEntry type="library" exported="" name="mockito.core" level="project" />
     <orderEntry type="library" exported="" name="mockito.inline" level="project" />
     <orderEntry type="library" exported="" name="mockito.junit.jupiter" level="project" />
+    <orderEntry type="library" exported="" name="mockito.inline" level="project" />
+    <orderEntry type="library" exported="" name="mockito.all" level="project" />
   </component>
 </module>

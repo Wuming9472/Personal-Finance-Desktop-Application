@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="mockito.inline" type="repository">
+    <properties maven-id="org.mockito:mockito-inline:3.9.0" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/mockito/mockito-inline/3.9.0/mockito-inline-3.9.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/mockito/mockito-core/3.9.0/mockito-core-3.9.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy/1.10.20/byte-buddy-1.10.20.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy-agent/1.10.20/byte-buddy-agent-1.10.20.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/objenesis/objenesis/3.2/objenesis-3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

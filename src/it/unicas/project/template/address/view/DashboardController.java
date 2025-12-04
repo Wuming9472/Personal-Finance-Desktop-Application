@@ -62,7 +62,13 @@ public class DashboardController {
     private BudgetDAOMySQLImpl budgetDAO = new BudgetDAOMySQLImpl();
     private Supplier<it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings> settingsSupplier =
             it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings::getCurrentDAOMySQLSettings;
-    private Function<String, Connection> connectionFactory = DriverManager::getConnection;
+    private Function<String, Connection> connectionFactory = url -> {
+        try {
+            return DriverManager.getConnection(url);
+        } catch (SQLException e) {
+            throw new RuntimeException(e); // o la tua eccezione custom
+        }
+    };
 
     // Mappa per memorizzare i valori per ogni periodo (per il tooltip combinato)
     private Map<String, float[]> periodData = new HashMap<>();

@@ -3,6 +3,7 @@ package it.unicas.project.template.address.view;
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.Movimenti;
+import it.unicas.project.template.address.model.dao.DAOException;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
@@ -51,7 +52,13 @@ public class MovimentiController {
     private final BudgetDAOMySQLImpl budgetDAO = new BudgetDAOMySQLImpl();
     private MovimentiGateway movimentiGateway = new StaticMovimentiGateway();
     private Supplier<DAOMySQLSettings> settingsSupplier = DAOMySQLSettings::getCurrentDAOMySQLSettings;
-    private Function<String, Connection> connectionFactory = url -> DriverManager.getConnection(url);
+    private Function<String, Connection> connectionFactory = url -> {
+        try {
+            return DriverManager.getConnection(url);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    };
 
     // Wrapper per ComboBox Categorie
     private static class CategoryItem {

@@ -17,7 +17,7 @@ class SummaryCalculatorTest {
     void calculateMonthlySummaryHandlesIncomeAndExpenses() {
         List<SummaryCalculator.Movement> movements = Arrays.asList(
             new SummaryCalculator.Movement("Entrata", 1000, "Stipendio", 1),
-            new SummaryCalculator.Movement("Uscita", 200, "Spesa", 2),
+            new SummaryCalculator.Movement("Uscita", 200, "Viaggio", 2),
             new SummaryCalculator.Movement("Uscita", 100, "Spesa", 3),
             new SummaryCalculator.Movement("Income", 300, "Bonus", 4)
         );

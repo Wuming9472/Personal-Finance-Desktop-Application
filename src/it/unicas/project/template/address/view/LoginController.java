@@ -33,7 +33,14 @@ public class LoginController {
     private MainApp mainApp;
     private User loggedUser;
 
-    private Supplier<Connection> connectionSupplier = DAOMySQLSettings::getConnection;
+    private Supplier<Connection> connectionSupplier = () -> {
+        try {
+            return DAOMySQLSettings.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    };
+
 
     // dati per il reset
     private int resetUserId = -1;
