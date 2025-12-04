@@ -2,6 +2,7 @@ package it.unicas.project.template.address.view;
 
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
+import it.unicas.project.template.address.util.ForecastCalculator;
 import javafx.animation.*;
 import javafx.scene.Cursor;
 import javafx.application.Platform;
@@ -440,7 +441,6 @@ public class ReportController {
         YearMonth currentMonth = YearMonth.from(today);
         int daysInMonth = currentMonth.lengthOfMonth();
 
-        // Dal 1 del mese fino a oggi (esclude i movimenti futuri)
         LocalDate startOfMonth = currentMonth.atDay(1);
 
         String query = "SELECT " +
@@ -465,57 +465,40 @@ public class ReportController {
                     double totaleUscite = rs.getDouble("totaleUscite");
                     int giorniConMovimenti = rs.getInt("giorniConMovimenti");
 
-                    // almeno 10 GIORNI diversi con movimenti
-                    if (giorniConMovimenti < 10) {
-                        displayInsufficientDataMessage();
+                    ForecastCalculator calculator = new ForecastCalculator();
+                    ForecastCalculator.ForecastResult result = calculator.calculateForecast(
+                            totaleEntrate,
+                            totaleUscite,
+                            giorniConMovimenti,
+                            today.getDayOfMonth(),
+                            daysInMonth
+                    );
+
+                    if (!result.isValid()) {
+                        mainApp.setLatestForecastResult(null);
+                        displayInsufficientDataMessage(result.getErrorMessage());
                         return;
                     }
 
-                    int currentDay = today.getDayOfMonth();      // giorni trascorsi nel mese
-                    int remainingDays = daysInMonth - currentDay; // giorni rimanenti alla fine del mese
-
-                    int giorniTrascorsi = currentDay;
-
-                    double mediaSpeseGiornaliera = giorniTrascorsi > 0
-                            ? totaleUscite / giorniTrascorsi
-                            : 0.0;
-
-                    double mediaEntrateGiornaliera = giorniTrascorsi > 0
-                            ? totaleEntrate / giorniTrascorsi
-                            : 0.0;
-
-                    double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
-                    double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
-
-                    double saldoStimato = entrateProiettate - speseProiettate;
-
-                    updateForecastUI(
-                            currentDay,
-                            remainingDays,
-                            mediaSpeseGiornaliera,
-                            speseProiettate,
-                            saldoStimato,
-                            totaleEntrate,
-                            totaleUscite,
-                            mediaEntrateGiornaliera,
-                            entrateProiettate
-                    );
+                    mainApp.setLatestForecastResult(result);
+                    updateForecastUI(result);
                 } else {
-                    displayInsufficientDataMessage();
+                    mainApp.setLatestForecastResult(null);
+                    displayInsufficientDataMessage("Dati insufficienti per calcolare una previsione");
                 }
             }
         }
     }
 
 
-    private void displayInsufficientDataMessage() {
+    private void displayInsufficientDataMessage(String message) {
         Platform.runLater(() -> {
-            lblPeriodoCalcolo.setText("Dati insufficienti per calcolare una previsione");
+            lblPeriodoCalcolo.setText(message);
             lblSaldoStimato.setText("N/A");
             lblSaldoStimato.setStyle("-fx-text-fill: #64748b;");
 
             lblStatusTitolo.setText("Dati Insufficienti");
-            lblStatusMessaggio.setText("Inserisci almeno 7 giorni di movimenti per visualizzare una previsione affidabile.");
+            lblStatusMessaggio.setText(message);
             lblStatusIcon.setText("⚠");
 
             paneStatus.setStyle("-fx-background-color: #fef3c7; -fx-background-radius: 12; " +
@@ -531,22 +514,19 @@ public class ReportController {
         });
     }
 
-    private void updateForecastUI(int currentDay, int remainingDays, double mediaSpeseGiornaliera,
-                                  double speseProiettate, double saldoStimato,
-                                  double totaleEntrate, double totaleUscite,
-                                  double mediaEntrateGiornaliera, double entrateProiettate) {
+    private void updateForecastUI(ForecastCalculator.ForecastResult result) {
         Platform.runLater(() -> {
-            lblPeriodoCalcolo.setText(String.format("Calcolata sui movimenti reali dal giorno 1 al %d", currentDay));
+            lblPeriodoCalcolo.setText(String.format("Calcolata sui movimenti reali dal giorno 1 al %d", result.getCurrentDay()));
 
-            lblSaldoStimato.setText(String.format("€ %.2f", saldoStimato));
+            lblSaldoStimato.setText(String.format("€ %.2f", result.getEstimatedBalance()));
 
-            lblGiorniRimanenti.setText(String.format("%d gg", remainingDays));
+            lblGiorniRimanenti.setText(String.format("%d gg", result.getRemainingDays()));
 
-            lblMediaSpeseGiornaliera.setText(String.format("Uscite: € %.2f", mediaSpeseGiornaliera));
-            lblMediaEntrateGiornaliera.setText(String.format("Entrate: € %.2f", mediaEntrateGiornaliera));
+            lblMediaSpeseGiornaliera.setText(String.format("Uscite: € %.2f", result.getDailyExpenseAverage()));
+            lblMediaEntrateGiornaliera.setText(String.format("Entrate: € %.2f", result.getDailyIncomeAverage()));
 
-            lblSpeseProiettateTotali.setText(String.format("Uscite: € %.2f", speseProiettate));
-            lblEntrateProiettateTotali.setText(String.format("Entrate: € %.2f", entrateProiettate));
+            lblSpeseProiettateTotali.setText(String.format("Uscite: € %.2f", result.getProjectedTotalExpenses()));
+            lblEntrateProiettateTotali.setText(String.format("Entrate: € %.2f", result.getProjectedTotalIncome()));
 
             String statusIcon;
             String statusTitolo;
@@ -557,7 +537,7 @@ public class ReportController {
             String messageColor;
             String saldoColor;
 
-            if (saldoStimato > 200) {
+            if (result.getStatus() == ForecastCalculator.ForecastStatus.STABLE) {
                 statusIcon = "📈";
                 statusTitolo = "Situazione Stabile";
                 statusMessaggio = "Previsione positiva. Mantenendo questo trend, chiuderai il mese in attivo.";
@@ -566,7 +546,7 @@ public class ReportController {
                 titleColor = "#065f46";
                 messageColor = "#047857";
                 saldoColor = "#10b981";
-            } else if (saldoStimato >= -100 && saldoStimato <= 200) {
+            } else if (result.getStatus() == ForecastCalculator.ForecastStatus.WARNING) {
                 statusIcon = "⚠️";
                 statusTitolo = "Attenzione";
                 statusMessaggio = "Previsione vicina al limite. Monitora le spese per evitare di chiudere in negativo.";
