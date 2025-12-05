@@ -20,6 +20,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.Pair;
+import it.unicas.project.template.address.util.ForecastQueryProvider;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -443,14 +444,7 @@ public class ReportController {
         // Dal 1 del mese fino a oggi (esclude i movimenti futuri)
         LocalDate startOfMonth = currentMonth.atDay(1);
 
-        String query = "SELECT " +
-                "SUM(CASE WHEN LOWER(type) IN ('entrata') THEN amount ELSE 0 END) as totaleEntrate, " +
-                "SUM(CASE WHEN LOWER(type) IN ('uscita') THEN amount ELSE 0 END) as totaleUscite, " +
-                "COUNT(DISTINCT DATE(date)) as giorniConMovimenti " +
-                "FROM movements " +
-                "WHERE user_id = ? " +
-                "AND date >= ? " +
-                "AND date <= ?";
+        String query = ForecastQueryProvider.MONTHLY_FORECAST_AGGREGATE;
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {

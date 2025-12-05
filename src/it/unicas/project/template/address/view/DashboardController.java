@@ -5,6 +5,7 @@ import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
+import it.unicas.project.template.address.util.ForecastQueryProvider;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -747,14 +748,7 @@ public class DashboardController {
             int daysInMonth = currentMonth.lengthOfMonth();
             LocalDate startOfMonth = currentMonth.atDay(1);
 
-            String query = "SELECT " +
-                    "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as totaleEntrate, " +
-                    "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as totaleUscite, " +
-                    "COUNT(DISTINCT DATE(date)) as giorniConMovimenti " +
-                    "FROM movements " +
-                    "WHERE user_id = ? " +
-                    "AND date >= ? " +
-                    "AND date <= ?";
+            String query = ForecastQueryProvider.MONTHLY_FORECAST_AGGREGATE;
 
             try (Connection conn = getConnection();
                  PreparedStatement pstmt = conn.prepareStatement(query)) {
