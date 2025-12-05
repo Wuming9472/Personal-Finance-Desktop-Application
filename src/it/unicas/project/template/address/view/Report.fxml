@@ -172,9 +172,10 @@
                                                 <!-- Dettagli Calcolo -->
                                                 <GridPane hgap="30.0" vgap="15.0">
                                                     <columnConstraints>
-                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
-                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
-                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="34.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
                                                     </columnConstraints>
                                                     <rowConstraints>
                                                         <RowConstraints />
@@ -202,8 +203,29 @@
                                                             </children>
                                                         </HBox>
 
-                                                        <!-- Media Movimenti Giornaliera -->
+                                                        <!-- Entrate Mese -->
                                                         <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1">
+                                                            <children>
+                                                                <Label style="-fx-font-size: 20px;" text="⬆️" />
+                                                                <VBox spacing="3.0">
+                                                                    <children>
+                                                                        <Label text="Entrate mese" textFill="#64748b">
+                                                                            <font>
+                                                                                <Font size="13.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                        <Label fx:id="lblEntrateMese" text="€ 0.00" textFill="#10b981">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="18.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </HBox>
+
+                                                        <!-- Media Movimenti Giornaliera -->
+                                                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="2">
                                                             <children>
                                                                 <Label style="-fx-font-size: 20px;" text="💰" />
                                                                 <VBox spacing="3.0">
@@ -229,7 +251,7 @@
                                                         </HBox>
 
                                                         <!-- Proiezioni Fine Mese -->
-                                                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="2">
+                                                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="3">
                                                             <children>
                                                                 <Label style="-fx-font-size: 20px;" text="💸" />
                                                                 <VBox spacing="3.0">
