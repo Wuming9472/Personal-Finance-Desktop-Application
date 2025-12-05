@@ -48,6 +48,7 @@ public class ReportController {
     @FXML private Label lblStatusTitolo;
     @FXML private Label lblStatusMessaggio;
     @FXML private Label lblGiorniRimanenti;
+    @FXML private Label lblEntrateMese;
     @FXML private Label lblMediaSpeseGiornaliera;
     @FXML private Label lblMediaEntrateGiornaliera;
     @FXML private Label lblSpeseProiettateTotali;
@@ -518,6 +519,7 @@ public class ReportController {
             lblStatusMessaggio.setStyle("-fx-text-fill: #b45309;");
 
             lblGiorniRimanenti.setText("--");
+            lblEntrateMese.setText("--");
             lblMediaSpeseGiornaliera.setText("--");
             lblMediaEntrateGiornaliera.setText("--");
             lblSpeseProiettateTotali.setText("--");
@@ -535,6 +537,7 @@ public class ReportController {
             lblSaldoStimato.setText(String.format("€ %.2f", saldoStimato));
 
             lblGiorniRimanenti.setText(String.format("%d gg", remainingDays));
+            lblEntrateMese.setText(String.format("€ %.2f", totaleEntrate));
 
             lblMediaSpeseGiornaliera.setText(String.format("Uscite: € %.2f", mediaSpeseGiornaliera));
             lblMediaEntrateGiornaliera.setText(String.format("Entrate: € %.2f", mediaEntrateGiornaliera));
