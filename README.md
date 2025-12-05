@@ -619,7 +619,7 @@ GROUP BY b.budget_id;
 - Refresh automatico dei grafici alla selezione
 
 **Pannello Previsione (Forecast)**  
-Visibile solo se ci sono abbastanza dati (almeno **3 giorni diversi** con movimenti nel **mese corrente**).
+Visibile solo se ci sono abbastanza dati (almeno **7 giorni diversi** con movimenti nel **mese corrente**).
 
 - **Periodo di Calcolo**: dal giorno **1** del mese corrente **fino a oggi**  
 - **Saldo Stimato**: saldo previsto a fine mese  
