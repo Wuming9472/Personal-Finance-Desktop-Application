@@ -7,6 +7,7 @@ import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import it.unicas.project.template.address.util.ForecastQueryProvider;
 import javafx.animation.*;
+import it.unicas.project.template.address.util.ForecastCalculator;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -743,7 +744,6 @@ public class DashboardController {
         try {
             int userId = mainApp.getLoggedUser().getUser_id();
 
-            // Mese corrente e numero di giorni nel mese
             var currentMonth = java.time.YearMonth.from(today);
             int daysInMonth = currentMonth.lengthOfMonth();
             LocalDate startOfMonth = currentMonth.atDay(1);
@@ -763,39 +763,45 @@ public class DashboardController {
                         double totaleUscite = rs.getDouble("totaleUscite");
                         int giorniConMovimenti = rs.getInt("giorniConMovimenti");
 
-                        // Stessa regola del Report: almeno 7 giorni diversi con movimenti
-                        if (giorniConMovimenti < 7) {
+                        ForecastCalculator calculator = new ForecastCalculator();
+                        ForecastCalculator.ForecastResult result =
+                                calculator.calculateForecast(
+                                        totaleEntrate,
+                                        totaleUscite,
+                                        giorniConMovimenti,
+                                        today.getDayOfMonth(),
+                                        daysInMonth
+                                );
+
+                        if (!result.isValid()) {
                             lblPrevisione.setText("N/A");
+                            lblPrevisione.setStyle("-fx-text-fill: #64748b; -fx-font-weight: bold; -fx-font-size: 28px;");
                             return;
                         }
 
-                        int currentDay = today.getDayOfMonth();
-                        int remainingDays = daysInMonth - currentDay;
-
-                        double mediaSpeseGiornaliera = currentDay > 0
-                                ? totaleUscite / currentDay
-                                : 0.0;
-
-                        double mediaEntrateGiornaliera = currentDay > 0
-                                ? totaleEntrate / currentDay
-                                : 0.0;
-
-                        double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
-                        double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
-
-                        double saldoStimato = entrateProiettate - speseProiettate;
-
+                        double saldoStimato = result.getEstimatedBalance();
                         lblPrevisione.setText(String.format("€ %.2f", saldoStimato));
+
+                        // Colore coerente col segno
+                        if (saldoStimato >= 0) {
+                            lblPrevisione.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;-fx-font-size: 28px;");
+                        } else {
+                            lblPrevisione.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 28px;");
+                        }
+
                     } else {
                         lblPrevisione.setText("N/A");
+                        lblPrevisione.setStyle("-fx-text-fill: #64748b; -fx-font-weight: bold; -fx-font-size: 28px;");
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
             lblPrevisione.setText("Errore");
+            lblPrevisione.setStyle("-fx-text-fill: #ef4444;");
         }
     }
+
 
     private void populateRecentMovements(List<Movimenti> list) {
         boxUltimiMovimenti.getChildren().clear();

@@ -87,7 +87,7 @@ public class ForecastCalculator {
     // Soglie per la classificazione dello status
     public static final double STABLE_THRESHOLD = 200.0;
     public static final double CRITICAL_THRESHOLD = -100.0;
-    public static final int MINIMUM_DAYS_FOR_FORECAST = 3;
+    public static final int MINIMUM_DAYS_FOR_FORECAST = 7;
 
     /**
      * Calcola la previsione mensile basandosi sui dati reali.
@@ -102,11 +102,12 @@ public class ForecastCalculator {
     public ForecastResult calculateForecast(double totalIncome, double totalExpenses,
                                             int daysWithMovements, int currentDay, int daysInMonth) {
 
-        // Validazione: servono almeno 3 giorni di dati
+        // Validazione: servono almeno N giorni di dati (ora 7)
         if (daysWithMovements < MINIMUM_DAYS_FOR_FORECAST) {
             return ForecastResult.insufficient(
-                "Dati insufficienti: necessari almeno " + MINIMUM_DAYS_FOR_FORECAST +
-                " giorni con movimenti (trovati: " + daysWithMovements + ")");
+                    "Dati insufficienti: necessari almeno " + MINIMUM_DAYS_FOR_FORECAST +
+                            " giorni con movimenti (trovati: " + daysWithMovements + ")"
+            );
         }
 
         // Validazione parametri
@@ -121,24 +122,31 @@ public class ForecastCalculator {
         // Calcolo dei giorni rimanenti
         int remainingDays = daysInMonth - currentDay;
 
-        // Calcolo medie giornaliere (basate sul giorno corrente, non sui giorni con movimenti)
+        // Medie giornaliere (basate sul giorno corrente)
         double dailyExpenseAverage = calculateDailyAverage(totalExpenses, currentDay);
         double dailyIncomeAverage = calculateDailyAverage(totalIncome, currentDay);
 
-        // Calcolo proiezioni totali
         double projectedExpenses = calculateProjectedTotal(totalExpenses, dailyExpenseAverage, remainingDays);
-        double projectedIncome = calculateProjectedTotal(totalIncome, dailyIncomeAverage, remainingDays);
+        double projectedIncome   = totalIncome; // nessuna proiezione delle entrate
 
-        // Calcolo saldo stimato
-        double estimatedBalance = calculateEstimatedBalance(projectedIncome, projectedExpenses);
+        // saldo stimato = entrate REALI - uscite PROIETTATE
+        double estimatedBalance = calculateEstimatedBalance(totalIncome, projectedExpenses);
 
-        // Determina lo status
+        // Determina lo status con le solite soglie
         ForecastStatus status = determineStatus(estimatedBalance);
 
-        return ForecastResult.valid(currentDay, remainingDays,
-            dailyExpenseAverage, dailyIncomeAverage,
-            projectedExpenses, projectedIncome, estimatedBalance, status);
+        return ForecastResult.valid(
+                currentDay,
+                remainingDays,
+                dailyExpenseAverage,
+                dailyIncomeAverage,
+                projectedExpenses,
+                projectedIncome,
+                estimatedBalance,
+                status
+        );
     }
+
 
     /**
      * Calcola la media giornaliera.

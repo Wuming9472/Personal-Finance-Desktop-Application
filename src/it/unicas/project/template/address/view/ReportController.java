@@ -3,6 +3,7 @@ package it.unicas.project.template.address.view;
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.animation.*;
+import it.unicas.project.template.address.util.ForecastCalculator;
 import javafx.scene.Cursor;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -447,8 +448,6 @@ public class ReportController {
         LocalDate today = LocalDate.now();
         YearMonth currentMonth = YearMonth.from(today);
         int daysInMonth = currentMonth.lengthOfMonth();
-
-        // Dal 1 del mese fino a oggi (esclude i movimenti futuri)
         LocalDate startOfMonth = currentMonth.atDay(1);
 
         String query = ForecastQueryProvider.MONTHLY_FORECAST_AGGREGATE;
@@ -466,32 +465,27 @@ public class ReportController {
                     double totaleUscite = rs.getDouble("totaleUscite");
                     int giorniConMovimenti = rs.getInt("giorniConMovimenti");
 
-                    // almeno 7 GIORNI diversi con movimenti
-                    if (giorniConMovimenti < 7) {
+                    ForecastCalculator calculator = new ForecastCalculator();
+                    ForecastCalculator.ForecastResult result =
+                            calculator.calculateForecast(
+                                    totaleEntrate,
+                                    totaleUscite,
+                                    giorniConMovimenti,
+                                    today.getDayOfMonth(),
+                                    daysInMonth
+                            );
+
+                    if (!result.isValid()) {
                         displayInsufficientDataMessage();
                         return;
                     }
 
-                    int currentDay = today.getDayOfMonth();       // giorni trascorsi nel mese
-                    int remainingDays = daysInMonth - currentDay; // giorni rimanenti alla fine del mese
-
-                    int giorniTrascorsi = currentDay;
-
-                    double mediaSpeseGiornaliera = giorniTrascorsi > 0
-                            ? totaleUscite / giorniTrascorsi
-                            : 0.0;
-
-                    double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
-                    // non calcolo le entrate proiettate perché una persona comune ha prevalentemente uscite fisse mensili e poche entrate isolate
-
-                    double saldoStimato = totaleEntrate - speseProiettate;
-
                     updateForecastUI(
-                            currentDay,
-                            remainingDays,
-                            mediaSpeseGiornaliera,
-                            speseProiettate,
-                            saldoStimato,
+                            result.getCurrentDay(),
+                            result.getRemainingDays(),
+                            result.getDailyExpenseAverage(),      // media spese giornaliera
+                            result.getProjectedTotalExpenses(),   // uscite proiettate
+                            result.getEstimatedBalance(),         // saldo stimato
                             totaleEntrate,
                             totaleUscite
                     );
@@ -501,6 +495,7 @@ public class ReportController {
             }
         }
     }
+
 
 
 

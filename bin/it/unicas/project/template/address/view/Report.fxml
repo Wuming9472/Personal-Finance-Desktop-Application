@@ -170,7 +170,7 @@
                                                 </AnchorPane>
 
                                                 <!-- Dettagli Calcolo -->
-                                                <GridPane hgap="30.0" vgap="15.0">
+                                                <GridPane hgap="30.0" translateX="10.0" vgap="15.0">
                                                     <columnConstraints>
                                                         <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
                                                         <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
