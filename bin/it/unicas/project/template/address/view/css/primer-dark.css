@@ -4963,3 +4963,265 @@ Text {
   -fx-opacity: 0.85;
   -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 8px, 0.6, 0, 2);
 }
+
+/* =========================================================================
+   PATCH CORRETTIVA DARK MODE - AGGIUNTA ALLA FINE DEL FILE ORIGINALE
+   Serve a sbloccare i colori personalizzati su Scene Builder (tema scuro)
+   ========================================================================= */
+
+/* 1. SBLOCCO PROGRESS BAR
+   Forza la barra a usare il colore definito in -fx-accent (quello che metti nell'FXML)
+   invece del blu fisso della libreria. */
+.progress-bar .bar {
+    -fx-background-color: -fx-accent !important;
+}
+
+.progress-bar .track {
+    -fx-background-color: #30363d !important; /* Grigio scuro per lo sfondo */
+}
+
+/* 2. SBLOCCO BOTTONI
+   Se il bottone ha uno stile inline (es. style="-fx-background-color: red"),
+   questa regola impedisce al tema di sovrascriverlo col bianco/grigio standard. */
+.button {
+    -fx-background-color: -fx-background; /* Usa il colore di background calcolato */
+}
+
+/* 3. PULIZIA TABELLA
+   Rimuove solo le righe blu/grigie pesanti, mantenendo il font della libreria */
+.table-view, .tree-table-view {
+    -fx-background-color: #0d1117 !important;
+    -fx-table-cell-border-color: transparent !important;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #21262d !important; /* Grigio scuro selezione */
+}
+
+.table-row-cell:selected .text {
+    -fx-fill: #58a6ff !important; /* Testo blu chiaro su selezione */
+}
+
+/* FIX DEFINITIVO COLORI LABEL */
+.label {
+    /* "inherit" dice al CSS: "Non imporre il tuo colore,
+       usa quello che l'utente ha messo nel FXML (Scene Builder)" */
+    -fx-text-fill: inherit !important;
+}
+
+/* =========================================================================
+   MODIFICHE GRAFICO DASHBOARD - STILE "WOW" PREMIUM (DARK MODE)
+   ========================================================================= */
+
+/* Rimuove il rumore visivo dal grafico */
+.chart-vertical-grid-lines, .chart-horizontal-grid-lines {
+    -fx-stroke: transparent !important;
+}
+.chart-plot-background {
+    -fx-background-color: transparent !important;
+}
+
+/* Personalizzazione degli Assi - Minimal & Clean */
+.axis {
+    -fx-tick-label-font-size: 0.9em;
+    -fx-tick-label-fill: #8b949e; /* Grigio morbido per dark mode */
+    -fx-font-weight: 500;
+}
+.axis:bottom {
+    -fx-border-color: transparent;
+}
+.axis:left {
+    -fx-border-color: transparent;
+}
+.axis-tick-mark, .axis-minor-tick-mark {
+    -fx-stroke: transparent !important;
+}
+
+/* --- SERIE 0: ENTRATE (Verde Smeraldo Premium) --- */
+.default-color0.chart-series-area-line {
+    -fx-stroke: linear-gradient(to right, #3fb950 0%, #2ea043 100%) !important;
+    -fx-stroke-width: 3.5px !important;
+    -fx-effect: dropshadow(gaussian, rgba(63, 185, 80, 0.5), 12, 0.6, 0, 4);
+}
+.default-color0.chart-series-area-fill {
+    -fx-fill: linear-gradient(to bottom,
+    rgba(63, 185, 80, 0.5) 0%,
+    rgba(63, 185, 80, 0.25) 50%,
+    rgba(63, 185, 80, 0.05) 100%) !important;
+}
+.default-color0.chart-area-symbol {
+    -fx-background-color: #0d1117, #3fb950 !important;
+    -fx-background-insets: 0, 2px !important;
+    -fx-background-radius: 50% !important;
+    -fx-padding: 5px !important;
+    -fx-effect: dropshadow(gaussian, rgba(63, 185, 80, 0.6), 8, 0.7, 0, 2);
+}
+
+/* --- SERIE 1: USCITE (Rosso/Corallo Premium) --- */
+.default-color1.chart-series-area-line {
+    -fx-stroke: linear-gradient(to right, #f85149 0%, #da3633 100%) !important;
+    -fx-stroke-width: 3.5px !important;
+    -fx-effect: dropshadow(gaussian, rgba(248, 81, 73, 0.5), 12, 0.6, 0, 4);
+}
+.default-color1.chart-series-area-fill {
+    -fx-fill: linear-gradient(to bottom,
+    rgba(248, 81, 73, 0.5) 0%,
+    rgba(248, 81, 73, 0.25) 50%,
+    rgba(248, 81, 73, 0.05) 100%) !important;
+}
+.default-color1.chart-area-symbol {
+    -fx-background-color: #0d1117, #f85149 !important;
+    -fx-background-insets: 0, 2px !important;
+    -fx-background-radius: 50% !important;
+    -fx-padding: 5px !important;
+    -fx-effect: dropshadow(gaussian, rgba(248, 81, 73, 0.6), 8, 0.7, 0, 2);
+}
+
+/* --- TOOLTIP PREMIUM FLOATING (DARK) --- */
+.chart-tooltip {
+    -fx-background-color: rgba(22, 27, 34, 0.98);
+    -fx-background-radius: 10px;
+    -fx-border-color: #30363d;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 10px;
+    -fx-padding: 12px 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 16, 0.3, 0, 6);
+    -fx-text-fill: #c9d1d9;
+    -fx-font-weight: 600;
+    -fx-font-size: 0.95em;
+}
+
+/* --- LEGENDA MODERNA (DARK) --- */
+.chart-legend {
+    -fx-background-color: transparent !important;
+    -fx-padding: 18px 0 8px 0;
+}
+.chart-legend-item {
+    -fx-padding: 6px 12px;
+}
+.chart-legend-item-symbol {
+    -fx-background-radius: 6px !important;
+    -fx-padding: 8px !important;
+}
+.chart-legend-item-label {
+    -fx-text-fill: #8b949e !important;
+    -fx-font-weight: 600 !important;
+    -fx-font-size: 0.95em;
+}
+
+/* --- ANIMAZIONE HOVER SUL GRAFICO --- */
+.chart-series-area-line:hover {
+    -fx-stroke-width: 4.5px !important;
+    -fx-opacity: 1;
+}
+
+/* --- SFONDO CARTA PREMIUM PER IL CONTAINER (DARK) --- */
+.chart {
+    -fx-background-color: #161b22;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 12, 0, 0, 4);
+    -fx-padding: 20px;
+}
+
+/* COLORI BAR CHART - VERDE E ROSSO (DARK) */
+.default-color0.chart-bar {
+    -fx-bar-fill: #3fb950 !important;
+}
+.default-color1.chart-bar {
+    -fx-bar-fill: #f85149 !important;
+}
+.default-color0.chart-legend-item-symbol {
+    -fx-background-color: #3fb950 !important;
+}
+.default-color1.chart-legend-item-symbol {
+    -fx-background-color: #f85149 !important;
+}
+
+/* FIX: Menu item text deve rimanere chiaro quando selezionato/hover */
+.menu-item:hover,
+.menu-item:focused,
+.menu-item:selected {
+    -fx-background-color: #21262d;
+}
+
+.menu-item:hover > .label,
+.menu-item:focused > .label,
+.menu-item:selected > .label {
+    -fx-text-fill: #c9d1d9 !important;
+}
+
+.menu-item:hover .text,
+.menu-item:focused .text,
+.menu-item:selected .text {
+    -fx-fill: #c9d1d9 !important;
+}
+
+/********************************************
+ * CUSTOM: ComboBox categoria / metodo uguali (DARK)
+ ********************************************/
+
+/* Sfondo e bordi uguali per tutte le ComboBox */
+.combo-box {
+    -fx-background-color: #21262d;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: transparent;
+}
+
+/* Rende invisibile il bordo della TextField interna
+   nelle ComboBox EDITABILI (es. metodo di pagamento),
+   così sembra identica a quella non editabile */
+.combo-box .text-field {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-text-fill: #c9d1d9;
+}
+
+/* Bottone della freccia */
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+/* Freccia uguale per tutte le ComboBox */
+.combo-box .arrow {
+    -fx-background-color: #8b949e;
+    -fx-shape: "M 0 0 L 6 6 L 12 0 Z"; /* piccolo triangolo ▼ */
+}
+
+/* Hover leggerissimo sulla freccia (opzionale) */
+.combo-box .arrow-button:hover {
+    -fx-background-color: rgba(139, 148, 158, 0.15);
+}
+
+/********************************************
+ * CUSTOM: DatePicker coerente con i campi testo (DARK)
+ ********************************************/
+
+.date-picker {
+    -fx-background-color: #21262d;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 0 10 0 10;
+}
+
+.date-picker > .text-field {
+    -fx-background-color: transparent;
+    -fx-padding: 6 0 6 0;
+    -fx-text-fill: #c9d1d9;
+}
+
+.date-picker > .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 6 0 8;
+}
+
+.date-picker > .arrow-button > .arrow {
+    -fx-background-color: #8b949e;
+    -fx-shape: "M3 5H21V19H3Z M7 3V7 M17 3V7 M3 9H21";
+    -fx-scale-shape: true;
+}
+
+.date-picker > .arrow-button:hover {
+    -fx-background-color: rgba(139, 148, 158, 0.15);
+}
