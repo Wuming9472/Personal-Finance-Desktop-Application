@@ -6,7 +6,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="600.0" prefWidth="1024.0" stylesheets="@css/primer-light.css,@css/collapsible-menu.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.RootLayoutController">
+<BorderPane prefHeight="600.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.RootLayoutController">
 
     <top>
         <HBox alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="200.0" spacing="20.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">

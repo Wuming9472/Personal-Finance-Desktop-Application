@@ -5,6 +5,7 @@ import java.io.IOException;
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.view.*;
 import it.unicas.project.template.address.model.User;
+import it.unicas.project.template.address.util.ThemeManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -28,15 +29,29 @@ public class MainApp extends Application {
     private ReportController reportController;
     private DashboardController dashboardController;
 
+    // Gestore del tema (rileva automaticamente dark/light mode di sistema)
+    private ThemeManager themeManager;
+
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("BalanceSuite");
 
+        // Inizializza il gestore del tema e avvia il monitoraggio automatico
+        themeManager = ThemeManager.getInstance();
+        themeManager.startThemeWatcher();
+
         // STEP 1: All'avvio mostriamo SOLO il Login.
         // Non carichiamo ancora il RootLayout.
         showLogin();
+    }
 
+    @Override
+    public void stop() {
+        // Ferma il monitoraggio del tema quando l'app si chiude
+        if (themeManager != null) {
+            themeManager.stopThemeWatcher();
+        }
     }
 
 
@@ -47,6 +62,9 @@ public class MainApp extends Application {
             AnchorPane page = (AnchorPane) loader.load();
 
             Scene scene = new Scene(page);
+            // Applica il tema di sistema (light/dark) e registra per aggiornamenti automatici
+            themeManager.applyTheme(scene);
+            themeManager.registerScene(scene);
             primaryStage.setScene(scene);
 
             RegisterController controller = loader.getController();
@@ -70,6 +88,9 @@ public class MainApp extends Application {
 
             // Creiamo la scena direttamente con la vista del Login
             Scene scene = new Scene(loginView);
+            // Applica il tema di sistema (light/dark) e registra per aggiornamenti automatici
+            themeManager.applyTheme(scene);
+            themeManager.registerScene(scene);
             primaryStage.setScene(scene);
 
             // Collega il controller
@@ -122,6 +143,9 @@ public class MainApp extends Application {
 
             // Sostituisce la scena del Login con quella dell'App Principale
             Scene scene = new Scene(rootLayout);
+            // Applica il tema di sistema (light/dark) con il CSS del menu collassabile
+            themeManager.applyThemeWithCollapsibleMenu(scene);
+            themeManager.registerScene(scene);
             primaryStage.setScene(scene);
 
             // Imposta dimensioni minime o massimizza se vuoi
@@ -252,6 +276,8 @@ public class MainApp extends Application {
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             Scene scene = new Scene(page);
+            // Applica il tema di sistema (light/dark) al dialog
+            themeManager.applyTheme(scene);
             dialogStage.setScene(scene);
 
             dialogStage.showAndWait();
@@ -274,6 +300,8 @@ public class MainApp extends Application {
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             Scene scene = new Scene(page);
+            // Applica il tema di sistema (light/dark) al dialog
+            themeManager.applyTheme(scene);
             dialogStage.setScene(scene);
 
             SettingsEditDialogController controller = loader.getController();
