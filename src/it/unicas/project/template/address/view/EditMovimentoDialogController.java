@@ -35,6 +35,7 @@ public class EditMovimentoDialogController {
         public String toString() {
             return name;
         }
+        public int getId() {return id;}
     }
 
     @FXML

@@ -36,6 +36,7 @@ class ReportControllerTest {
 
         setField(controller, "lblRisparmioStimato", new Label());
         setField(controller, "lblCategoriaCritica", new Label());
+        setField(controller, "lblEntrateMese", new Label());
 
         setField(controller, "lblPeriodoCalcolo", new Label());
         setField(controller, "lblSaldoStimato", new Label());
@@ -106,14 +107,14 @@ class ReportControllerTest {
 
         waitForFxEvents();
 
-        Label lblSaldoStimato      = getField(controller, "lblSaldoStimato");
-        Label lblPeriodoCalcolo    = getField(controller, "lblPeriodoCalcolo");
-        Label lblStatusTitolo      = getField(controller, "lblStatusTitolo");
-        Label lblStatusMessaggio   = getField(controller, "lblStatusMessaggio");
-        Label lblGiorniRimanenti   = getField(controller, "lblGiorniRimanenti");
-        Label lblMediaSpese        = getField(controller, "lblMediaSpeseGiornaliera");
-        Label lblMediaEntrate      = getField(controller, "lblMediaEntrateGiornaliera");
-        Label lblSpeseProiettate   = getField(controller, "lblSpeseProiettateTotali");
+        Label lblSaldoStimato = getField(controller, "lblSaldoStimato");
+        Label lblPeriodoCalcolo = getField(controller, "lblPeriodoCalcolo");
+        Label lblStatusTitolo = getField(controller, "lblStatusTitolo");
+        Label lblStatusMessaggio = getField(controller, "lblStatusMessaggio");
+        Label lblGiorniRimanenti = getField(controller, "lblGiorniRimanenti");
+        Label lblMediaSpese = getField(controller, "lblMediaSpeseGiornaliera");
+        Label lblMediaEntrate = getField(controller, "lblMediaEntrateGiornaliera");
+        Label lblSpeseProiettate = getField(controller, "lblSpeseProiettateTotali");
         Label lblEntrateProiettate = getField(controller, "lblEntrateProiettateTotali");
 
         assertEquals("N/A", lblSaldoStimato.getText());
@@ -143,8 +144,6 @@ class ReportControllerTest {
         double saldoStimato = 300.0;              // > 200 → Situazione Stabile
         double totaleEntrate = 800.0;
         double totaleUscite = 500.0;
-        double mediaEntrateGiornaliera = 30.0;
-        double entrateProiettate = 900.0;
 
         invokeUpdateForecastUI(
                 controller,
@@ -154,22 +153,19 @@ class ReportControllerTest {
                 speseProiettate,
                 saldoStimato,
                 totaleEntrate,
-                totaleUscite,
-                mediaEntrateGiornaliera,
-                entrateProiettate
+                totaleUscite
         );
 
         waitForFxEvents();
 
-        Label lblSaldoStimato      = getField(controller, "lblSaldoStimato");
-        Label lblGiorniRimanenti   = getField(controller, "lblGiorniRimanenti");
-        Label lblMediaSpese        = getField(controller, "lblMediaSpeseGiornaliera");
-        Label lblMediaEntrate      = getField(controller, "lblMediaEntrateGiornaliera");
-        Label lblSpeseProiettate   = getField(controller, "lblSpeseProiettateTotali");
+        Label lblSaldoStimato = getField(controller, "lblSaldoStimato");
+        Label lblGiorniRimanenti = getField(controller, "lblGiorniRimanenti");
+        Label lblMediaSpese = getField(controller, "lblMediaSpeseGiornaliera");
+        Label lblSpeseProiettate = getField(controller, "lblSpeseProiettateTotali");
         Label lblEntrateProiettate = getField(controller, "lblEntrateProiettateTotali");
-        Label lblStatusIcon        = getField(controller, "lblStatusIcon");
-        Label lblStatusTitolo      = getField(controller, "lblStatusTitolo");
-        Label lblStatusMessaggio   = getField(controller, "lblStatusMessaggio");
+        Label lblStatusIcon = getField(controller, "lblStatusIcon");
+        Label lblStatusTitolo = getField(controller, "lblStatusTitolo");
+        Label lblStatusMessaggio = getField(controller, "lblStatusMessaggio");
 
         // Locale IT → virgola, quindi controllo "€" e "300"
         assertTrue(lblSaldoStimato.getText().contains("€"));
@@ -177,9 +173,8 @@ class ReportControllerTest {
 
         assertEquals(remainingDays + " gg", lblGiorniRimanenti.getText());
         assertTrue(lblMediaSpese.getText().contains("Uscite: €"));
-        assertTrue(lblMediaEntrate.getText().contains("Entrate: €"));
         assertTrue(lblSpeseProiettate.getText().contains("Uscite: €"));
-        assertTrue(lblEntrateProiettate.getText().contains("Entrate: €"));
+        assertTrue(lblEntrateProiettate.getText().contains("€"));
 
         assertEquals("📈", lblStatusIcon.getText());
         assertEquals("Situazione Stabile", lblStatusTitolo.getText());
@@ -200,8 +195,6 @@ class ReportControllerTest {
         double saldoStimato = 50.0;              // tra -100 e 200 → Attenzione
         double totaleEntrate = 600.0;
         double totaleUscite = 450.0;
-        double mediaEntrateGiornaliera = 28.0;
-        double entrateProiettate = 650.0;
 
         invokeUpdateForecastUI(
                 controller,
@@ -211,22 +204,20 @@ class ReportControllerTest {
                 speseProiettate,
                 saldoStimato,
                 totaleEntrate,
-                totaleUscite,
-                mediaEntrateGiornaliera,
-                entrateProiettate
+                totaleUscite
         );
 
         waitForFxEvents();
 
-        Label lblSaldoStimato    = getField(controller, "lblSaldoStimato");
-        Label lblStatusIcon      = getField(controller, "lblStatusIcon");
-        Label lblStatusTitolo    = getField(controller, "lblStatusTitolo");
+        Label lblSaldoStimato = getField(controller, "lblSaldoStimato");
+        Label lblStatusIcon = getField(controller, "lblStatusIcon");
+        Label lblStatusTitolo = getField(controller, "lblStatusTitolo");
         Label lblStatusMessaggio = getField(controller, "lblStatusMessaggio");
 
         assertTrue(lblSaldoStimato.getText().contains("€"));
         assertTrue(lblSaldoStimato.getText().contains("50"));
 
-        assertEquals("⚠️", lblStatusIcon.getText());
+        assertEquals("⚠", lblStatusIcon.getText());
         assertEquals("Attenzione", lblStatusTitolo.getText());
         assertTrue(lblStatusMessaggio.getText().contains("vicina al limite")
                 || lblStatusMessaggio.getText().contains("Monitora le spese"));
@@ -245,8 +236,6 @@ class ReportControllerTest {
         double saldoStimato = -150.0;            // < -100 → Situazione Critica
         double totaleEntrate = 400.0;
         double totaleUscite = 550.0;
-        double mediaEntrateGiornaliera = 20.0;
-        double entrateProiettate = 650.0;
 
         invokeUpdateForecastUI(
                 controller,
@@ -256,16 +245,14 @@ class ReportControllerTest {
                 speseProiettate,
                 saldoStimato,
                 totaleEntrate,
-                totaleUscite,
-                mediaEntrateGiornaliera,
-                entrateProiettate
+                totaleUscite
         );
 
         waitForFxEvents();
 
-        Label lblSaldoStimato    = getField(controller, "lblSaldoStimato");
-        Label lblStatusIcon      = getField(controller, "lblStatusIcon");
-        Label lblStatusTitolo    = getField(controller, "lblStatusTitolo");
+        Label lblSaldoStimato = getField(controller, "lblSaldoStimato");
+        Label lblStatusIcon = getField(controller, "lblStatusIcon");
+        Label lblStatusTitolo = getField(controller, "lblStatusTitolo");
         Label lblStatusMessaggio = getField(controller, "lblStatusMessaggio");
 
         assertTrue(lblSaldoStimato.getText().contains("€"));
@@ -336,14 +323,12 @@ class ReportControllerTest {
             double speseProiettate,
             double saldoStimato,
             double totaleEntrate,
-            double totaleUscite,
-            double mediaEntrateGiornaliera,
-            double entrateProiettate
+            double totaleUscite
     ) throws Exception {
         var method = ReportController.class.getDeclaredMethod(
                 "updateForecastUI",
                 int.class, int.class, double.class, double.class, double.class,
-                double.class, double.class, double.class, double.class
+                double.class, double.class
         );
         method.setAccessible(true);
         method.invoke(controller,
@@ -353,9 +338,7 @@ class ReportControllerTest {
                 speseProiettate,
                 saldoStimato,
                 totaleEntrate,
-                totaleUscite,
-                mediaEntrateGiornaliera,
-                entrateProiettate
+                totaleUscite
         );
     }
 }

@@ -87,8 +87,8 @@ class EditMovimentoDialogControllerTest {
     @Test
     void categoryItemStoresIdAndName() {
         CategoryItem item = new CategoryItem(5, "Salute");
-        assertEquals(5, item.id);
-        assertEquals("Salute", item.name);
+        assertEquals(5, item.getId());
+        assertEquals("Salute", item.toString());
     }
 
     @Test
@@ -209,7 +209,7 @@ class EditMovimentoDialogControllerTest {
 
     @Test
     void getSelectedCategoryIdReturnsMinusOneWhenNoSelection() {
-        int categoryId = categoryField.getValue() != null ? categoryField.getValue().id : -1;
+        int categoryId = categoryField.getValue() != null ? categoryField.getValue().getId() : -1;
         assertEquals(-1, categoryId);
     }
 
@@ -219,7 +219,7 @@ class EditMovimentoDialogControllerTest {
         categoryField.getItems().add(item);
         categoryField.setValue(item);
 
-        int categoryId = categoryField.getValue() != null ? categoryField.getValue().id : -1;
+        int categoryId = categoryField.getValue() != null ? categoryField.getValue().getId() : -1;
         assertEquals(3, categoryId);
     }
 
