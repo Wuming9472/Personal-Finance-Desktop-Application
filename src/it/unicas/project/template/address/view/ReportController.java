@@ -595,10 +595,6 @@ public class ReportController {
 
 
     private Connection getConnection() throws SQLException {
-        it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings settings =
-                it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings.getCurrentDAOMySQLSettings();
-        String connectionString = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
-                + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
-        return DriverManager.getConnection(connectionString);
+        return it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings.getConnection();
     }
 }

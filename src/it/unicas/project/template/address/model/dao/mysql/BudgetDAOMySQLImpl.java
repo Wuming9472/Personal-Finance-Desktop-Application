@@ -9,10 +9,7 @@ public class BudgetDAOMySQLImpl {
 
     // Metodo helper per ottenere la connessione usando le tue impostazioni
     private Connection getConnection() throws SQLException {
-        DAOMySQLSettings settings = DAOMySQLSettings.getCurrentDAOMySQLSettings();
-        String connectionString = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
-                + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
-        return DriverManager.getConnection(connectionString);
+        return DAOMySQLSettings.getConnection();
     }
 
     /**

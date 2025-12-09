@@ -4,6 +4,7 @@ import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import it.unicas.project.template.address.model.Movimenti;
+import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import it.unicas.project.template.address.util.ForecastQueryProvider;
 import javafx.animation.*;
@@ -552,10 +553,7 @@ public class DashboardController {
     }
 
     private Connection getConnection() throws SQLException {
-        it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings settings = settingsSupplier.get();
-        String connectionString = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
-                + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
-        return connectionFactory.apply(connectionString);
+        return DAOMySQLSettings.getConnection();
     }
 
     private void setupChartAppearance() {

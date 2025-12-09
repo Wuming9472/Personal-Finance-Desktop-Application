@@ -64,13 +64,9 @@ public class EditMovimentoDialogController {
      * Carica le categorie dal database
      */
     private void loadCategories() {
-        DAOMySQLSettings settings = DAOMySQLSettings.getCurrentDAOMySQLSettings();
-        String url = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
-                + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
-
         String sql = "SELECT category_id, name FROM categories ORDER BY category_id ASC";
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DAOMySQLSettings.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 

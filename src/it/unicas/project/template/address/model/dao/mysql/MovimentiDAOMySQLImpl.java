@@ -16,10 +16,7 @@ import  javafx.util.Pair;
 public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
 
     private Connection getConnection() throws SQLException {
-        DAOMySQLSettings settings = DAOMySQLSettings.getCurrentDAOMySQLSettings();
-        String connectionString = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
-                + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
-        return DriverManager.getConnection(connectionString);
+        return DAOMySQLSettings.getConnection();
     }
 
     // --- METODO SELECT AGGIORNATO (JOIN) ---

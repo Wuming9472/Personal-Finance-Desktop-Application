@@ -141,14 +141,10 @@ public class MovimentiController {
     }
 
     private void loadCategories() {
-        DAOMySQLSettings settings = settingsSupplier.get();
-        String url = "jdbc:mysql://" + settings.getHost() + ":3306/" + settings.getSchema()
-                + "?user=" + settings.getUserName() + "&password=" + settings.getPwd();
-
         // Ordine per ID ASC come richiesto
         String sql = "SELECT category_id, name FROM categories ORDER BY category_id ASC";
 
-        try (Connection conn = connectionFactory.apply(url);
+        try (Connection conn = DAOMySQLSettings.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
