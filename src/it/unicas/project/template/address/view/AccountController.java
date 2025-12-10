@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.TextFormatter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,6 +49,98 @@ public class AccountController {
             question1Box.setItems(questions);
             question2Box.setItems(questions);
             question3Box.setItems(questions);
+        }
+
+        // Limite password: max 32 caratteri
+        if (txtOldPwd != null) {
+            txtOldPwd.setTextFormatter(new TextFormatter<String>(change -> {
+                String newText = change.getControlNewText();
+                if (newText.length() > 32) {
+                    int excess = newText.length() - 32;
+                    if (change.getText().length() > excess) {
+                        change.setText(change.getText().substring(0, change.getText().length() - excess));
+                    } else {
+                        return null;
+                    }
+                }
+                return change;
+            }));
+        }
+
+        if (txtNewPwd != null) {
+            txtNewPwd.setTextFormatter(new TextFormatter<String>(change -> {
+                String newText = change.getControlNewText();
+                if (newText.length() > 32) {
+                    int excess = newText.length() - 32;
+                    if (change.getText().length() > excess) {
+                        change.setText(change.getText().substring(0, change.getText().length() - excess));
+                    } else {
+                        return null;
+                    }
+                }
+                return change;
+            }));
+        }
+
+        if (txtRepeatPwd != null) {
+            txtRepeatPwd.setTextFormatter(new TextFormatter<String>(change -> {
+                String newText = change.getControlNewText();
+                if (newText.length() > 32) {
+                    int excess = newText.length() - 32;
+                    if (change.getText().length() > excess) {
+                        change.setText(change.getText().substring(0, change.getText().length() - excess));
+                    } else {
+                        return null;
+                    }
+                }
+                return change;
+            }));
+        }
+
+        // Limite risposte domande di sicurezza: max 16 caratteri
+        if (answer1Field != null) {
+            answer1Field.setTextFormatter(new TextFormatter<String>(change -> {
+                String newText = change.getControlNewText();
+                if (newText.length() > 16) {
+                    int excess = newText.length() - 16;
+                    if (change.getText().length() > excess) {
+                        change.setText(change.getText().substring(0, change.getText().length() - excess));
+                    } else {
+                        return null;
+                    }
+                }
+                return change;
+            }));
+        }
+
+        if (answer2Field != null) {
+            answer2Field.setTextFormatter(new TextFormatter<String>(change -> {
+                String newText = change.getControlNewText();
+                if (newText.length() > 16) {
+                    int excess = newText.length() - 16;
+                    if (change.getText().length() > excess) {
+                        change.setText(change.getText().substring(0, change.getText().length() - excess));
+                    } else {
+                        return null;
+                    }
+                }
+                return change;
+            }));
+        }
+
+        if (answer3Field != null) {
+            answer3Field.setTextFormatter(new TextFormatter<String>(change -> {
+                String newText = change.getControlNewText();
+                if (newText.length() > 16) {
+                    int excess = newText.length() - 16;
+                    if (change.getText().length() > excess) {
+                        change.setText(change.getText().substring(0, change.getText().length() - excess));
+                    } else {
+                        return null;
+                    }
+                }
+                return change;
+            }));
         }
     }
 

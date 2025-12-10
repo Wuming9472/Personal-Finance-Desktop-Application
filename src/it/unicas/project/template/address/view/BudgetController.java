@@ -5,6 +5,7 @@ import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.TextFormatter;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -233,6 +234,22 @@ public class BudgetController {
         dialog.setTitle("Modifica Budget");
         dialog.setHeaderText("Imposta limite per " + categoryName);
         dialog.setContentText("Nuovo limite (€):");
+
+        // Limite max 7 cifre per il budget
+        dialog.getEditor().setTextFormatter(new TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            // Rimuovi caratteri non numerici per contare le cifre (escluso virgola/punto decimale)
+            String digitsOnly = newText.replaceAll("[^0-9]", "");
+            if (digitsOnly.length() > 7) {
+                int excess = digitsOnly.length() - 7;
+                if (change.getText().length() > excess) {
+                    change.setText(change.getText().substring(0, change.getText().length() - excess));
+                } else {
+                    return null;
+                }
+            }
+            return change;
+        }));
 
         Optional<String> result = dialog.showAndWait();
 
