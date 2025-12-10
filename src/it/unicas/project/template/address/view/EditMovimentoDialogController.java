@@ -47,12 +47,42 @@ public class EditMovimentoDialogController {
         methodField.getItems().addAll("Contanti", "Bancomat", "Carta di credito", "Bonifico", "Addebito SDD");
         methodField.setEditable(true);
 
-        // Limite Caratteri Descrizione (Max 100)
+        // Limite importo (Max 10 cifre)
+        amountField.setTextFormatter(new TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            // Rimuovi caratteri non numerici per contare le cifre (escluso virgola/punto decimale)
+            String digitsOnly = newText.replaceAll("[^0-9]", "");
+            if (digitsOnly.length() > 10) {
+                int excess = digitsOnly.length() - 10;
+                if (change.getText().length() > excess) {
+                    change.setText(change.getText().substring(0, change.getText().length() - excess));
+                } else {
+                    return null;
+                }
+            }
+            return change;
+        }));
+
+        // Limite metodo di pagamento (Max 32 caratteri) - per input manuale
+        methodField.getEditor().setTextFormatter(new TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            if (newText.length() > 32) {
+                int excess = newText.length() - 32;
+                if (change.getText().length() > excess) {
+                    change.setText(change.getText().substring(0, change.getText().length() - excess));
+                } else {
+                    return null;
+                }
+            }
+            return change;
+        }));
+
+        // Limite Caratteri Descrizione/Titolo (Max 40)
         descArea.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal.length() > 100) {
+            if (newVal.length() > 40) {
                 descArea.setText(oldVal); // Blocca scrittura
             } else {
-                charCountLabel.setText(newVal.length() + "/100");
+                charCountLabel.setText(newVal.length() + "/40");
             }
         });
 

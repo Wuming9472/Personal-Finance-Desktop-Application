@@ -41,11 +41,90 @@ public class RegisterController {
         if (errorLabel != null) {
             errorLabel.setVisible(false);
             errorLabel.setText("");
-
-            usernameField.setTextFormatter(new TextFormatter<String>(change -> {
-                return change.getControlNewText().length() <= 16 ? change : null;
-            }));
         }
+
+        // Limite username: max 16 caratteri
+        usernameField.setTextFormatter(new TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            if (newText.length() > 16) {
+                // Tronca in caso di copia-incolla
+                String truncated = newText.substring(0, 16);
+                change.setText(truncated.substring(change.getRangeStart(), Math.min(truncated.length(), change.getRangeStart() + change.getText().length())));
+                change.setRange(change.getRangeStart(), change.getRangeEnd());
+                int newLength = change.getControlText().length() - (change.getRangeEnd() - change.getRangeStart()) + change.getText().length();
+                if (newLength > 16) {
+                    change.setText(change.getText().substring(0, change.getText().length() - (newLength - 16)));
+                }
+            }
+            return change;
+        }));
+
+        // Limite password: max 32 caratteri
+        passwordField.setTextFormatter(new TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            if (newText.length() > 32) {
+                int excess = newText.length() - 32;
+                if (change.getText().length() > excess) {
+                    change.setText(change.getText().substring(0, change.getText().length() - excess));
+                } else {
+                    return null;
+                }
+            }
+            return change;
+        }));
+
+        confirmPasswordField.setTextFormatter(new TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            if (newText.length() > 32) {
+                int excess = newText.length() - 32;
+                if (change.getText().length() > excess) {
+                    change.setText(change.getText().substring(0, change.getText().length() - excess));
+                } else {
+                    return null;
+                }
+            }
+            return change;
+        }));
+
+        // Limite risposte domande di sicurezza: max 16 caratteri
+        answer1Field.setTextFormatter(new TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            if (newText.length() > 16) {
+                int excess = newText.length() - 16;
+                if (change.getText().length() > excess) {
+                    change.setText(change.getText().substring(0, change.getText().length() - excess));
+                } else {
+                    return null;
+                }
+            }
+            return change;
+        }));
+
+        answer2Field.setTextFormatter(new TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            if (newText.length() > 16) {
+                int excess = newText.length() - 16;
+                if (change.getText().length() > excess) {
+                    change.setText(change.getText().substring(0, change.getText().length() - excess));
+                } else {
+                    return null;
+                }
+            }
+            return change;
+        }));
+
+        answer3Field.setTextFormatter(new TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            if (newText.length() > 16) {
+                int excess = newText.length() - 16;
+                if (change.getText().length() > excess) {
+                    change.setText(change.getText().substring(0, change.getText().length() - excess));
+                } else {
+                    return null;
+                }
+            }
+            return change;
+        }));
 
         // Lista di domande disponibili
         ObservableList<String> questions = FXCollections.observableArrayList(
