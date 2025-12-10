@@ -32,6 +32,7 @@ public class UserDAOMySQLImpl implements UserDAO {
         return false;
     }
 
+
     @Override
     public boolean register(String username, String password) throws SQLException {
         String query = "INSERT INTO users (username, password) VALUES (?, ?)";
@@ -43,8 +44,16 @@ public class UserDAOMySQLImpl implements UserDAO {
 
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
+
+        } catch (SQLException e) {
+            // errore MySQL per chiave duplicata: codice 1062, SQLState 23000
+            if (e.getErrorCode() == 1062 || "23000".equals(e.getSQLState())) {
+                throw new SQLException("Username già esistente", e);
+            }
+            throw e; // altri errori li rilancio così come sono
         }
     }
+
 
     /**
      * Aggiorna la password sapendo user_id e vecchia password.

@@ -41,6 +41,10 @@ public class RegisterController {
         if (errorLabel != null) {
             errorLabel.setVisible(false);
             errorLabel.setText("");
+
+            usernameField.setTextFormatter(new TextFormatter<String>(change -> {
+                return change.getControlNewText().length() <= 16 ? change : null;
+            }));
         }
 
         // Lista di domande disponibili
