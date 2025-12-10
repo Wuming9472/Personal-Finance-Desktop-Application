@@ -19,7 +19,6 @@ Un'applicazione desktop moderna e intuitiva per la gestione delle finanze person
 - [Esecuzione](#-esecuzione)
 - [Struttura del Database](#-struttura-del-database)
 - [Funzionalità Dettagliate](#-funzionalità-dettagliate)
-- [Testing](#-testing)
 - [Contribuire](#-contribuire)
 - [Licenza](#-licenza)
 
@@ -205,6 +204,7 @@ Dovresti vedere:
 - `categories`
 - `movements`
 - `budgets`
+- `security_questions`
 
 ### 3. Configura Credenziali
 
@@ -292,48 +292,26 @@ Budget mensili per categoria.
 
 > **Nota**: Il campo `year` è stato aggiunto nell'implementazione Java per supportare budget multi-anno.
 
+#### Tabella `security_questions`
+Domande di sicurezza in caso di password dimenticata.
+
+| Campo       | Tipo          | Descrizione                     |
+|-------------|---------------|---------------------------------|
+| question_id | INT (PK, AI)  | ID univoco budget               |
+| user_id     | INT (FK)      | Riferimento a users             |
+| question    | VARCHAR(32)   | Domanda di sicurezza            |
+| answer      | VARCHAR       | Risposta associata              |
+
+
 ### Relazioni
 
 ```
 users (1) ──< (N) movements
 users (1) ──< (N) budgets
+users (1) ──< (N) security_questions
 categories (1) ──< (N) movements
 categories (1) ──< (N) budgets
-```
 
-### Query Comuni
-
-```sql
--- Entrate e uscite di un utente per un mese
-SELECT
-    SUM(CASE WHEN type = 'Entrata' THEN amount ELSE 0 END) as entrate,
-    SUM(CASE WHEN type = 'Uscita' THEN amount ELSE 0 END) as uscite
-FROM movements
-WHERE user_id = ? AND MONTH(date) = ? AND YEAR(date) = ?;
-
--- Spesa per categoria in un mese
-SELECT c.name, SUM(m.amount) as totale
-FROM movements m
-JOIN categories c ON m.category_id = c.category_id
-WHERE m.user_id = ? AND m.type = 'Uscita'
-  AND MONTH(m.date) = ? AND YEAR(m.date) = ?
-GROUP BY c.category_id;
-
--- Budget con spesa corrente
-SELECT
-    b.budget_id,
-    c.name as category_name,
-    b.amount as budget_amount,
-    COALESCE(SUM(m.amount), 0) as spent_amount
-FROM budgets b
-JOIN categories c ON b.category_id = c.category_id
-LEFT JOIN movements m ON m.category_id = b.category_id
-    AND m.user_id = b.user_id
-    AND m.type = 'Uscita'
-    AND MONTH(m.date) = b.month
-    AND YEAR(m.date) = b.year
-WHERE b.user_id = ? AND b.month = ? AND b.year = ?
-GROUP BY b.budget_id;
 ```
 
 ## 🎯 Funzionalità Dettagliate
@@ -365,7 +343,7 @@ GROUP BY b.budget_id;
 - Area hover trasparente per migliore UX
 
 **Ultimi Movimenti**
-- Lista scrollabile degli ultimi 10 movimenti
+- Lista scrollabile dei movimenti dell'ultimo mese
 - Icone colorate (verde per entrate, rosso per uscite)
 - Data, titolo (o categoria se titolo vuoto), importo
 
@@ -376,11 +354,6 @@ GROUP BY b.budget_id;
 - Visualizzazione speso, rimanente e percentuale
 
 ### Gestione Movimenti
-
-**Tabella Movimenti**
-- Colonne: ID, Tipo, Categoria, Data, Importo, Titolo, Metodo Pagamento
-- Ordinamento per colonna
-- Selezione riga per modifica/eliminazione
 
 **Creazione Movimento**
 1. Click su "Nuovo Movimento"
@@ -420,37 +393,11 @@ GROUP BY b.budget_id;
 
 ### Budget Planning
 
-**Visualizzazione Budget**
-- Tabella con colonne:
-  - Categoria
-  - Mese/Anno
-  - Budget Limite
-  - Speso
-  - Rimanente (calcolato)
-  - Percentuale (barra di progresso)
-
-**Creazione Budget**
-1. Click su "Nuovo Budget"
-2. Seleziona:
-   - Categoria (ComboBox)
-   - Mese (ComboBox 1-12)
-   - Anno (TextField)
-   - Importo Limite (TextField)
-3. Validazione:
-   - Un solo budget per categoria/mese/anno
-   - Importo > 0
-4. Salvataggio su DB
-
 **Modifica Budget**
 1. Seleziona budget dalla tabella
 2. Click su "Modifica"
 3. Aggiorna importo limite
 4. Update su DB
-
-**Calcolo Automatico Spesa**
-- Query su DB per sommare movimenti di tipo "Uscita"
-- Filtro per: user_id, categoria, mese, anno
-- Visualizzazione in tempo reale
 
 **Alert Visivi**
 - Budget < 80%: Barra verde
@@ -479,28 +426,22 @@ GROUP BY b.budget_id;
 - ComboBox con opzioni:
   - Ultimi 6 mesi
   - Ultimo anno
-  - Ultimi 2 anni
-  - Tutto (dall'inizio)
 - Refresh automatico dei grafici alla selezione
 
 **Pannello Previsione (Forecast)**  
-Visibile solo se ci sono abbastanza dati (almeno **7 giorni diversi** con movimenti nel **mese corrente**).
+Visibile solo se ci sono abbastanza dati (almeno 7 **giorni diversi** con movimenti nel **mese corrente**)
 
 - **Periodo di Calcolo**: dal giorno **1** del mese corrente **fino a oggi**  
 - **Saldo Stimato**: saldo previsto a fine mese  
-  `SaldoStimato = EntrateProiettateTotali − SpeseProiettateTotali`
+  `SaldoStimato = EntrateTotali − SpeseProiettateTotali`
 - **Giorni Trascorsi**: numero di giorni di calendario dall’inizio del mese a oggi  
   `GiorniTrascorsi = giorno_corrente_del_mese`
 - **Giorni Rimanenti**: giorni di calendario dalla data odierna fino alla fine del mese  
   `GiorniRimanenti = GiorniNelMese − GiorniTrascorsi`
 - **Media Spese Giornaliera**: spesa media giornaliera del mese corrente  
   `MediaSpeseGiornaliera = TotaleUscite / GiorniTrascorsi`
-- **Media Entrate Giornaliera**: entrata media giornaliera del mese corrente  
-  `MediaEntrateGiornaliera = TotaleEntrate / GiorniTrascorsi`
 - **Spese Proiettate Totali**: spese stimate a fine mese  
   `SpeseProiettateTotali = TotaleUscite + (MediaSpeseGiornaliera * GiorniRimanenti)`
-- **Entrate Proiettate Totali**: entrate stimate a fine mese  
-  `EntrateProiettateTotali = TotaleEntrate + (MediaEntrateGiornaliera * GiorniRimanenti)`
 - **Status Badge**: indicatore visivo dello stato previsto del saldo a fine mese  
   - verde = situazione stabile (saldoStimato > 200)  
   - giallo = attenzione (−100 ≤ saldoStimato ≤ 200)  
@@ -534,54 +475,6 @@ Visibile solo se ci sono abbastanza dati (almeno **7 giorni diversi** con movime
 - Ritorno alla schermata di login
 - Pulizia sessione utente
 
-## 🧪 Testing
-
-Il progetto include test unitari per le classi di utilità (escluso `DateUtil`) e test di smoke sui controller.
-
-### Eseguire i Test
-
-#### Da Command Line
-
-```bash
-# Compila i test
-javac -d out/test-classes \
-  src/test/java/org/junit/jupiter/api/*.java \
-  src/it/unicas/project/template/address/test.util/BudgetNotificationPreferences.java \
-  src/test/java/it/unicas/project/template/address/test.util/BudgetNotificationPreferencesTest.java \
-  src/test/java/TestRunner.java
-
-# Esegui i test
-java -cp out/test-classes TestRunner
-```
-
-#### Da IDE
-- IntelliJ: Right-click su `TestRunner.java` → Run 'TestRunner.main()'
-- Eclipse: Right-click su `TestRunner.java` → Run As → Java Application
-
-### Test Inclusi
-
-**DateUtilTest**
-Spostato in `archived-tests/` per non essere eseguito dal build principale; resta come
-referenza manuale quando si vuole verificare il parsing/formattazione delle date senza
-impattare la copertura automatica degli altri helper.
-
-**BudgetNotificationPreferencesTest**
-- Gestione marcatura notifiche, dismissione e pulizia mesi obsoleti
-
-**ForecastCalculatorTest**
-- Calcolo delle previsioni e classificazione stato
-
-**SummaryCalculatorTest**
-- Calcolo riepilogo mensile e aggregazioni per periodo
-
-**ControllerInstantiationTest**
-- Istanziazione dei controller principali in `view`
-
-### Copertura Test
-- **Utility Classes**: 90%+ (focalizzata su helper diversi da `DateUtil`, ora archiviato)
-- **DAO Layer**: Testing manuale con DB di test
-- **Controller Layer**: Testing manuale tramite UI
-
 
 ## 🔮 Roadmap Future
 
@@ -589,19 +482,15 @@ Possibili migliori futuri:
 
 - [ ] **Sicurezza Password**: Hashing password con BCrypt
 - [ ] **Export/Import Dati**: Export CSV/Excel di movimenti e budget
-- [ ] **Backup Database**: Funzione di backup automatico
 - [ ] **Multi-Currency**: Supporto valute multiple
 - [ ] **Ricevute**: Upload e associazione ricevute/fatture ai movimenti
 - [ ] **Obiettivi di Risparmio**: Impostazione e tracking obiettivi finanziari
 - [ ] **Notifiche Desktop**: Notifiche native OS per alert budget
 - [ ] **Dark Mode Auto**: Cambio automatico tema in base a orario
-- [ ] **Grafici Avanzati**: Grafici a linea, heatmap, sankey diagram
 - [ ] **Machine Learning**: Previsioni spese basate su ML
 - [ ] **Mobile Companion App**: App mobile per inserimento rapido spese
-- [ ] **API REST**: Backend API per sincronizzazione multi-device
 - [ ] **Categorizzazione Automatica**: Suggerimento categorie basato su titolo
 - [ ] **Ricorrenze**: Gestione movimenti ricorrenti (stipendio, affitto)
-- [ ] **Splitting Spese**: Divisione spese con coinquilini/partner
 
 ## 📄 Licenza
 
