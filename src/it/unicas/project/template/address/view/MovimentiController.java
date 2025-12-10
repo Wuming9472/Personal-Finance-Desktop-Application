@@ -106,6 +106,21 @@ public class MovimentiController {
 
         // Metodi di Pagamento (Ordine Richiesto)
         methodField.getItems().addAll("Contanti", "Bancomat", "Carta di credito", "Bonifico", "Addebito SDD");
+        methodField.setEditable(true);
+
+        // Limite metodo di pagamento (Max 32 caratteri) - per input manuale
+        methodField.getEditor().setTextFormatter(new TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            if (newText.length() > 32) {
+                int excess = newText.length() - 32;
+                if (change.getText().length() > excess) {
+                    change.setText(change.getText().substring(0, change.getText().length() - excess));
+                } else {
+                    return null;
+                }
+            }
+            return change;
+        }));
 
         // 3. LIMITE IMPORTO (Max 10 cifre)
         amountField.setTextFormatter(new TextFormatter<String>(change -> {
