@@ -60,7 +60,7 @@ public class ForecastCalculator {
 
         /// Costruttore privato usato dai factory method statici
         /// [#insufficient(String)] e
-        /// [#valid(int, int, double, double, double, double, double, ForecastStatus)].
+        ///[#valid(int, int, double, double, double, ForecastStatus)]
         ///
         /// @param valid                  `true` se la previsione è valida,
         ///                               `false` in caso di errore o dati insufficienti
