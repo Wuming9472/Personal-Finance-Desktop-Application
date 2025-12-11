@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"it.unicas.project.template.address"},{"l":"it.unicas.project.template.address.model"},{"l":"it.unicas.project.template.address.model.dao.mysql"},{"l":"it.unicas.project.template.address.util"},{"l":"it.unicas.project.template.address.view"}];updateSearchResults();

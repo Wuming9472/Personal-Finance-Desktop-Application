@@ -47,14 +47,10 @@ public class ForecastCalculator {
         /** Media giornaliera delle uscite calcolata sui giorni trascorsi. */
         private final double dailyExpenseAverage;
 
-        /** Media giornaliera delle entrate calcolata sui giorni trascorsi. */
-        private final double dailyIncomeAverage;
 
         /** Totale delle uscite proiettato a fine mese. */
         private final double projectedTotalExpenses;
 
-        /** Totale delle entrate proiettato o considerato a fine mese. */
-        private final double projectedTotalIncome;
 
         /** Saldo stimato a fine mese (entrate - uscite). */
         private final double estimatedBalance;
@@ -62,35 +58,28 @@ public class ForecastCalculator {
         /** Stato della previsione sulla base del saldo stimato. */
         private final ForecastStatus status;
 
-        /**
-         * Costruttore privato usato dai factory method statici
-         * {@link #insufficient(String)} e
-         * {@link #valid(int, int, double, double, double, double, double, ForecastStatus)}.
-         *
-         * @param valid                  {@code true} se la previsione è valida,
-         *                               {@code false} in caso di errore o dati insufficienti
-         * @param errorMessage           messaggio di errore (o {@code null} se non applicabile)
-         * @param currentDay             giorno corrente del mese
-         * @param remainingDays          giorni rimanenti nel mese
-         * @param dailyExpenseAverage    media giornaliera delle uscite
-         * @param dailyIncomeAverage     media giornaliera delle entrate
-         * @param projectedTotalExpenses totale uscite proiettato a fine mese
-         * @param projectedTotalIncome   totale entrate proiettato o considerato a fine mese
-         * @param estimatedBalance       saldo stimato a fine mese
-         * @param status                 stato della previsione
-         */
+        /// Costruttore privato usato dai factory method statici
+        /// [#insufficient(String)] e
+        /// [#valid(int, int, double, double, double, double, double, ForecastStatus)].
+        ///
+        /// @param valid                  `true` se la previsione è valida,
+        ///                               `false` in caso di errore o dati insufficienti
+        /// @param errorMessage           messaggio di errore (o `null` se non applicabile)
+        /// @param currentDay             giorno corrente del mese
+        /// @param remainingDays          giorni rimanenti nel mese
+        /// @param dailyExpenseAverage    media giornaliera delle uscite
+        /// @param projectedTotalExpenses totale uscite proiettato a fine mese
+        /// @param estimatedBalance       saldo stimato a fine mese
+        /// @param status                 stato della previsione
         private ForecastResult(boolean valid, String errorMessage, int currentDay, int remainingDays,
-                               double dailyExpenseAverage, double dailyIncomeAverage,
-                               double projectedTotalExpenses, double projectedTotalIncome,
+                               double dailyExpenseAverage, double projectedTotalExpenses,
                                double estimatedBalance, ForecastStatus status) {
             this.valid = valid;
             this.errorMessage = errorMessage;
             this.currentDay = currentDay;
             this.remainingDays = remainingDays;
             this.dailyExpenseAverage = dailyExpenseAverage;
-            this.dailyIncomeAverage = dailyIncomeAverage;
             this.projectedTotalExpenses = projectedTotalExpenses;
-            this.projectedTotalIncome = projectedTotalIncome;
             this.estimatedBalance = estimatedBalance;
             this.status = status;
         }
@@ -142,14 +131,6 @@ public class ForecastCalculator {
             return dailyExpenseAverage;
         }
 
-        /**
-         * Restituisce la media giornaliera delle entrate.
-         *
-         * @return media giornaliera delle entrate
-         */
-        public double getDailyIncomeAverage() {
-            return dailyIncomeAverage;
-        }
 
         /**
          * Restituisce il totale delle uscite proiettato a fine mese.
@@ -160,14 +141,6 @@ public class ForecastCalculator {
             return projectedTotalExpenses;
         }
 
-        /**
-         * Restituisce il totale delle entrate proiettato o considerato a fine mese.
-         *
-         * @return totale entrate proiettato (o reale, a seconda della logica adottata)
-         */
-        public double getProjectedTotalIncome() {
-            return projectedTotalIncome;
-        }
 
         /**
          * Restituisce il saldo stimato a fine mese.
@@ -198,7 +171,7 @@ public class ForecastCalculator {
          * @return istanza di {@link ForecastResult} non valida
          */
         public static ForecastResult insufficient(String message) {
-            return new ForecastResult(false, message, 0, 0, 0, 0, 0, 0, 0, ForecastStatus.INSUFFICIENT_DATA);
+            return new ForecastResult(false, message, 0, 0, 0, 0, 0, ForecastStatus.INSUFFICIENT_DATA);
         }
 
         /**
@@ -210,20 +183,16 @@ public class ForecastCalculator {
          * @param currentDay             giorno corrente del mese utilizzato per il calcolo
          * @param remainingDays          giorni rimanenti nel mese
          * @param dailyExpenseAverage    media giornaliera delle uscite
-         * @param dailyIncomeAverage     media giornaliera delle entrate
          * @param projectedTotalExpenses totale uscite proiettato a fine mese
-         * @param projectedTotalIncome   totale entrate proiettato o considerato a fine mese
          * @param estimatedBalance       saldo stimato a fine mese
          * @param status                 stato della previsione
          * @return istanza di {@link ForecastResult} valida
          */
         public static ForecastResult valid(int currentDay, int remainingDays,
-                                           double dailyExpenseAverage, double dailyIncomeAverage,
-                                           double projectedTotalExpenses, double projectedTotalIncome,
+                                           double dailyExpenseAverage, double projectedTotalExpenses,
                                            double estimatedBalance, ForecastStatus status) {
             return new ForecastResult(true, null, currentDay, remainingDays,
-                    dailyExpenseAverage, dailyIncomeAverage,
-                    projectedTotalExpenses, projectedTotalIncome, estimatedBalance, status);
+                    dailyExpenseAverage, projectedTotalExpenses, estimatedBalance, status);
         }
     }
 
@@ -330,14 +299,10 @@ public class ForecastCalculator {
 
         // Medie giornaliere (basate sul giorno corrente)
         double dailyExpenseAverage = calculateDailyAverage(totalExpenses, currentDay);
-        double dailyIncomeAverage = calculateDailyAverage(totalIncome, currentDay);
 
         // Proiezione delle uscite a fine mese
         double projectedExpenses = calculateProjectedTotal(totalExpenses, dailyExpenseAverage, remainingDays);
 
-        // In questa implementazione si considerano solo le entrate reali
-        // senza proiezione ulteriore
-        double projectedIncome   = totalIncome;
 
         // saldo stimato = entrate REALI - uscite PROIETTATE
         double estimatedBalance = calculateEstimatedBalance(totalIncome, projectedExpenses);
@@ -349,9 +314,7 @@ public class ForecastCalculator {
                 currentDay,
                 remainingDays,
                 dailyExpenseAverage,
-                dailyIncomeAverage,
                 projectedExpenses,
-                projectedIncome,
                 estimatedBalance,
                 status
         );
@@ -403,15 +366,15 @@ public class ForecastCalculator {
      * <p>
      * La formula utilizzata è:
      * <pre>
-     * estimatedBalance = projectedIncome - projectedExpenses
+     * estimatedBalance = totalIncome - projectedExpenses
      * </pre>
      *
-     * @param projectedIncome   entrate proiettate a fine mese
+     * @param totalIncome   entrate totali fino al giorno corrente
      * @param projectedExpenses uscite proiettate a fine mese
      * @return saldo stimato (entrate - uscite)
      */
-    public double calculateEstimatedBalance(double projectedIncome, double projectedExpenses) {
-        return projectedIncome - projectedExpenses;
+    public double calculateEstimatedBalance(double totalIncome, double projectedExpenses) {
+        return totalIncome - projectedExpenses;
     }
 
     /**

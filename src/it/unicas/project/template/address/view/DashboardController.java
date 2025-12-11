@@ -20,7 +20,6 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -30,7 +29,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
 import javafx.util.Duration;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -162,14 +160,6 @@ public class DashboardController {
 
     public void setBudgetDAO(BudgetDAOMySQLImpl budgetDAO) {
         this.budgetDAO = budgetDAO;
-    }
-
-    public void setSettingsSupplier(Supplier<it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings> settingsSupplier) {
-        this.settingsSupplier = settingsSupplier;
-    }
-
-    public void setConnectionFactory(Function<String, Connection> connectionFactory) {
-        this.connectionFactory = connectionFactory;
     }
 
 

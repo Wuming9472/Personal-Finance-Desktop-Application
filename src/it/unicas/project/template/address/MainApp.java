@@ -348,48 +348,6 @@ public class MainApp extends Application {
         }
     }
 
-    /**
-     * Apre la finestra di dialogo per la modifica delle impostazioni
-     * di connessione al database.
-     * <p>
-     * Carica il file FXML {@code view/SettingsEditDialog.fxml}, inizializza
-     * lo {@link SettingsEditDialogController} con l'istanza di
-     * {@link DAOMySQLSettings} corrente e mostra lo {@link Stage} in modalità
-     * modale. Al termine restituisce il risultato dell'azione utente
-     * (pulsante OK premuto oppure no).
-     *
-     * @param daoMySQLSettings oggetto che rappresenta le impostazioni correnti
-     *                         di connessione al database
-     * @return {@code true} se l'utente ha confermato le modifiche (OK),
-     *         {@code false} in caso di annullamento o errore
-     */
-    public boolean showSettingsEditDialog(DAOMySQLSettings daoMySQLSettings) {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/SettingsEditDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Impostazioni Database");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            Scene scene = new Scene(page);
-            dialogStage.setScene(scene);
-
-            SettingsEditDialogController controller = loader.getController();
-            controller.setDialogStage(dialogStage);
-
-            // Passa le impostazioni correnti al controller
-            controller.setSettings(daoMySQLSettings);
-
-            dialogStage.showAndWait();
-
-            return controller.isOkClicked();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     /**
      * Restituisce lo {@link Stage} principale dell'applicazione.

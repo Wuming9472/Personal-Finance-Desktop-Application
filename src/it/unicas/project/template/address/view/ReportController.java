@@ -4,7 +4,6 @@ import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import javafx.animation.*;
 import it.unicas.project.template.address.util.ForecastCalculator;
-import javafx.scene.Cursor;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,13 +21,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import it.unicas.project.template.address.util.ForecastQueryProvider;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.TextStyle;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Controller per la sezione Report dell'applicazione.
@@ -39,7 +35,7 @@ import java.util.Locale;
  *   <li>Grafico ad area dell'andamento entrate/uscite nel tempo</li>
  *   <li>Previsione finanziaria di fine mese</li>
  * </ul>
- 
+
  *
  * @author Personal Finance Team
  * @version 1.0
@@ -123,7 +119,7 @@ public class ReportController {
      * <p>
      * Metodo chiamato automaticamente da JavaFX dopo il caricamento del file FXML.
      * Configura i grafici e inizializza il selettore del range temporale.
-     
+
      */
     @FXML
     private void initialize() {
@@ -152,7 +148,7 @@ public class ReportController {
      * Carica i dati del report per l'utente corrente.
      * <p>
      * Recupera l'ID dell'utente loggato e avvia l'aggiornamento della UI.
-     
+
      */
     private void loadReportDataForCurrentUser() {
         if (mainApp == null || mainApp.getLoggedUser() == null) return;
@@ -164,7 +160,7 @@ public class ReportController {
      * Aggiorna i dati del report.
      * <p>
      * Metodo pubblico per forzare un refresh completo dei dati visualizzati.
-     
+
      */
     public void refreshReportData() {
         updateUIFromData();
@@ -175,7 +171,7 @@ public class ReportController {
      * <p>
      * Carica in sequenza i dati per il grafico a torta, il grafico
      * ad area e la sezione previsione.
-     
+
      */
     private void updateUIFromData() {
         if (currentUserId <= 0) return;
@@ -195,7 +191,7 @@ public class ReportController {
      * <p>
      * Configura le opzioni disponibili e imposta il listener per
      * aggiornare il grafico quando cambia la selezione.
-     
+
      */
     private void initRangeSelector() {
         if (cmbRange != null) {
@@ -239,7 +235,7 @@ public class ReportController {
      * <p>
      * Esegue una query aggregata per ottenere il totale delle uscite
      * raggruppate per categoria.
-     
+
      *
      * @throws SQLException in caso di errori di accesso al database
      */
@@ -297,7 +293,7 @@ public class ReportController {
      * Configura l'interazione per una fetta del grafico a torta.
      * <p>
      * Aggiunge tooltip, animazione hover e cambio cursore.
-     
+
      *
      * @param node        il nodo grafico della fetta
      * @param data        i dati associati alla fetta
@@ -418,7 +414,7 @@ public class ReportController {
      * Anima il grafico ad area con un effetto di rivelazione progressiva.
      * <p>
      * Il grafico viene svelato da sinistra a destra in 1200ms.
-     
+
      */
     private void animateChartReveal() {
         if (lineChartAndamento == null) return;
@@ -494,7 +490,7 @@ public class ReportController {
      * Anima il grafico a torta con effetto "sbocciare".
      * <p>
      * Ogni fetta viene animata in sequenza con fade in e scala.
-     
+
      */
     private void animatePieChart() {
         if (pieChart == null) return;
@@ -625,7 +621,7 @@ public class ReportController {
      * <p>
      * Viene chiamato quando non ci sono abbastanza giorni di movimenti
      * per calcolare una previsione affidabile.
-     
+
      */
     private void displayInsufficientDataMessage() {
         Platform.runLater(() -> {

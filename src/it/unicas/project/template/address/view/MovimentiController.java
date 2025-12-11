@@ -17,7 +17,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.paint.Color;
-
 import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;

@@ -177,49 +177,6 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
         }
     }
 
-    /**
-     * Recupera gli ultimi {@code limit} movimenti registrati da un utente,
-     * ordinati dalla data più recente alla più vecchia.
-     * <p>
-     * La query utilizza la tabella {@code movements} e una LEFT JOIN su
-     * {@code categories} per ottenere anche il nome della categoria.
-     *
-     * @param userId identificativo dell'utente
-     * @param limit  numero massimo di movimenti da restituire
-     * @return lista di {@link Movimenti} limitata a {@code limit} elementi
-     * @throws SQLException se si verifica un errore durante l'esecuzione della query
-     */
-    public List<Movimenti> selectLastByUser(int userId, int limit) throws SQLException {
-        ArrayList<Movimenti> lista = new ArrayList<>();
-        String query = "SELECT m.*, c.name as cat_name FROM movements m " +
-                "LEFT JOIN categories c ON m.category_id = c.category_id " +
-                "WHERE m.user_id = ? " +
-                "ORDER BY m.date DESC LIMIT ?";
-
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setInt(1, userId);
-            pstmt.setInt(2, limit);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    Movimenti mov = new Movimenti(
-                            rs.getInt("movement_id"),
-                            rs.getString("type"),
-                            rs.getDate("date").toLocalDate(),
-                            rs.getFloat("amount"),
-                            rs.getString("title"),
-                            rs.getString("payment_method")
-                    );
-                    mov.setCategoryId(rs.getInt("category_id"));
-                    mov.setCategoryName(rs.getString("cat_name"));
-                    lista.add(mov);
-                }
-            }
-        }
-        return lista;
-    }
 
     /**
      * Recupera i movimenti di un utente filtrati per mese e anno,
@@ -309,75 +266,7 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
         return total;
     }
 
-    /**
-     * Restituisce i dati di trend giornaliero per un mese specifico,
-     * calcolando un saldo progressivo.
-     * <p>
-     * Per ogni giorno con movimenti viene calcolato:
-     * <ul>
-     *     <li>entrate come valore positivo;</li>
-     *     <li>uscite come valore negativo;</li>
-     *     <li>saldo cumulativo (running balance) nel tempo.</li>
-     * </ul>
-     * Le entrate sono riconosciute come {@code type} in
-     * {@code ('entrata', 'income')}, le uscite come gli altri valori.
-     * <p>
-     * Il risultato è una lista di coppie {@code (labelGiorno, saldoCumulativo)},
-     * dove la label è il giorno del mese come stringa.
-     * Se non ci sono movimenti, viene comunque restituito un punto base
-     * con giorno 1 e saldo 0.
-     *
-     * @param userId identificativo dell'utente
-     * @param month  mese di riferimento (1–12)
-     * @param year   anno di riferimento
-     * @return lista di {@link Pair} con etichetta giorno e saldo cumulativo
-     * @throws SQLException se si verifica un errore durante l'accesso al database
-     */
-    public List<Pair<String, Float>> getMonthlyTrend(int userId, int month, int year) throws SQLException {
-        List<Pair<String, Float>> data = new ArrayList<>();
 
-        String query = "SELECT DATE(date) as giorno, " +
-                "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE -amount END) as saldo " +
-                "FROM movements " +
-                "WHERE user_id = ? AND MONTH(date) = ? AND YEAR(date) = ? " +
-                "GROUP BY DATE(date) " +
-                "ORDER BY giorno ASC";
-
-        try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setInt(1, userId);
-            pstmt.setInt(2, month);
-            pstmt.setInt(3, year);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                float runningBalance = 0f;
-                boolean firstPointAdded = false;
-
-                while (rs.next()) {
-                    LocalDate giorno = rs.getDate("giorno").toLocalDate();
-                    float saldo = rs.getFloat("saldo");
-
-                    if (!firstPointAdded) {
-                        // Punto iniziale per dare ancoraggio al grafico
-                        LocalDate firstDay = LocalDate.of(year, month, 1);
-                        data.add(new Pair<>(firstDay.getDayOfMonth() + "", 0f));
-                        firstPointAdded = true;
-                    }
-
-                    runningBalance += saldo;
-                    data.add(new Pair<>(giorno.getDayOfMonth() + "", runningBalance));
-                }
-
-                // Se non ci sono movimenti, restituiamo un punto base per evitare grafici vuoti
-                if (!firstPointAdded) {
-                    LocalDate firstDay = LocalDate.of(year, month, 1);
-                    data.add(new Pair<>(firstDay.getDayOfMonth() + "", 0f));
-                }
-            }
-        }
-        return data;
-    }
 
     /**
      * Calcola il trend di entrate e uscite per un utente su un intervallo
@@ -588,41 +477,24 @@ public class MovimentiDAOMySQLImpl implements DAO<Movimenti> {
         }
     }
 
-    // Metodi dell'interfaccia DAO generica (non utilizzati direttamente qui, ma richiesti dall'interfaccia)
 
-    /**
-     * Implementazione richiesta dall'interfaccia {@link DAO}, non utilizzata
-     * in questa classe. Restituisce sempre {@code null}.
-     */
     @Override
-    public List<Movimenti> select(Movimenti m) throws DAOException {
-        return null;
+    public List<Movimenti> select(Movimenti a) throws DAOException {
+        return List.of();
     }
 
-    /**
-     * Implementazione richiesta dall'interfaccia {@link DAO}, non utilizzata
-     * in questa classe. Non esegue alcuna operazione.
-     */
     @Override
-    public void update(Movimenti m) throws DAOException {
-        // Non utilizzato
+    public void update(Movimenti a) throws DAOException {
+
     }
 
-    /**
-     * Implementazione richiesta dall'interfaccia {@link DAO}, non utilizzata
-     * in questa classe. Non esegue alcuna operazione.
-     */
     @Override
-    public void insert(Movimenti m) throws DAOException {
-        // Non utilizzato
+    public void insert(Movimenti a) throws DAOException {
+
     }
 
-    /**
-     * Implementazione richiesta dall'interfaccia {@link DAO}, non utilizzata
-     * in questa classe. Non esegue alcuna operazione.
-     */
     @Override
-    public void delete(Movimenti m) throws DAOException {
-        // Non utilizzato
+    public void delete(Movimenti a) throws DAOException {
+
     }
 }

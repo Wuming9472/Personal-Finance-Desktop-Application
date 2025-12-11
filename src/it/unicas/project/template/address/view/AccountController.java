@@ -45,6 +45,7 @@ public class AccountController {
 
     private MainApp mainApp;
 
+
     /**
      * Inizializza i componenti dell'interfaccia grafica.
      * <p>
