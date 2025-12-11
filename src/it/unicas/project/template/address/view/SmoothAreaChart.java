@@ -15,23 +15,72 @@ import javafx.scene.shape.CubicCurveTo;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Estensione di {@link AreaChart} che renderizza le linee con curve smussate
+ * invece di segmenti rettilinei.
+ * <p>
+ * Utilizza l'algoritmo Catmull-Rom per calcolare i punti di controllo delle
+ * curve di Bézier cubiche, producendo un effetto visivo più gradevole e
+ * professionale rispetto al grafico ad area standard.
+ * </p>
+ *
+ * <h3>Esempio di utilizzo:</h3>
+ * <pre>{@code
+ * SmoothAreaChart<String, Number> chart = new SmoothAreaChart<>();
+ * chart.getData().add(series);
+ * }</pre>
+ *
+ * @param <X> il tipo di dati dell'asse X
+ * @param <Y> il tipo di dati dell'asse Y
+ *
+ * @author Personal Finance Team
+ * @version 1.0
+ * @see AreaChart
+ */
 public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
 
-    // --- COSTRUTTORE AGGIUNTO PER FXML ---
+    /**
+     * Costruttore di default per compatibilità con FXML.
+     * <p>
+     * Crea un grafico con {@link CategoryAxis} per l'asse X e
+     * {@link NumberAxis} per l'asse Y.
+     * </p>
+     */
+    @SuppressWarnings("unchecked")
     public SmoothAreaChart() {
         this((Axis<X>) new CategoryAxis(), (Axis<Y>) new NumberAxis());
     }
 
+    /**
+     * Crea un nuovo SmoothAreaChart con gli assi specificati.
+     *
+     * @param xAxis l'asse X del grafico
+     * @param yAxis l'asse Y del grafico
+     */
     public SmoothAreaChart(Axis<X> xAxis, Axis<Y> yAxis) {
         super(xAxis, yAxis);
         configureYAxis();
     }
 
+    /**
+     * Crea un nuovo SmoothAreaChart con gli assi e i dati specificati.
+     *
+     * @param xAxis l'asse X del grafico
+     * @param yAxis l'asse Y del grafico
+     * @param data  la lista osservabile delle serie di dati da visualizzare
+     */
     public SmoothAreaChart(Axis<X> xAxis, Axis<Y> yAxis, ObservableList<Series<X, Y>> data) {
         super(xAxis, yAxis, data);
         configureYAxis();
     }
 
+    /**
+     * Configura l'asse X per una migliore visualizzazione.
+     * <p>
+     * Se l'asse X è di tipo {@link CategoryAxis}, ruota le etichette
+     * di -45 gradi per evitare sovrapposizioni.
+     * </p>
+     */
     private void configureXAxis() {
         if (getXAxis() instanceof CategoryAxis) {
             CategoryAxis xAxis = (CategoryAxis) getXAxis();
@@ -39,6 +88,13 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
         }
     }
 
+    /**
+     * Configura l'asse Y per una migliore visualizzazione.
+     * <p>
+     * Se l'asse Y è di tipo {@link NumberAxis}, forza l'inclusione
+     * dello zero nel range e abilita l'auto-ranging.
+     * </p>
+     */
     private void configureYAxis() {
         if (getYAxis() instanceof NumberAxis) {
             NumberAxis yAxis = (NumberAxis) getYAxis();
@@ -47,6 +103,14 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Override del metodo per applicare lo smoothing alle linee del grafico
+     * dopo il layout standard. Per ogni serie di dati, trova i path della
+     * linea e dell'area riempita e applica l'algoritmo di smoothing.
+     * </p>
+     */
     @Override
     protected void layoutPlotChildren() {
         super.layoutPlotChildren();
@@ -60,6 +124,22 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
         }
     }
 
+    /**
+     * Applica lo smoothing a un path, convertendo i segmenti lineari
+     * in curve di Bézier cubiche.
+     * <p>
+     * L'algoritmo:
+     * <ol>
+     *   <li>Estrae i punti dal path originale</li>
+     *   <li>Per il primo e l'ultimo segmento usa curve semplificate</li>
+     *   <li>Per i segmenti interni usa l'interpolazione Catmull-Rom</li>
+     *   <li>Aggiorna sia la linea che l'area riempita</li>
+     * </ol>
+     * </p>
+     *
+     * @param line il path della linea da smussare
+     * @param fill il path dell'area riempita da smussare (può essere null)
+     */
     private void smoothPath(Path line, Path fill) {
         List<Point2D> points = new ArrayList<>();
         for (PathElement elem : line.getElements()) {
@@ -81,9 +161,8 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
             Point2D p1 = points.get(i);
             Point2D p2 = points.get(i + 1);
 
-            // Gestione speciale per primo e ultimo segmento (evita loop)
             if (i == 0) {
-                // Primo segmento: usa una curva più semplice
+                // Primo segmento: curva semplificata per evitare loop
                 Point2D cp1 = new Point2D(
                         p1.x + (p2.x - p1.x) * 0.3,
                         p1.y
@@ -99,7 +178,7 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
                         p2.x, clampToBaseline(p2.y, yZero)
                 ));
             } else if (i == points.size() - 2) {
-                // Ultimo segmento: usa una curva più semplice
+                // Ultimo segmento: curva semplificata per evitare loop
                 Point2D cp1 = new Point2D(
                         p1.x + (p2.x - p1.x) * 0.3,
                         p1.y
@@ -115,7 +194,7 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
                         p2.x, clampToBaseline(p2.y, yZero)
                 ));
             } else {
-                // Segmenti interni: usa Catmull-Rom
+                // Segmenti interni: interpolazione Catmull-Rom
                 Point2D p0 = points.get(i - 1);
                 Point2D p3 = points.get(i + 2);
 
@@ -141,11 +220,36 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
         }
     }
 
+    /**
+     * Calcola la posizione Y corrispondente al valore zero sull'asse Y.
+     * <p>
+     * Utilizzato per determinare la baseline dell'area riempita del grafico.
+     * </p>
+     *
+     * @return la posizione in pixel dello zero, o l'altezza del grafico se non disponibile
+     */
     private double getZeroDisplayPosition() {
-        double yZero = ((Axis) getYAxis()).getDisplayPosition(0);
+        @SuppressWarnings("unchecked")
+        double yZero = ((Axis<Number>) getYAxis()).getDisplayPosition(0);
         return Double.isNaN(yZero) ? getHeight() : yZero;
     }
 
+    /**
+     * Calcola un punto di controllo per una curva di Bézier usando
+     * l'interpolazione Catmull-Rom.
+     * <p>
+     * L'algoritmo considera tre punti consecutivi per calcolare la tangente
+     * e posizionare il punto di controllo in modo da ottenere una curva
+     * fluida e naturale.
+     * </p>
+     *
+     * @param p0       il punto precedente
+     * @param p1       il punto corrente
+     * @param p2       il punto successivo
+     * @param isSecond {@code true} per calcolare il secondo punto di controllo,
+     *                 {@code false} per il primo
+     * @return il punto di controllo calcolato
+     */
     private Point2D getControlPoint(Point2D p0, Point2D p1, Point2D p2, boolean isSecond) {
         // Tensione ridotta per evitare loop e curve eccessive
         double tension = 0.25;
@@ -173,12 +277,42 @@ public class SmoothAreaChart<X, Y> extends AreaChart<X, Y> {
         return new Point2D(cpX, cpY);
     }
 
+    /**
+     * Limita un valore Y alla baseline del grafico.
+     * <p>
+     * Assicura che i punti della curva non superino la linea di base,
+     * evitando artefatti visivi nell'area riempita.
+     * </p>
+     *
+     * @param value    il valore Y da limitare
+     * @param baseline la posizione della baseline
+     * @return il valore limitato
+     */
     private double clampToBaseline(double value, double baseline) {
         return Math.min(value, baseline);
     }
 
+    /**
+     * Classe interna per rappresentare un punto 2D.
+     * <p>
+     * Utilizzata internamente per i calcoli geometrici delle curve.
+     * </p>
+     */
     private static class Point2D {
-        double x, y;
-        Point2D(double x, double y) { this.x = x; this.y = y; }
+        /** Coordinata X del punto. */
+        double x;
+        /** Coordinata Y del punto. */
+        double y;
+
+        /**
+         * Crea un nuovo punto con le coordinate specificate.
+         *
+         * @param x la coordinata X
+         * @param y la coordinata Y
+         */
+        Point2D(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
     }
 }

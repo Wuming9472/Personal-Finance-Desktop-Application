@@ -30,34 +30,105 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Controller per la sezione Report dell'applicazione.
+ * <p>
+ * Gestisce la visualizzazione di:
+ * <ul>
+ *   <li>Grafico a torta delle spese per categoria</li>
+ *   <li>Grafico ad area dell'andamento entrate/uscite nel tempo</li>
+ *   <li>Previsione finanziaria di fine mese</li>
+ * </ul>
+ * </p>
+ *
+ * @author Personal Finance Team
+ * @version 1.0
+ * @see ForecastCalculator
+ * @see SmoothAreaChart
+ */
 public class ReportController {
 
+    /** Riferimento all'applicazione principale. */
     private MainApp mainApp;
+
+    /** ID dell'utente correntemente loggato. */
     private int currentUserId = -1;
 
-    @FXML private PieChart pieChart;
-    @FXML private SmoothAreaChart<String, Number> lineChartAndamento;
-    @FXML private ComboBox<String> cmbRange;
-    @FXML private Label lblRisparmioStimato;
-    @FXML private Label lblCategoriaCritica;
+    /** Grafico a torta per la distribuzione delle spese per categoria. */
+    @FXML
+    private PieChart pieChart;
 
-    // Forecast section UI elements
-    @FXML private Label lblPeriodoCalcolo;
-    @FXML private Label lblSaldoStimato;
-    @FXML private AnchorPane paneStatus;
-    @FXML private Label lblStatusIcon;
-    @FXML private Label lblStatusTitolo;
-    @FXML private Label lblStatusMessaggio;
-    @FXML private Label lblGiorniRimanenti;
-    @FXML private Label lblEntrateMese;
-    @FXML private Label lblMediaSpeseGiornaliera;
-    @FXML private Label lblSpeseProiettateTotali;
-    @FXML private Label lblDisclaimer;
+    /** Grafico ad area smussato per l'andamento temporale. */
+    @FXML
+    private SmoothAreaChart<String, Number> lineChartAndamento;
 
+    /** ComboBox per la selezione del range temporale. */
+    @FXML
+    private ComboBox<String> cmbRange;
+
+    /** Label per il risparmio stimato. */
+    @FXML
+    private Label lblRisparmioStimato;
+
+    /** Label per la categoria con maggiori spese. */
+    @FXML
+    private Label lblCategoriaCritica;
+
+    /** Label per il periodo di calcolo della previsione. */
+    @FXML
+    private Label lblPeriodoCalcolo;
+
+    /** Label per il saldo stimato a fine mese. */
+    @FXML
+    private Label lblSaldoStimato;
+
+    /** Pannello contenitore dello status della previsione. */
+    @FXML
+    private AnchorPane paneStatus;
+
+    /** Label per l'icona dello status (emoji). */
+    @FXML
+    private Label lblStatusIcon;
+
+    /** Label per il titolo dello status. */
+    @FXML
+    private Label lblStatusTitolo;
+
+    /** Label per il messaggio descrittivo dello status. */
+    @FXML
+    private Label lblStatusMessaggio;
+
+    /** Label per i giorni rimanenti nel mese. */
+    @FXML
+    private Label lblGiorniRimanenti;
+
+    /** Label per le entrate totali del mese. */
+    @FXML
+    private Label lblEntrateMese;
+
+    /** Label per la media giornaliera delle spese. */
+    @FXML
+    private Label lblMediaSpeseGiornaliera;
+
+    /** Label per le spese proiettate a fine mese. */
+    @FXML
+    private Label lblSpeseProiettateTotali;
+
+    /** Label per il disclaimer sulla previsione. */
+    @FXML
+    private Label lblDisclaimer;
+
+    /**
+     * Inizializza il controller.
+     * <p>
+     * Metodo chiamato automaticamente da JavaFX dopo il caricamento del file FXML.
+     * Configura i grafici e inizializza il selettore del range temporale.
+     * </p>
+     */
     @FXML
     private void initialize() {
         if (lineChartAndamento != null) {
-            lineChartAndamento.setAnimated(false); // Usiamo animazione custom
+            lineChartAndamento.setAnimated(false);
             lineChartAndamento.setLegendVisible(true);
             lineChartAndamento.setCreateSymbols(true);
         }
@@ -67,21 +138,45 @@ public class ReportController {
         initRangeSelector();
     }
 
+    /**
+     * Imposta il riferimento all'applicazione principale.
+     *
+     * @param mainApp l'istanza di {@link MainApp} da associare
+     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
         loadReportDataForCurrentUser();
     }
 
+    /**
+     * Carica i dati del report per l'utente corrente.
+     * <p>
+     * Recupera l'ID dell'utente loggato e avvia l'aggiornamento della UI.
+     * </p>
+     */
     private void loadReportDataForCurrentUser() {
         if (mainApp == null || mainApp.getLoggedUser() == null) return;
         currentUserId = mainApp.getLoggedUser().getUser_id();
         updateUIFromData();
     }
 
+    /**
+     * Aggiorna i dati del report.
+     * <p>
+     * Metodo pubblico per forzare un refresh completo dei dati visualizzati.
+     * </p>
+     */
     public void refreshReportData() {
         updateUIFromData();
     }
 
+    /**
+     * Aggiorna tutti i componenti UI con i dati dal database.
+     * <p>
+     * Carica in sequenza i dati per il grafico a torta, il grafico
+     * ad area e la sezione previsione.
+     * </p>
+     */
     private void updateUIFromData() {
         if (currentUserId <= 0) return;
 
@@ -95,6 +190,13 @@ public class ReportController {
         }
     }
 
+    /**
+     * Inizializza il selettore del range temporale.
+     * <p>
+     * Configura le opzioni disponibili e imposta il listener per
+     * aggiornare il grafico quando cambia la selezione.
+     * </p>
+     */
     private void initRangeSelector() {
         if (cmbRange != null) {
             cmbRange.getItems().setAll(
@@ -112,6 +214,11 @@ public class ReportController {
         }
     }
 
+    /**
+     * Risolve il numero di mesi da considerare in base alla selezione.
+     *
+     * @return il numero di mesi selezionato (6 per "Ultimi 6 mesi", 12 per "Ultimo anno")
+     */
     private int resolveMonthsBack() {
         if (cmbRange == null) return 6;
         String selected = cmbRange.getValue();
@@ -127,6 +234,15 @@ public class ReportController {
         }
     }
 
+    /**
+     * Carica i dati per il grafico a torta delle spese.
+     * <p>
+     * Esegue una query aggregata per ottenere il totale delle uscite
+     * raggruppate per categoria.
+     * </p>
+     *
+     * @throws SQLException in caso di errori di accesso al database
+     */
     private void loadPieChartData() throws SQLException {
         String query = "SELECT c.name, SUM(m.amount) as totale " +
                 "FROM movements m " +
@@ -160,7 +276,6 @@ public class ReportController {
 
         pieChart.setData(pieData);
 
-        // Aggiungi tooltip e animazione hover per ogni fetta
         final double total = totalAmount;
         for (PieChart.Data data : pieData) {
             Node node = data.getNode();
@@ -179,15 +294,18 @@ public class ReportController {
     }
 
     /**
-     * Configura l'interazione per ogni fetta del grafico a torta:
-     * - Tooltip con categoria, importo e percentuale
-     * - Animazione hover delicata che evidenzia la fetta
+     * Configura l'interazione per una fetta del grafico a torta.
+     * <p>
+     * Aggiunge tooltip, animazione hover e cambio cursore.
+     * </p>
+     *
+     * @param node        il nodo grafico della fetta
+     * @param data        i dati associati alla fetta
+     * @param totalAmount il totale di tutte le spese per calcolare la percentuale
      */
     private void setupSliceInteraction(Node node, PieChart.Data data, double totalAmount) {
-        // Calcola la percentuale
         double percentage = (data.getPieValue() / totalAmount) * 100;
 
-        // Crea il tooltip con importo e percentuale
         Tooltip tooltip = new Tooltip(String.format("%s\n€ %.2f (%.1f%%)",
                 data.getName(),
                 data.getPieValue(),
@@ -196,49 +314,45 @@ public class ReportController {
         tooltip.setStyle("-fx-font-size: 13px; -fx-padding: 8px;");
         Tooltip.install(node, tooltip);
 
-        // Crea l'effetto ombra per il sollevamento
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(15);
         dropShadow.setOffsetY(3);
         dropShadow.setColor(Color.rgb(0, 0, 0, 0.3));
 
-        // Animazione hover: leggero ingrandimento e ombra
         node.setOnMouseEntered(e -> {
-            // Salva la scala originale se non è già salvata
             if (node.getUserData() == null) {
                 node.setUserData(new double[]{node.getScaleX(), node.getScaleY()});
             }
 
-            // Effetto ombra per dare profondità
             node.setEffect(dropShadow);
 
-            // Leggero ingrandimento (solo 3%)
             ScaleTransition scaleUp = new ScaleTransition(Duration.millis(150), node);
             scaleUp.setToX(1.03);
             scaleUp.setToY(1.03);
             scaleUp.setInterpolator(Interpolator.EASE_OUT);
             scaleUp.play();
 
-            // Cambia il cursore per indicare che è interattivo
             node.setCursor(javafx.scene.Cursor.HAND);
         });
 
         node.setOnMouseExited(e -> {
-            // Rimuovi l'ombra
             node.setEffect(null);
 
-            // Ripristina la dimensione originale
             ScaleTransition scaleDown = new ScaleTransition(Duration.millis(150), node);
             scaleDown.setToX(1.0);
             scaleDown.setToY(1.0);
             scaleDown.setInterpolator(Interpolator.EASE_IN);
             scaleDown.play();
 
-            // Ripristina il cursore
             node.setCursor(javafx.scene.Cursor.DEFAULT);
         });
     }
 
+    /**
+     * Carica i dati per il grafico ad area dell'andamento temporale.
+     *
+     * @throws SQLException in caso di errori di accesso al database
+     */
     private void loadLineChartData() throws SQLException {
         if (lineChartAndamento == null) return;
 
@@ -297,17 +411,18 @@ public class ReportController {
             xAxis.setTickLabelRotation(-45);
         }
 
-        // Avvia animazione da sinistra a destra
         Platform.runLater(() -> animateChartReveal());
     }
 
     /**
-     * Anima il grafico rivelando progressivamente da sinistra a destra
+     * Anima il grafico ad area con un effetto di rivelazione progressiva.
+     * <p>
+     * Il grafico viene svelato da sinistra a destra in 1200ms.
+     * </p>
      */
     private void animateChartReveal() {
         if (lineChartAndamento == null) return;
 
-        // Aspetta che il layout sia completo
         Platform.runLater(() -> {
             try {
                 Region plotBackground = (Region) lineChartAndamento.lookup(".chart-plot-background");
@@ -316,7 +431,6 @@ public class ReportController {
                 }
 
                 Node plotArea = lineChartAndamento.lookup(".plot-content");
-                // Limitiamo il clip solo all'area del grafico, non agli assi
                 if (plotArea == null) {
                     plotArea = findPlotArea(plotBackground);
                 }
@@ -349,18 +463,22 @@ public class ReportController {
                 Node finalPlotArea = plotArea;
                 timeline.setOnFinished(e -> finalPlotArea.setClip(null));
 
-                // Piccolo delay per assicurarsi che il grafico sia renderizzato
                 PauseTransition pause = new PauseTransition(Duration.millis(100));
                 pause.setOnFinished(e -> timeline.play());
                 pause.play();
 
             } catch (Exception e) {
-                // Se qualcosa va storto, assicurati che il grafico sia visibile
                 lineChartAndamento.setClip(null);
             }
         });
     }
 
+    /**
+     * Cerca l'area di plot risalendo l'albero dei nodi.
+     *
+     * @param startNode il nodo da cui iniziare la ricerca
+     * @return il nodo dell'area di plot, o {@code null} se non trovato
+     */
     private Node findPlotArea(Node startNode) {
         Node current = startNode;
         while (current != null) {
@@ -373,8 +491,10 @@ public class ReportController {
     }
 
     /**
-     * Anima il grafico a torta facendo "sbocciare" ogni fetta con un leggero rimbalzo
-     * e una piccola oscillazione per dare un effetto fiera.
+     * Anima il grafico a torta con effetto "sbocciare".
+     * <p>
+     * Ogni fetta viene animata in sequenza con fade in e scala.
+     * </p>
      */
     private void animatePieChart() {
         if (pieChart == null) return;
@@ -383,7 +503,7 @@ public class ReportController {
         if (data == null || data.isEmpty()) return;
 
         Platform.runLater(() -> {
-            final double delayIncrement = 90; // ms tra una fetta e l'altra
+            final double delayIncrement = 90;
 
             for (int i = 0; i < data.size(); i++) {
                 PieChart.Data slice = data.get(i);
@@ -404,6 +524,12 @@ public class ReportController {
         });
     }
 
+    /**
+     * Esegue l'animazione di apparizione per una fetta del grafico.
+     *
+     * @param node    il nodo della fetta da animare
+     * @param delayMs il ritardo in millisecondi prima di iniziare l'animazione
+     */
     private void playSliceAnimation(Node node, double delayMs) {
         node.setScaleX(0.92);
         node.setScaleY(0.92);
@@ -436,6 +562,12 @@ public class ReportController {
         sequence.play();
     }
 
+    /**
+     * Carica i dati per la sezione previsione finanziaria.
+     *
+     * @throws SQLException in caso di errori di accesso al database
+     * @see ForecastCalculator
+     */
     private void loadForecastData() throws SQLException {
         LocalDate today = LocalDate.now();
         YearMonth currentMonth = YearMonth.from(today);
@@ -475,9 +607,9 @@ public class ReportController {
                     updateForecastUI(
                             result.getCurrentDay(),
                             result.getRemainingDays(),
-                            result.getDailyExpenseAverage(),      // media spese giornaliera
-                            result.getProjectedTotalExpenses(),   // uscite proiettate
-                            result.getEstimatedBalance(),         // saldo stimato
+                            result.getDailyExpenseAverage(),
+                            result.getProjectedTotalExpenses(),
+                            result.getEstimatedBalance(),
                             totaleEntrate,
                             totaleUscite
                     );
@@ -488,9 +620,13 @@ public class ReportController {
         }
     }
 
-
-
-
+    /**
+     * Mostra il messaggio di dati insufficienti nella sezione previsione.
+     * <p>
+     * Viene chiamato quando non ci sono abbastanza giorni di movimenti
+     * per calcolare una previsione affidabile.
+     * </p>
+     */
     private void displayInsufficientDataMessage() {
         Platform.runLater(() -> {
             lblPeriodoCalcolo.setText("Dati insufficienti per calcolare una previsione");
@@ -513,6 +649,17 @@ public class ReportController {
         });
     }
 
+    /**
+     * Aggiorna l'interfaccia utente della sezione previsione.
+     *
+     * @param currentDay            il giorno corrente del mese (1-31)
+     * @param remainingDays         i giorni rimanenti fino a fine mese
+     * @param mediaSpeseGiornaliera la media giornaliera delle spese in euro
+     * @param speseProiettate       le spese proiettate a fine mese in euro
+     * @param saldoStimato          il saldo stimato a fine mese in euro
+     * @param totaleEntrate         il totale delle entrate del mese in euro
+     * @param totaleUscite          il totale delle uscite del mese in euro
+     */
     private void updateForecastUI(int currentDay, int remainingDays,
                                   double mediaSpeseGiornaliera,
                                   double speseProiettate, double saldoStimato,
@@ -525,7 +672,6 @@ public class ReportController {
             lblGiorniRimanenti.setText(String.format("%d gg", remainingDays));
             lblEntrateMese.setText(String.format("€ %.2f", totaleEntrate));
 
-            // Uscite: media e proiezione
             lblMediaSpeseGiornaliera.setText(String.format("Uscite: € %.2f", mediaSpeseGiornaliera));
             lblSpeseProiettateTotali.setText(String.format("Uscite: € %.2f", speseProiettate));
 
@@ -582,7 +728,12 @@ public class ReportController {
         });
     }
 
-
+    /**
+     * Ottiene una connessione al database MySQL.
+     *
+     * @return una nuova {@link Connection} al database
+     * @throws SQLException in caso di errori di connessione
+     */
     private Connection getConnection() throws SQLException {
         return it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings.getConnection();
     }

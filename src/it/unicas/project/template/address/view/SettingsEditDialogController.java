@@ -9,31 +9,63 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
- * Dialog to edit details of a colleghi.
+ * Controller per il dialog di modifica delle impostazioni di connessione al database.
+ * <p>
+ * Permette all'utente di configurare i parametri di connessione MySQL:
+ * <ul>
+ *   <li>Host del server</li>
+ *   <li>Username</li>
+ *   <li>Password</li>
+ *   <li>Nome dello schema/database</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Il dialog valida l'input dell'utente prima di salvare le modifiche
+ * e mostra messaggi di errore appropriati in caso di campi non validi.
+ * </p>
  *
  * @author Mario Molinara
+ * @version 1.0
+ * @see DAOMySQLSettings
  */
 public class SettingsEditDialogController {
 
+    /** Campo di testo per il nome del driver JDBC (sola lettura). */
     @FXML
     private TextField driverNameField;
+
+    /** Campo di testo per l'hostname del server MySQL. */
     @FXML
     private TextField hostField;
+
+    /** Campo di testo per il nome utente del database. */
     @FXML
     private TextField usernameField;
+
+    /** Campo di testo per la password del database. */
     @FXML
     private TextField passwordField;
+
+    /** Campo di testo per il nome dello schema/database. */
     @FXML
     private TextField schemaField;
 
-
+    /** Riferimento allo Stage del dialog. */
     private Stage dialogStage;
+
+    /** Oggetto settings da modificare. */
     private DAOMySQLSettings settings;
+
+    /** Flag che indica se l'utente ha confermato le modifiche. */
     private boolean okClicked = false;
 
     /**
-     * Initializes the controller class. This method is automatically called
-     * after the fxml file has been loaded.
+     * Inizializza il controller.
+     * <p>
+     * Questo metodo viene chiamato automaticamente dopo il caricamento
+     * del file FXML. Imposta il campo del driver name con il valore
+     * di default e svuota gli altri campi.
+     * </p>
      */
     @FXML
     private void initialize() {
@@ -45,9 +77,13 @@ public class SettingsEditDialogController {
     }
 
     /**
-     * Sets the stage of this dialog.
+     * Imposta lo Stage del dialog.
+     * <p>
+     * Configura anche l'icona del dialog utilizzando l'immagine
+     * presente nella cartella resources.
+     * </p>
      *
-     * @param dialogStage
+     * @param dialogStage lo Stage da associare a questo dialog
      */
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
@@ -57,9 +93,12 @@ public class SettingsEditDialogController {
     }
 
     /**
-     * Sets the colleghi to be edited in the dialog.
+     * Imposta l'oggetto settings da modificare nel dialog.
+     * <p>
+     * Popola i campi di testo con i valori correnti delle impostazioni.
+     * </p>
      *
-     * @param settings
+     * @param settings l'oggetto {@link DAOMySQLSettings} da modificare
      */
     public void setSettings(DAOMySQLSettings settings) {
         this.settings = settings;
@@ -70,16 +109,20 @@ public class SettingsEditDialogController {
     }
 
     /**
-     * Returns true if the user clicked OK, false otherwise.
+     * Verifica se l'utente ha confermato le modifiche.
      *
-     * @return
+     * @return {@code true} se l'utente ha cliccato OK, {@code false} altrimenti
      */
     public boolean isOkClicked() {
         return okClicked;
     }
 
     /**
-     * Called when the user clicks ok.
+     * Gestisce il click sul pulsante OK.
+     * <p>
+     * Valida l'input dell'utente e, se valido, aggiorna l'oggetto
+     * settings con i nuovi valori e chiude il dialog.
+     * </p>
      */
     @FXML
     private void handleOk() {
@@ -95,7 +138,10 @@ public class SettingsEditDialogController {
     }
 
     /**
-     * Called when the user clicks cancel.
+     * Gestisce il click sul pulsante Cancel.
+     * <p>
+     * Chiude il dialog senza salvare le modifiche.
+     * </p>
      */
     @FXML
     private void handleCancel() {
@@ -103,9 +149,19 @@ public class SettingsEditDialogController {
     }
 
     /**
-     * Validates the user input in the text fields.
+     * Valida l'input dell'utente nei campi di testo.
+     * <p>
+     * Verifica che tutti i campi obbligatori siano compilati:
+     * <ul>
+     *   <li>Hostname</li>
+     *   <li>Username</li>
+     *   <li>Password</li>
+     *   <li>Schema</li>
+     * </ul>
+     * In caso di errori, mostra un alert con l'elenco dei problemi.
+     * </p>
      *
-     * @return true if the input is valid
+     * @return {@code true} se l'input è valido, {@code false} altrimenti
      */
     private boolean isInputValid() {
         String errorMessage = "";
@@ -120,11 +176,9 @@ public class SettingsEditDialogController {
         if (passwordField.getText() == null || passwordField.getText().length() == 0) {
             errorMessage += "No valid password!\n";
         }
-        if (schemaField.getText() == null || schemaField.getText().length() == 0){
+        if (schemaField.getText() == null || schemaField.getText().length() == 0) {
             errorMessage += "No valid schema!\n";
         }
-
-
 
         if (errorMessage.length() == 0) {
             return true;
@@ -142,8 +196,3 @@ public class SettingsEditDialogController {
         }
     }
 }
-
-
-
-
-

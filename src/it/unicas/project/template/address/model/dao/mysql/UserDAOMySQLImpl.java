@@ -3,17 +3,52 @@ package it.unicas.project.template.address.model.dao.mysql;
 import it.unicas.project.template.address.model.dao.UserDAO;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Implementazione MySQL dell'interfaccia {@link UserDAO}.
+ * <p>
+ * Questa classe gestisce le operazioni di accesso dati per gli utenti:
+ * <ul>
+ *     <li>autenticazione di un utente tramite username e password;</li>
+ *     <li>registrazione di un nuovo utente;</li>
+ *     <li>aggiornamento della password di un utente esistente;</li>
+ *     <li>eliminazione di un utente e dei relativi dati (movimenti e budget)
+ *         tramite transazione.</li>
+ * </ul>
+ * Le connessioni al database vengono ottenute tramite
+ * {@link DAOMySQLSettings#getConnection()}.
+ */
 public class UserDAOMySQLImpl implements UserDAO {
 
+    /**
+     * Restituisce una connessione al database utilizzando le impostazioni
+     * correnti definite in {@link DAOMySQLSettings}.
+     *
+     * @return una connessione aperta verso il database MySQL
+     * @throws SQLException se si verifica un errore nella creazione della connessione
+     */
     private Connection getConnection() throws SQLException {
         return DAOMySQLSettings.getConnection();
     }
 
+    /**
+     * Verifica le credenziali di accesso di un utente.
+     * <p>
+     * Esegue una query del tipo:
+     * <pre>
+     * SELECT COUNT(*) FROM users WHERE username = ? AND password = ?
+     * </pre>
+     * Se il conteggio è maggiore di zero, l'utente viene considerato autenticato.
+     *
+     * @param username username inserito dall'utente
+     * @param password password inserita dall'utente
+     * @return {@code true} se esiste almeno una riga con username e password corrispondenti,
+     *         {@code false} altrimenti
+     * @throws SQLException se si verifica un errore durante l'esecuzione della query
+     */
     @Override
     public boolean authenticate(String username, String password) throws SQLException {
         String query = "SELECT COUNT(*) FROM users WHERE username = ? AND password = ?";
@@ -32,7 +67,23 @@ public class UserDAOMySQLImpl implements UserDAO {
         return false;
     }
 
-
+    /**
+     * Registra un nuovo utente nel sistema.
+     * <p>
+     * Esegue un {@code INSERT} nella tabella {@code users}:
+     * <pre>
+     * INSERT INTO users (username, password) VALUES (?, ?)
+     * </pre>
+     * In caso di violazione di vincolo di unicità (username già esistente)
+     * viene rilanciata una {@link SQLException} con messaggio descrittivo
+     * "Username già esistente".
+     *
+     * @param username username del nuovo utente
+     * @param password password del nuovo utente
+     * @return {@code true} se è stata inserita almeno una riga,
+     *         {@code false} se per qualche motivo non è stato inserito nulla
+     * @throws SQLException se si verifica un errore durante l'INSERT o se l'username è duplicato
+     */
     @Override
     public boolean register(String username, String password) throws SQLException {
         String query = "INSERT INTO users (username, password) VALUES (?, ?)";
@@ -50,14 +101,27 @@ public class UserDAOMySQLImpl implements UserDAO {
             if (e.getErrorCode() == 1062 || "23000".equals(e.getSQLState())) {
                 throw new SQLException("Username già esistente", e);
             }
-            throw e; // altri errori li rilancio così come sono
+            // altri errori vengono rilanciati così come sono
+            throw e;
         }
     }
 
-
     /**
-     * Aggiorna la password sapendo user_id e vecchia password.
-     * Restituisce true se è stata aggiornata esattamente una riga.
+     * Aggiorna la password di un utente conoscendo il suo {@code user_id}
+     * e la vecchia password.
+     * <p>
+     * La query eseguita è:
+     * <pre>
+     * UPDATE users SET password = ? WHERE user_id = ? AND password = ?
+     * </pre>
+     * In questo modo l'aggiornamento avviene solo se la vecchia password
+     * corrisponde a quella attuale.
+     *
+     * @param userId identificativo dell'utente
+     * @param oldPwd password attuale dell'utente
+     * @param newPwd nuova password da impostare
+     * @return {@code true} se è stata aggiornata esattamente una riga,
+     *         {@code false} se nessuna riga è stata modificata
      */
     public boolean updatePassword(int userId, String oldPwd, String newPwd) {
         String sql = "UPDATE users SET password = ? WHERE user_id = ? AND password = ?";
@@ -79,8 +143,22 @@ public class UserDAOMySQLImpl implements UserDAO {
     }
 
     /**
-     * Elimina l'utente con lo user_id indicato.
-     * Restituisce true se è stata eliminata esattamente una riga.
+     * Elimina l'utente identificato da {@code userId} e tutti i dati correlati.
+     * <p>
+     * L'operazione viene effettuata all'interno di una transazione esplicita
+     * che esegue, in ordine:
+     * <ol>
+     *     <li>DELETE dalla tabella {@code movements} per l'utente;</li>
+     *     <li>DELETE dalla tabella {@code budgets} per l'utente;</li>
+     *     <li>DELETE dalla tabella {@code users} per l'utente.</li>
+     * </ol>
+     * Se tutte le operazioni vanno a buon fine viene eseguita una
+     * {@link Connection#commit()}, altrimenti viene eseguito un
+     * {@link Connection#rollback()}.
+     *
+     * @param userId identificativo dell'utente da eliminare
+     * @return {@code true} se la transazione è andata a buon fine,
+     *         {@code false} in caso di errore (con rollback)
      */
     public boolean deleteUser(int userId) {
         String[] tablesToDelete = {
@@ -126,6 +204,4 @@ public class UserDAOMySQLImpl implements UserDAO {
             }
         }
     }
-
-
 }

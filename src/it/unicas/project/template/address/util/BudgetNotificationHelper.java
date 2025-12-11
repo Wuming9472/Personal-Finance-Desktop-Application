@@ -19,21 +19,51 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Helper class per gestire le notifiche di superamento budget.
- * Mostra popup di allarme quando un budget mensile viene superato.
+ * Helper per la gestione delle notifiche di superamento budget.
+ * <p>
+ * La classe fornisce metodi statici per:
+ * <ul>
+ *     <li>verificare se il budget di una singola categoria è stato superato
+ *         e mostrare il relativo popup di avviso;</li>
+ *     <li>(deprecato) verificare e mostrare un avviso cumulativo per
+ *         tutte le categorie che hanno superato il budget;</li>
+ *     <li>eseguire un controllo semplice su un singolo oggetto {@link Budget}
+ *         per sapere se risulta superato.</li>
+ * </ul>
+ * I popup utilizzano componenti JavaFX e si basano sulle preferenze utente
+ * gestite da {@link BudgetNotificationPreferences} per ricordare:
+ * <ul>
+ *     <li>quali categorie sono già state notificate nel mese corrente;</li>
+ *     <li>quali notifiche sono state disabilitate con l'opzione
+ *         "Non mostrare più" per il mese.</li>
  */
 public class BudgetNotificationHelper {
 
     /**
-     * Controlla se una specifica categoria ha appena superato il budget e mostra la notifica.
+     * Controlla se una specifica categoria ha appena superato il budget e,
+     * se necessario, mostra una notifica di avviso.
+     * <p>
      * La notifica viene mostrata solo se:
-     * - Il budget è stato superato
-     * - La categoria NON era già stata notificata questo mese
-     * - Le notifiche per questa categoria NON sono disabilitate
+     * <ul>
+     *     <li>il budget della categoria risulta effettivamente superato;</li>
+     *     <li>la categoria non è la categoria "Stipendio" (ID 6, ignorata);</li>
+     *     <li>per il mese corrente non è stata memorizzata la scelta
+     *         "Non mostrare più" tramite {@link BudgetNotificationPreferences};</li>
+     * </ul>
+     * Inoltre:
+     * <ul>
+     *     <li>se il budget è superato per la prima volta nel mese corrente,
+     *         viene registrata la notifica con
+     *         {@link BudgetNotificationPreferences#markAsNotified(int)};</li>
+     *     <li>se il budget non risulta più superato, eventuali marcature
+     *         precedenti vengono rimosse tramite
+     *         {@link BudgetNotificationPreferences#unmarkAsNotified(int)}.</li>
+     * </ul>
      *
-     * @param budgets Lista di tutti i budget del mese
+     * @param budgets    lista di tutti i budget del mese correntemente attivo
      * @param categoryId ID della categoria da controllare (quella del movimento appena inserito)
-     * @return true se la notifica è stata mostrata, false altrimenti
+     * @return {@code true} se la notifica è stata effettivamente mostrata
+     *         all'utente, {@code false} altrimenti
      */
     public static boolean checkAndNotifyForCategory(List<Budget> budgets, int categoryId) {
         if (budgets == null || budgets.isEmpty()) {
@@ -47,9 +77,9 @@ public class BudgetNotificationHelper {
 
         // Trova il budget per la categoria specifica
         Budget categoryBudget = budgets.stream()
-            .filter(b -> b.getCategoryId() == categoryId)
-            .findFirst()
-            .orElse(null);
+                .filter(b -> b.getCategoryId() == categoryId)
+                .findFirst()
+                .orElse(null);
 
         if (categoryBudget == null) {
             return false;
@@ -57,7 +87,7 @@ public class BudgetNotificationHelper {
 
         // Controlla se il budget è stato superato
         boolean isExceeded = categoryBudget.getSpentAmount() > categoryBudget.getBudgetAmount()
-            && categoryBudget.getBudgetAmount() > 0;
+                && categoryBudget.getBudgetAmount() > 0;
 
         BudgetNotificationPreferences prefs = BudgetNotificationPreferences.getInstance();
 
@@ -74,7 +104,7 @@ public class BudgetNotificationHelper {
         }
 
         if (prefs.wasAlreadyNotifiedThisMonth(categoryId)) {
-            // Già notificato questo mese, mostra comunque il popup
+            // Già notificato questo mese: mostra comunque il popup
             // (l'utente ha inserito un altro movimento nella stessa categoria)
             showSingleBudgetExceededAlert(categoryBudget);
             return true;
@@ -87,10 +117,18 @@ public class BudgetNotificationHelper {
     }
 
     /**
-     * Controlla se ci sono budget superati nella lista fornita e mostra una notifica di allarme.
-     * @param budgets Lista di budget da controllare
-     * @return true se almeno un budget è stato superato, false altrimenti
-     * @deprecated Usare checkAndNotifyForCategory per notifiche per singola categoria
+     * Controlla se ci sono budget superati nella lista fornita e mostra una
+     * notifica di allarme cumulativa per tutte le categorie interessate.
+     * <p>
+     * Il metodo ignora la categoria "Stipendio" (ID 6).
+     * In caso di uno o più budget superati viene mostrato un unico popup
+     * con l'elenco delle categorie e i relativi importi.
+     *
+     * @param budgets lista di budget da controllare
+     * @return {@code true} se almeno un budget risulta superato e il popup
+     *         è stato mostrato, {@code false} altrimenti
+     * @deprecated Utilizzare {@link #checkAndNotifyForCategory(List, int)}
+     *             per notifiche mirate alla singola categoria
      */
     @Deprecated
     public static boolean checkAndNotifyBudgetExceeded(List<Budget> budgets) {
@@ -120,7 +158,25 @@ public class BudgetNotificationHelper {
 
     /**
      * Mostra un popup di allarme per una singola categoria che ha superato il budget.
-     * Include il bottone "Non mostrare più" per disabilitare le notifiche.
+     * <p>
+     * Il popup contiene:
+     * <ul>
+     *     <li>titolo di avviso;</li>
+     *     <li>nome della categoria;</li>
+     *     <li>budget impostato, spesa attuale, importo e percentuale di superamento;</li>
+     *     <li>un suggerimento per l'utente;</li>
+     *     <li>due pulsanti:
+     *         <ul>
+     *             <li>"OK": chiude semplicemente l'avviso;</li>
+     *             <li>"Non mostrare più": registra, tramite
+     *                 {@link BudgetNotificationPreferences#dismissNotificationForCurrentMonth(int, double)},
+     *                 la scelta di non mostrare ulteriori avvisi per quella categoria nel
+     *                 mese corrente.</li>
+     *         </ul>
+     *     </li>
+     * </ul>
+     *
+     * @param budget budget relativo alla categoria che ha superato il limite
      */
     private static void showSingleBudgetExceededAlert(Budget budget) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -136,7 +192,6 @@ public class BudgetNotificationHelper {
         // Titolo con icona
         HBox titleBox = new HBox(10);
         titleBox.setAlignment(Pos.CENTER);
-        
 
         Label titleLabel = new Label("ATTENZIONE: Budget Superato!");
         titleLabel.setFont(Font.font("System", FontWeight.BOLD, 20));
@@ -154,7 +209,7 @@ public class BudgetNotificationHelper {
         VBox categoryBox = new VBox(10);
         categoryBox.setPadding(new Insets(15));
         categoryBox.setStyle("-fx-background-color: white; -fx-border-color: #f87171; " +
-                           "-fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8;");
+                "-fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8;");
 
         HBox categoryRow = new HBox(10);
         categoryRow.setAlignment(Pos.CENTER_LEFT);
@@ -174,8 +229,8 @@ public class BudgetNotificationHelper {
         double percentage = (budget.getSpentAmount() / budget.getBudgetAmount()) * 100;
 
         Label amountInfo = new Label(String.format(
-            "Budget: €%.2f | Speso: €%.2f | Superato di: €%.2f (%.0f%%)",
-            budget.getBudgetAmount(), budget.getSpentAmount(), exceeded, percentage
+                "Budget: €%.2f | Speso: €%.2f | Superato di: €%.2f (%.0f%%)",
+                budget.getBudgetAmount(), budget.getSpentAmount(), exceeded, percentage
         ));
         amountInfo.setFont(Font.font("System", FontWeight.NORMAL, 13));
         amountInfo.setStyle("-fx-text-fill: #7f1d1d;");
@@ -204,15 +259,15 @@ public class BudgetNotificationHelper {
         // Stile bottone OK
         Button okBtn = (Button) alert.getDialogPane().lookupButton(okButton);
         okBtn.setStyle(
-            "-fx-background-color: #dc2626; -fx-text-fill: white; " +
-            "-fx-font-weight: bold; -fx-padding: 10 20; -fx-font-size: 14px;"
+                "-fx-background-color: #dc2626; -fx-text-fill: white; " +
+                        "-fx-font-weight: bold; -fx-padding: 10 20; -fx-font-size: 14px;"
         );
 
         // Stile bottone "Non mostrare più"
         Button disableBtn = (Button) alert.getDialogPane().lookupButton(disableButton);
         disableBtn.setStyle(
-            "-fx-background-color: #6b7280; -fx-text-fill: white; " +
-            "-fx-font-weight: normal; -fx-padding: 10 20; -fx-font-size: 13px;"
+                "-fx-background-color: #6b7280; -fx-text-fill: white; " +
+                        "-fx-font-weight: normal; -fx-padding: 10 20; -fx-font-size: 13px;"
         );
 
         // Gestione click
@@ -220,14 +275,24 @@ public class BudgetNotificationHelper {
         if (result.isPresent() && result.get() == disableButton) {
             // L'utente ha scelto "Non mostrare più" per il mese corrente
             BudgetNotificationPreferences.getInstance()
-                .dismissNotificationForCurrentMonth(budget.getCategoryId(), budget.getBudgetAmount());
+                    .dismissNotificationForCurrentMonth(budget.getCategoryId(), budget.getBudgetAmount());
         }
     }
 
     /**
      * Mostra un popup di allarme personalizzato per i budget superati.
-     * Stile: rosso/arancione con icone di warning.
-     * @deprecated Usare showSingleBudgetExceededAlert per notifiche singole
+     * <p>
+     * Il popup elenca tutte le categorie che hanno superato il budget e,
+     * per ciascuna, mostra:
+     * <ul>
+     *     <li>nome della categoria;</li>
+     *     <li>budget impostato, spesa attuale, importo e percentuale di superamento.</li>
+     * </ul>
+     * Lo stile grafico è orientato a un tema rosso/arancione con icone di warning.
+     *
+     * @param exceededBudgets lista di {@link Budget} che risultano superati
+     * @deprecated Usare {@link #showSingleBudgetExceededAlert(Budget)} tramite
+     *             {@link #checkAndNotifyForCategory(List, int)} per notifiche singole
      */
     @Deprecated
     private static void showBudgetExceededAlert(List<Budget> exceededBudgets) {
@@ -264,7 +329,7 @@ public class BudgetNotificationHelper {
         VBox categoriesBox = new VBox(10);
         categoriesBox.setPadding(new Insets(10));
         categoriesBox.setStyle("-fx-background-color: white; -fx-border-color: #f87171; " +
-                              "-fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8;");
+                "-fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8;");
 
         for (Budget b : exceededBudgets) {
             HBox categoryRow = new HBox(10);
@@ -285,8 +350,8 @@ public class BudgetNotificationHelper {
             double percentage = (b.getSpentAmount() / b.getBudgetAmount()) * 100;
 
             Label amountInfo = new Label(String.format(
-                "Budget: €%.2f | Speso: €%.2f | Superato di: €%.2f (%.0f%%)",
-                b.getBudgetAmount(), b.getSpentAmount(), exceeded, percentage
+                    "Budget: €%.2f | Speso: €%.2f | Superato di: €%.2f (%.0f%%)",
+                    b.getBudgetAmount(), b.getSpentAmount(), exceeded, percentage
             ));
             amountInfo.setFont(Font.font("System", FontWeight.NORMAL, 12));
             amountInfo.setStyle("-fx-text-fill: #7f1d1d;");
@@ -310,15 +375,28 @@ public class BudgetNotificationHelper {
         // Personalizza il pulsante
         alert.getButtonTypes().setAll(ButtonType.OK);
         alert.getDialogPane().lookupButton(ButtonType.OK).setStyle(
-            "-fx-background-color: #dc2626; -fx-text-fill: white; " +
-            "-fx-font-weight: bold; -fx-padding: 10 20; -fx-font-size: 14px;"
+                "-fx-background-color: #dc2626; -fx-text-fill: white; " +
+                        "-fx-font-weight: bold; -fx-padding: 10 20; -fx-font-size: 14px;"
         );
 
         alert.showAndWait();
     }
 
     /**
-     * Verifica se un singolo budget è stato superato.
+     * Verifica se un singolo budget risulta superato.
+     * <p>
+     * Il metodo considera superato un budget quando:
+     * <ul>
+     *     <li>la spesa ({@link Budget#getSpentAmount()}) è maggiore del
+     *         limite ({@link Budget#getBudgetAmount()});</li>
+     *     <li>il limite impostato è strettamente maggiore di 0;</li>
+     *     <li>la categoria non è la categoria "Stipendio" (ID 6),
+     *         che viene esplicitamente ignorata.</li>
+     * </ul>
+     *
+     * @param budget oggetto {@link Budget} da verificare (può essere {@code null})
+     * @return {@code true} se il budget risulta superato secondo le condizioni
+     *         sopra descritte, {@code false} in caso contrario
      */
     public static boolean isBudgetExceeded(Budget budget) {
         if (budget == null || budget.getCategoryId() == 6) {

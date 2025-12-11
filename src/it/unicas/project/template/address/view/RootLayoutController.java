@@ -21,62 +21,146 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
 
+/**
+ * Controller principale per il layout root dell'applicazione.
+ * <p>
+ * Gestisce la struttura generale dell'interfaccia utente, inclusi:
+ * <ul>
+ *   <li>La sidebar di navigazione con menu collassabile</li>
+ *   <li>La barra superiore con informazioni utente</li>
+ *   <li>La navigazione tra le diverse sezioni dell'app</li>
+ *   <li>Le animazioni di transizione del menu</li>
+ * </ul>
+ * </p>
+ * <p>
+ * La sidebar supporta due modalità:
+ * <ul>
+ *   <li><b>Espansa</b>: mostra icone e testo dei menu (260px)</li>
+ *   <li><b>Collassata</b>: mostra solo le icone con tooltip (82px)</li>
+ * </ul>
+ * </p>
+ *
+ * @author Personal Finance Team
+ * @version 1.0
+ * @see MainApp
+ */
 public class RootLayoutController {
 
+    /** Riferimento all'applicazione principale. */
     private MainApp mainApp;
 
-    @FXML private Label lblPageTitle;
-    @FXML private Label lblInitials;
-    @FXML private MenuButton btnUser;
+    /** Label per il titolo della pagina corrente. */
+    @FXML
+    private Label lblPageTitle;
 
-    // Sidebar components
-    @FXML private VBox sidebar;
-    @FXML private Button btnToggleMenu;
-    @FXML private Button btnDashboard;
-    @FXML private Button btnMovimenti;
-    @FXML private Button btnBudget;
-    @FXML private Button btnReport;
-    @FXML private Button btnAccount;
-    
-    // Toggle icon components
-    @FXML private StackPane toggleIconContainer;
-    @FXML private SVGPath toggleArrow;
+    /** Label per le iniziali dell'utente nell'avatar. */
+    @FXML
+    private Label lblInitials;
 
-    // Menu text labels (to hide when collapsed)
-    @FXML private Label lblDashboard;
-    @FXML private Label lblMovimenti;
-    @FXML private Label lblBudget;
-    @FXML private Label lblReport;
-    @FXML private Label lblAccount;
+    /** MenuButton con il nome utente e opzioni dropdown. */
+    @FXML
+    private MenuButton btnUser;
 
+    /** Container principale della sidebar. */
+    @FXML
+    private VBox sidebar;
+
+    /** Pulsante per espandere/collassare il menu. */
+    @FXML
+    private Button btnToggleMenu;
+
+    /** Pulsante di navigazione alla Dashboard. */
+    @FXML
+    private Button btnDashboard;
+
+    /** Pulsante di navigazione ai Movimenti. */
+    @FXML
+    private Button btnMovimenti;
+
+    /** Pulsante di navigazione al Budget. */
+    @FXML
+    private Button btnBudget;
+
+    /** Pulsante di navigazione ai Report. */
+    @FXML
+    private Button btnReport;
+
+    /** Pulsante di navigazione all'Account. */
+    @FXML
+    private Button btnAccount;
+
+    /** Container per l'icona del toggle menu. */
+    @FXML
+    private StackPane toggleIconContainer;
+
+    /** Freccia SVG per l'animazione del toggle. */
+    @FXML
+    private SVGPath toggleArrow;
+
+    /** Label testo per il menu Dashboard. */
+    @FXML
+    private Label lblDashboard;
+
+    /** Label testo per il menu Movimenti. */
+    @FXML
+    private Label lblMovimenti;
+
+    /** Label testo per il menu Budget. */
+    @FXML
+    private Label lblBudget;
+
+    /** Label testo per il menu Report. */
+    @FXML
+    private Label lblReport;
+
+    /** Label testo per il menu Account. */
+    @FXML
+    private Label lblAccount;
+
+    /** Flag che indica se il menu è espanso. */
     private boolean isMenuExpanded = true;
+
+    /** Larghezza della sidebar quando espansa (in pixel). */
     private static final double EXPANDED_WIDTH = 260.0;
+
+    /** Larghezza della sidebar quando collassata (in pixel). */
     private static final double COLLAPSED_WIDTH = 82.0;
+
+    /** Riferimento al pulsante del menu attualmente attivo. */
     private Button currentActiveButton = null;
 
+    /**
+     * Inizializza il controller.
+     * <p>
+     * Questo metodo viene chiamato automaticamente dopo il caricamento
+     * del file FXML. Configura i tooltip per i pulsanti del menu e
+     * imposta la Dashboard come sezione attiva di default.
+     * </p>
+     */
     @FXML
     private void initialize() {
-        // Setup tooltips for collapsed menu
         setupTooltips();
 
-        // Set initial active button (must be after tooltips setup)
         if (btnDashboard != null) {
             setActiveButton(btnDashboard);
         }
     }
 
     /**
-     * Setup tooltips for menu buttons (shown when collapsed)
+     * Configura i tooltip per i pulsanti del menu.
+     * <p>
+     * I tooltip vengono mostrati quando il menu è collassato,
+     * permettendo all'utente di identificare le voci di menu
+     * anche senza il testo visibile.
+     * </p>
      */
     private void setupTooltips() {
-        // Create tooltips with custom style
         Tooltip dashboardTip = createStyledTooltip("Dashboard");
         Tooltip movimentiTip = createStyledTooltip("Movimenti");
         Tooltip budgetTip = createStyledTooltip("Budget");
         Tooltip reportTip = createStyledTooltip("Report");
         Tooltip accountTip = createStyledTooltip("Account");
 
-        // Apply tooltips to buttons
         if (btnDashboard != null) Tooltip.install(btnDashboard, dashboardTip);
         if (btnMovimenti != null) Tooltip.install(btnMovimenti, movimentiTip);
         if (btnBudget != null) Tooltip.install(btnBudget, budgetTip);
@@ -85,7 +169,10 @@ public class RootLayoutController {
     }
 
     /**
-     * Create a styled tooltip
+     * Crea un tooltip con stile personalizzato.
+     *
+     * @param text il testo da mostrare nel tooltip
+     * @return un nuovo {@link Tooltip} configurato
      */
     private Tooltip createStyledTooltip(String text) {
         Tooltip tooltip = new Tooltip(text);
@@ -95,17 +182,32 @@ public class RootLayoutController {
         return tooltip;
     }
 
+    /**
+     * Imposta il riferimento all'applicazione principale.
+     * <p>
+     * Aggiorna automaticamente le informazioni dell'utente loggato
+     * nella barra superiore.
+     * </p>
+     *
+     * @param mainApp l'istanza di {@link MainApp}
+     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
 
-        // Appena colleghiamo la MainApp, recuperiamo l'utente loggato e aggiorniamo la grafica
         if (mainApp != null && mainApp.getLoggedUser() != null) {
             updateUserInfo(mainApp.getLoggedUser().getUsername());
         }
     }
 
     /**
-     * Aggiorna nome e iniziali nella barra in alto.
+     * Aggiorna le informazioni utente nella barra superiore.
+     * <p>
+     * Imposta il nome completo nel menu e calcola le iniziali
+     * da mostrare nell'avatar. Le iniziali vengono estratte
+     * dalla prima lettera di ogni parola del nome (max 2 lettere).
+     * </p>
+     *
+     * @param username il nome utente da visualizzare
      */
     public void updateUserInfo(String username) {
         if (username == null || username.isEmpty()) {
@@ -114,20 +216,16 @@ public class RootLayoutController {
             return;
         }
 
-        // 1. Imposta il nome completo nel menu
         btnUser.setText(username);
 
-        // 2. Calcola le iniziali
         String initials = "";
-        String[] parts = username.trim().split("\\s+"); // Divide per spazi
+        String[] parts = username.trim().split("\\s+");
 
         if (parts.length == 1) {
-            // Caso: Solo una parola (es. "mario" -> "M")
             if (parts[0].length() > 0) {
                 initials = parts[0].substring(0, 1).toUpperCase();
             }
         } else if (parts.length >= 2) {
-            // Caso: Due o più parole (es. "Mario Rossi" -> "MR")
             String first = parts[0].substring(0, 1);
             String second = parts[1].substring(0, 1);
             initials = (first + second).toUpperCase();
@@ -136,51 +234,62 @@ public class RootLayoutController {
         lblInitials.setText(initials);
     }
 
+    /**
+     * Imposta il titolo della pagina corrente.
+     *
+     * @param title il titolo da visualizzare
+     */
     public void setPageTitle(String title) {
         if (lblPageTitle != null) lblPageTitle.setText(title);
     }
 
     /**
-     * Toggle menu expansion/collapse with smooth animation
+     * Gestisce l'espansione/collasso del menu laterale.
+     * <p>
+     * Esegue un'animazione fluida che:
+     * <ul>
+     *   <li>Ridimensiona la larghezza della sidebar</li>
+     *   <li>Ruota la freccia del toggle</li>
+     *   <li>Dissolve/mostra le etichette di testo</li>
+     * </ul>
+     * La durata dell'animazione è di 350ms.
+     * </p>
      */
     @FXML
     private void handleToggleMenu() {
         double targetWidth = isMenuExpanded ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
         double arrowRotation = isMenuExpanded ? 180.0 : 0.0;
 
-        // Create smooth animation for width change
         Timeline widthTimeline = new Timeline();
         KeyValue widthKV = new KeyValue(sidebar.prefWidthProperty(), targetWidth);
         KeyFrame widthKF = new KeyFrame(Duration.millis(350), widthKV);
         widthTimeline.getKeyFrames().add(widthKF);
 
-        // Create rotation animation for the arrow
         RotateTransition rotateTransition = new RotateTransition(Duration.millis(350), toggleArrow);
         rotateTransition.setToAngle(arrowRotation);
 
-        // Animate text visibility
         if (isMenuExpanded) {
-            // Collapsing: hide text with fade out
             fadeOutLabels();
-            // Add collapsed class for CSS styling
             if (!sidebar.getStyleClass().contains("collapsed")) {
                 widthTimeline.setOnFinished(e -> sidebar.getStyleClass().add("collapsed"));
             }
         } else {
-            // Expanding: remove collapsed class and show text
             sidebar.getStyleClass().remove("collapsed");
             widthTimeline.setOnFinished(e -> fadeInLabels());
         }
 
-        // Play both animations
         ParallelTransition parallelTransition = new ParallelTransition(widthTimeline, rotateTransition);
         parallelTransition.play();
-        
+
         isMenuExpanded = !isMenuExpanded;
     }
 
     /**
-     * Fade out menu text labels
+     * Esegue l'animazione di dissolvenza in uscita per le etichette del menu.
+     * <p>
+     * Le etichette vengono nascoste con un fade out di 200ms e poi
+     * rimosse dal layout (setManaged false).
+     * </p>
      */
     private void fadeOutLabels() {
         Label[] labels = {lblDashboard, lblMovimenti, lblBudget, lblReport, lblAccount};
@@ -200,7 +309,11 @@ public class RootLayoutController {
     }
 
     /**
-     * Fade in menu text labels
+     * Esegue l'animazione di dissolvenza in entrata per le etichette del menu.
+     * <p>
+     * Le etichette vengono mostrate con un fade in di 250ms,
+     * con un leggero ritardo per un effetto più fluido.
+     * </p>
      */
     private void fadeInLabels() {
         Label[] labels = {lblDashboard, lblMovimenti, lblBudget, lblReport, lblAccount};
@@ -210,31 +323,34 @@ public class RootLayoutController {
                 label.setVisible(true);
                 label.setManaged(true);
                 label.setOpacity(0);
-                
+
                 FadeTransition fade = new FadeTransition(Duration.millis(250), label);
                 fade.setFromValue(0.0);
                 fade.setToValue(1.0);
-                fade.setDelay(Duration.millis(100)); // Slight delay for smoother effect
+                fade.setDelay(Duration.millis(100));
                 fade.play();
             }
         }
     }
 
     /**
-     * Set a button as active and deactivate others
+     * Imposta un pulsante come attivo e disattiva gli altri.
+     * <p>
+     * Gestisce lo stile visivo dei pulsanti del menu, applicando
+     * la classe CSS "menu-button-active" al pulsante selezionato
+     * e aggiornando il colore del testo.
+     * </p>
+     *
+     * @param button il pulsante da impostare come attivo
      */
     private void setActiveButton(Button button) {
-        // Remove active style from previous button
         if (currentActiveButton != null) {
             currentActiveButton.getStyleClass().remove("menu-button-active");
-            // Reset text color to default (dark)
             resetButtonTextColor(currentActiveButton);
         }
 
-        // Add active style to new button
         if (button != null && !button.getStyleClass().contains("menu-button-active")) {
             button.getStyleClass().add("menu-button-active");
-            // Set text color to white
             setButtonTextColor(button, "#FFFFFF");
         }
 
@@ -242,7 +358,10 @@ public class RootLayoutController {
     }
 
     /**
-     * Set text color for a menu button's label
+     * Imposta il colore del testo per l'etichetta di un pulsante menu.
+     *
+     * @param button il pulsante di cui modificare l'etichetta
+     * @param color  il colore in formato CSS (es. "#FFFFFF")
      */
     private void setButtonTextColor(Button button, String color) {
         Label label = getButtonLabel(button);
@@ -252,17 +371,22 @@ public class RootLayoutController {
     }
 
     /**
-     * Reset text color for a menu button's label
+     * Ripristina il colore di default del testo per l'etichetta di un pulsante.
+     *
+     * @param button il pulsante di cui ripristinare l'etichetta
      */
     private void resetButtonTextColor(Button button) {
         Label label = getButtonLabel(button);
         if (label != null) {
-            label.setStyle(""); // Remove inline style to use CSS default
+            label.setStyle("");
         }
     }
 
     /**
-     * Get the label associated with a menu button
+     * Restituisce l'etichetta associata a un pulsante del menu.
+     *
+     * @param button il pulsante di cui ottenere l'etichetta
+     * @return la {@link Label} associata, o {@code null} se non trovata
      */
     private Label getButtonLabel(Button button) {
         if (button == btnDashboard) return lblDashboard;
@@ -273,6 +397,9 @@ public class RootLayoutController {
         return null;
     }
 
+    /**
+     * Gestisce la navigazione alla sezione Dashboard.
+     */
     @FXML
     private void handleShowDashboard() {
         if (mainApp != null) {
@@ -281,6 +408,9 @@ public class RootLayoutController {
         }
     }
 
+    /**
+     * Gestisce la navigazione alla sezione Movimenti.
+     */
     @FXML
     private void handleShowMovements() {
         if (mainApp != null) {
@@ -289,6 +419,9 @@ public class RootLayoutController {
         }
     }
 
+    /**
+     * Gestisce la navigazione alla sezione Budget.
+     */
     @FXML
     private void handleShowBudget() {
         if (mainApp != null) {
@@ -297,6 +430,9 @@ public class RootLayoutController {
         }
     }
 
+    /**
+     * Gestisce la navigazione alla sezione Report.
+     */
     @FXML
     private void handleShowReport() {
         if (mainApp != null) {
@@ -305,6 +441,9 @@ public class RootLayoutController {
         }
     }
 
+    /**
+     * Gestisce la navigazione alla sezione Account.
+     */
     @FXML
     private void handleShowAccount() {
         if (mainApp != null) {
@@ -313,19 +452,28 @@ public class RootLayoutController {
         }
     }
 
-    // --- MENU UTENTE ---
+    /**
+     * Gestisce il click su "Impostazioni" nel menu utente.
+     * <p>
+     * Attualmente reindirizza alla pagina Account.
+     * </p>
+     */
     @FXML
     private void handleSettings() {
-        //  porta alla pagina Account
         if (mainApp != null) {
             mainApp.showAccountPage();
             setActiveButton(btnAccount);
         }
     }
 
+    /**
+     * Gestisce il logout dell'utente.
+     * <p>
+     * Resetta l'utente loggato e torna alla schermata di login.
+     * </p>
+     */
     @FXML
     private void handleExit() {
-        // Logout: resetta l'utente e torna alla schermata di login
         if (mainApp != null) {
             mainApp.setLoggedUser(null);
             mainApp.showLogin();

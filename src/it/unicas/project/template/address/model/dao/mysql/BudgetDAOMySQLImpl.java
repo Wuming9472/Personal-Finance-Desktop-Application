@@ -1,20 +1,57 @@
 package it.unicas.project.template.address.model.dao.mysql;
 
 import it.unicas.project.template.address.model.Budget;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementazione MySQL delle operazioni di accesso ai dati per l'entità {@link Budget}.
+ * <p>
+ * Questa classe fornisce metodi per:
+ * <ul>
+ *     <li>recuperare i budget mensili di un utente, includendo l'importo speso
+ *         calcolato "al volo" dalla tabella {@code movements};</li>
+ *     <li>inserire o aggiornare un budget (upsert) per una combinazione
+ *         utente/categoria/mese/anno.</li>
+ * </ul>
+ * Si appoggia alle impostazioni di connessione fornite da
+ * {@link DAOMySQLSettings#getConnection()}.
+ */
 public class BudgetDAOMySQLImpl {
 
-    // Metodo helper per ottenere la connessione usando le tue impostazioni
+    /**
+     * Restituisce una nuova connessione al database MySQL utilizzando
+     * le impostazioni definite in {@link DAOMySQLSettings}.
+     *
+     * @return una connessione JDBC aperta verso il database
+     * @throws SQLException se si verifica un errore durante l'apertura della connessione
+     */
     private Connection getConnection() throws SQLException {
         return DAOMySQLSettings.getConnection();
     }
 
     /**
-     * Recupera la lista dei budget per un dato utente in un dato mese/anno.
-     * Include anche quanto è stato speso (spentAmount) calcolandolo "al volo" dalla tabella movements.
+     * Recupera la lista dei budget per un dato utente e per uno specifico mese/anno.
+     * <p>
+     * Per ogni riga della tabella {@code budgets} viene calcolato anche l'importo
+     * effettivamente speso ({@code spentAmount}) tramite una subquery sulla tabella
+     * {@code movements}, filtrando:
+     * <ul>
+     *     <li>per {@code user_id} dell'utente;</li>
+     *     <li>per {@code category_id} del budget;</li>
+     *     <li>per mese e anno del movimento ({@code MONTH(m.date)} e {@code YEAR(m.date)});</li>
+     *     <li>solo movimenti di tipo {@code 'Uscita'}.</li>
+     * </ul>
+     * Il risultato viene mappato in una lista di oggetti {@link Budget}.
+     *
+     * @param userId identificativo dell'utente
+     * @param month  mese di riferimento (1–12)
+     * @param year   anno di riferimento (es. 2025)
+     * @return lista di {@link Budget} per l'utente nel mese/anno richiesti;
+     *         la lista può essere vuota se non esistono budget
+     * @throws SQLException se si verifica un errore durante l'esecuzione della query
      */
     public List<Budget> getBudgetsForMonth(int userId, int month, int year) throws SQLException {
         List<Budget> budgetList = new ArrayList<>();
@@ -67,8 +104,24 @@ public class BudgetDAOMySQLImpl {
     }
 
     /**
-     * Imposta o Aggiorna un budget.
-     * Se esiste già per quel mese/anno/categoria, lo aggiorna. Altrimenti lo crea nuovo.
+     * Inserisce o aggiorna un budget per una specifica combinazione
+     * utente/categoria/mese/anno.
+     * <p>
+     * La logica è:
+     * <ol>
+     *     <li>verificare se esiste già una riga nella tabella {@code budgets}
+     *         per la combinazione ({@code user_id}, {@code category_id},
+     *         {@code month}, {@code year});</li>
+     *     <li>se esiste, effettuare un {@code UPDATE} dell'importo;</li>
+     *     <li>se non esiste, effettuare un {@code INSERT} di una nuova riga.</li>
+     * </ol>
+     *
+     * @param userId     identificativo dell'utente
+     * @param categoryId identificativo della categoria del budget
+     * @param month      mese di riferimento (1–12)
+     * @param year       anno di riferimento (es. 2025)
+     * @param amount     importo del budget da impostare
+     * @throws SQLException se si verifica un errore durante le operazioni SQL
      */
     public void setOrUpdateBudget(int userId, int categoryId, int month, int year, double amount) throws SQLException {
         // 1. Controllo se esiste già un budget per questa combinazione
