@@ -4,8 +4,21 @@ import java.time.LocalDate;
 import javafx.beans.property.*;
 
 /**
- * Model class for Movimenti.
- * Updated to replace the old Amici class.
+ * Rappresenta un singolo movimento contabile (entrata o uscita)
+ * registrato dall'utente.
+ * <p>
+ * Contiene informazioni su:
+ * <ul>
+ *     <li>tipo di movimento (entrata/uscita);</li>
+ *     <li>data;</li>
+ *     <li>importo;</li>
+ *     <li>titolo/descrizione;</li>
+ *     <li>metodo di pagamento;</li>
+ *     <li>categoria (id e nome) per la visualizzazione nella UI.</li>
+ * </ul>
+ * <br>
+ * La classe utilizza le JavaFX Property per supportare il binding
+ * diretto con i controlli dell'interfaccia grafica (TableView, ecc.).
  */
 public class Movimenti {
 
@@ -22,17 +35,29 @@ public class Movimenti {
     private final StringProperty categoryName = new SimpleStringProperty("");
     private final IntegerProperty categoryId = new SimpleIntegerProperty(0);
 
-    // ========================================================================
-    // COSTRUTTORI (INTATTI come richiesto)
-    // ========================================================================
+
 
     /**
-     * Default constructor.
+     * Costruttore di default.
+     * <p>
+     * Inizializza il movimento con valori di base (id non valido,
+     * importo a zero, stringhe vuote), da popolare successivamente
+     * tramite i setter.
      */
     public Movimenti() {
         this(null, null, null, null, null, null);
     }
 
+    /**
+     * Costruttore completo.
+     *
+     * @param id              identificativo univoco del movimento (può essere {@code null} per movimenti nuovi).
+     * @param type            tipo di movimento ("Entrata" o "Uscita").
+     * @param date            data del movimento.
+     * @param amount          importo del movimento.
+     * @param title           titolo/descrizione breve del movimento.
+     * @param payment_method  metodo di pagamento utilizzato (es. contanti, carta, bonifico).
+     */
     public Movimenti(Integer id, String type, LocalDate date, Float amount, String title, String payment_method) {
         this.movement_id = new SimpleIntegerProperty(id != null ? id : -1); // Un piccolo fix per evitare null pointer sul Integer
         this.type = new SimpleStringProperty(type);
@@ -42,17 +67,25 @@ public class Movimenti {
         this.payment_method = new SimpleStringProperty(payment_method != null ? payment_method : "");
     }
 
-    // ========================================================================
-    // METODI FLUENT (INTATTI come richiesto)
-    // ========================================================================
-
-    // Metodo per aggiungere la descrizione (opzionale)
+    /**
+     * Imposta il titolo/descrizione del movimento e restituisce
+     * la stessa istanza per permettere una scrittura fluente.
+     *
+     * @param val titolo/descrizione da impostare.
+     * @return questa stessa istanza di {@code Movimenti}.
+     */
     public Movimenti title(String val) {
         this.title.set(val);
         return this;
     }
 
-    // Metodo per aggiungere il metodo di pagamento (opzionale)
+    /**
+     * Imposta il metodo di pagamento del movimento e restituisce
+     * la stessa istanza per permettere una scrittura fluente.
+     *
+     * @param val metodo di pagamento da impostare.
+     * @return questa stessa istanza di {@code Movimenti}.
+     */
     public Movimenti paymentMethod(String val) {
         this.payment_method.set(val);
         return this;

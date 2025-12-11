@@ -2,6 +2,18 @@ package it.unicas.project.template.address.model;
 
 import javafx.beans.property.*;
 
+/**
+ * Rappresenta il budget mensile di una specifica categoria per un utente.
+ * <p>
+ * I campi principali (budgetId, categoryId, userId, month, year, budgetAmount)
+ * corrispondono alle colonne della tabella <code>budgets</code> nel database.
+ * I campi aggiuntivi (<code>categoryName</code>, <code>spentAmount</code>) non
+ * sono persistiti direttamente nella tabella, ma vengono calcolati/arricchiti
+ * a runtime e utilizzati per la visualizzazione nell'interfaccia grafica.
+ * <br>
+ * La classe utilizza le JavaFX Property per permettere il binding con i controlli
+ * dell'interfaccia utente.
+ */
 public class Budget {
 
     // Campi che corrispondono alla tabella 'budgets' del DB
@@ -16,12 +28,29 @@ public class Budget {
     private final StringProperty categoryName; // Es. "Alimentari"
     private final DoubleProperty spentAmount;  // Es. 120.50€ (somma delle spese reali)
 
-    // Costruttore vuoto
+    /**
+     * Costruttore di default.
+     * <p>
+     * Inizializza il budget con valori di default (zero o stringa vuota).
+     * Utile per framework come JavaFX e per eventuali casi in cui
+     * l'oggetto venga popolato successivamente tramite setter.
+     */
     public Budget() {
         this(0, 0, 0, 0, 0, 0.0, "", 0.0);
     }
 
-    // Costruttore completo
+    /**
+     * Costruttore completo.
+     *
+     * @param budgetId     identificativo univoco del budget.
+     * @param categoryId   identificativo della categoria di spesa.
+     * @param userId       identificativo dell'utente proprietario del budget.
+     * @param month        mese di riferimento (1-12).
+     * @param year         anno di riferimento.
+     * @param budgetAmount importo massimo previsto per la categoria.
+     * @param categoryName nome descrittivo della categoria (es. "Alimentari").
+     * @param spentAmount  importo già speso per la categoria nel periodo.
+     */
     public Budget(int budgetId, int categoryId, int userId, int month, int year,
                   double budgetAmount, String categoryName, double spentAmount) {
         this.budgetId = new SimpleIntegerProperty(budgetId);

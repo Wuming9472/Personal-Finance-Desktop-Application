@@ -27,6 +27,18 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Controller JavaFX per la gestione dei movimenti (entrate/uscite).
+ * <p>
+ * Gestisce:
+ * <ul>
+ *     <li>visualizzazione dei movimenti in tabella;</li>
+ *     <li>inserimento, modifica ed eliminazione di movimenti;</li>
+ *     <li>caricamento delle categorie dal database;</li>
+ *     <li>aggiornamento dei budget, del report e della dashboard
+ *         dopo ogni operazione.</li>
+ * </ul>
+ */
 public class MovimentiController {
 
     // TABELLA
@@ -60,7 +72,12 @@ public class MovimentiController {
         }
     };
 
-    // Wrapper per ComboBox Categorie
+    /**
+     * Wrapper per rappresentare una categoria all'interno della ComboBox.
+     * <p>
+     * Contiene l'id numerico e il nome leggibile della categoria e
+     * ridefinisce {@link #toString()} per mostrare il nome nella UI.
+     */
     private static class CategoryItem {
         int id;
         String name;
@@ -68,6 +85,15 @@ public class MovimentiController {
         @Override public String toString() { return name; }
     }
 
+    /**
+     * Inizializza il controller dei movimenti.
+     * <p>
+     * Configura le colonne della tabella, i formattatori dei campi di input
+     * (limiti su importo, metodo di pagamento, descrizione), imposta la
+     * selezione multipla nella tabella, inizializza i valori di default
+     * e carica la lista delle categorie dal database.
+     * Viene chiamato automaticamente da JavaFX dopo il caricamento dell'FXML.
+     */
     @FXML
     private void initialize() {
         // 1. SETUP COLONNE
@@ -154,23 +180,58 @@ public class MovimentiController {
         loadCategories();
     }
 
+    /**
+     * Imposta il riferimento all'applicazione principale e carica
+     * i movimenti relativi all'utente attualmente loggato.
+     *
+     * @param mainApp istanza dell'applicazione principale.
+     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
         loadMovementsForCurrentUser();
     }
 
+    /**
+     * Imposta il gateway per l'accesso ai dati dei movimenti.
+     * <p>
+     * Permette di sostituire l'implementazione di default
+     * ({@link StaticMovimentiGateway}) con una personalizzata
+     * o mockata (es. per test).
+     *
+     * @param movimentiGateway implementazione di {@link MovimentiGateway} da utilizzare.
+     */
     public void setMovimentiGateway(MovimentiGateway movimentiGateway) {
         this.movimentiGateway = movimentiGateway;
     }
 
+    /**
+     * Imposta il fornitore delle impostazioni DAO MySQL.
+     * <p>
+     * Utile per rendere il controller più testabile o per
+     * sostituire dinamicamente la configurazione del database.
+     *
+     * @param settingsSupplier fornitore di {@link DAOMySQLSettings}.
+     */
     public void setSettingsSupplier(Supplier<DAOMySQLSettings> settingsSupplier) {
         this.settingsSupplier = settingsSupplier;
     }
 
+    /**
+     * Imposta la factory utilizzata per creare le connessioni al database
+     * a partire da una URL.
+     *
+     * @param connectionFactory funzione che, data una URL, restituisce una {@link Connection}.
+     */
     public void setConnectionFactory(Function<String, Connection> connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
+    /**
+     * Carica l'elenco delle categorie dal database e lo imposta
+     * nella ComboBox delle categorie.
+     * <p>
+     * Le categorie vengono ordinate per id crescente.
+     */
     private void loadCategories() {
         // Ordine per ID ASC come richiesto
         String sql = "SELECT category_id, name FROM categories ORDER BY category_id ASC";
@@ -190,6 +251,12 @@ public class MovimentiController {
         }
     }
 
+    /**
+     * Carica tutti i movimenti associati all'utente attualmente loggato
+     * e li visualizza nella tabella.
+     * <p>
+     * Utilizza il {@link MovimentiGateway} per recuperare i dati dal livello DAO.
+     */
     private void loadMovementsForCurrentUser() {
         if (mainApp == null || mainApp.getLoggedUser() == null) return;
         try {
@@ -200,6 +267,19 @@ public class MovimentiController {
         }
     }
 
+    /**
+     * Gestisce l'inserimento di un nuovo movimento.
+     * <p>
+     * Esegue una validazione minima (importo, categoria, valore positivo),
+     * crea un oggetto {@link Movimenti}, lo salva tramite il gateway
+     * e ricarica la tabella. Dopo l'inserimento:
+     * <ul>
+     *     <li>verifica l'eventuale superamento del budget per la categoria;</li>
+     *     <li>aggiorna il report;</li>
+     *     <li>aggiorna la dashboard;</li>
+     *     <li>resetta i campi di input principali.</li>
+     * </ul>
+     */
     @FXML
     private void handleNewTransaction() {
         if (mainApp == null || mainApp.getLoggedUser() == null) {
@@ -260,6 +340,18 @@ public class MovimentiController {
         }
     }
 
+    /**
+     * Gestisce l'eliminazione di uno o più movimenti selezionati
+     * nella tabella.
+     * <p>
+     * Richiede conferma se sono selezionati più elementi, elimina
+     * i movimenti tramite il gateway, ricarica la tabella e aggiorna:
+     * <ul>
+     *     <li>lo stato dei budget (per eventuali categorie non più superate);</li>
+     *     <li>i dati del report;</li>
+     *     <li>i dati della dashboard.</li>
+     * </ul>
+     */
     @FXML
     private void handleDeleteTransaction() {
         ObservableList<Movimenti> selectedItems = transactionTable.getSelectionModel().getSelectedItems();
@@ -302,6 +394,15 @@ public class MovimentiController {
         }
     }
 
+    /**
+     * Gestisce la modifica di un movimento selezionato nella tabella.
+     * <p>
+     * Permette la selezione di un solo movimento alla volta, apre
+     * una finestra di dialogo dedicata, precompila i campi con i dati
+     * correnti, valida e salva le modifiche tramite il gateway.
+     * Dopo il salvataggio aggiorna la tabella, controlla il budget,
+     * aggiorna report e dashboard e mostra un messaggio di conferma.
+     */
     @FXML
     private void handleEditTransaction() {
         Movimenti selectedMovement = transactionTable.getSelectionModel().getSelectedItem();
@@ -463,6 +564,11 @@ public class MovimentiController {
         }
     }
 
+    /**
+     * Mostra un messaggio di errore all'utente tramite una finestra di dialogo.
+     *
+     * @param msg testo del messaggio di errore da visualizzare.
+     */
     private void showError(String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText(null);
@@ -470,6 +576,11 @@ public class MovimentiController {
         alert.showAndWait();
     }
 
+    /**
+     * Mostra un messaggio informativo di successo all'utente.
+     *
+     * @param msg testo del messaggio di conferma da visualizzare.
+     */
     private void showSuccess(String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Successo");
@@ -478,7 +589,15 @@ public class MovimentiController {
         alert.showAndWait();
     }
 
+    /**
+     * Interfaccia che astrae l'accesso ai dati dei movimenti.
+     * <p>
+     * Permette di disaccoppiare il controller dall'implementazione
+     * concreta del DAO (ad esempio {@link MovimentiDAOMySQLImpl}),
+     * facilitando test e sostituzione del backend.
+     */
     public interface MovimentiGateway {
+
         List<Movimenti> findByUser(int userId) throws DAOException, SQLException;
 
         void insert(Movimenti m, int userId, int categoryId) throws DAOException, SQLException;
@@ -488,6 +607,11 @@ public class MovimentiController {
         void update(Movimenti m, int categoryId) throws DAOException, SQLException;
     }
 
+    /**
+     * Implementazione di default di {@link MovimentiGateway} che
+     * delega tutte le operazioni ai metodi statici di
+     * {@link MovimentiDAOMySQLImpl}.
+     */
     private static class StaticMovimentiGateway implements MovimentiGateway {
         @Override
         public List<Movimenti> findByUser(int userId) throws DAOException, SQLException {

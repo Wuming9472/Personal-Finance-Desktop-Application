@@ -14,6 +14,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Controller JavaFX per la schermata di registrazione di un nuovo utente.
+ * <p>
+ * Gestisce:
+ * <ul>
+ *     <li>validazione di username e password;</li>
+ *     <li>scelta e validazione delle domande di sicurezza;</li>
+ *     <li>creazione dell'account nel database;</li>
+ *     <li>salvataggio delle domande di sicurezza associate all'utente.</li>
+ * </ul>
+ */
 public class RegisterController {
 
     @FXML private TextField usernameField;
@@ -32,10 +43,27 @@ public class RegisterController {
 
     private MainApp mainApp;
 
+    /**
+     * Imposta il riferimento all'applicazione principale.
+     * <p>
+     * Utilizzato per tornare alla schermata di login dopo una
+     * registrazione avvenuta con successo o su richiesta dell'utente.
+     *
+     * @param mainApp istanza dell'applicazione principale.
+     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
     }
 
+    /**
+     * Inizializza la schermata di registrazione.
+     * <p>
+     * Nasconde il messaggio di errore, imposta i TextFormatter
+     * per limitare la lunghezza di username, password e risposte
+     * di sicurezza e popola le ComboBox con l'elenco delle domande
+     * di sicurezza disponibili.
+     * Viene chiamato automaticamente da JavaFX dopo il caricamento dell'FXML.
+     */
     @FXML
     private void initialize() {
         if (errorLabel != null) {
@@ -140,6 +168,22 @@ public class RegisterController {
         question3Box.setItems(questions);
     }
 
+    /**
+     * Gestisce la registrazione di un nuovo utente.
+     * <p>
+     * Esegue i seguenti passi:
+     * <ul>
+     *     <li>valida i campi obbligatori (username, password, conferma);</li>
+     *     <li>controlla la coerenza e la lunghezza minima della password;</li>
+     *     <li>verifica che le tre domande di sicurezza siano selezionate,
+     *         diverse tra loro e con risposte non vuote;</li>
+     *     <li>registra l'utente tramite {@link UserDAO};</li>
+     *     <li>recupera l'id dell'utente appena creato e salva le domande
+     *         di sicurezza nel database;</li>
+     *     <li>mostra un messaggio di conferma e torna alla schermata di login.</li>
+     * </ul>
+     * In caso di errore di validazione o di database mostra un messaggio di errore.
+     */
     @FXML
     private void handleRegister() {
         if (errorLabel != null) {
@@ -226,6 +270,9 @@ public class RegisterController {
         }
     }
 
+    /**
+     * Torna alla schermata di login senza completare la registrazione.
+     */
     @FXML
     private void handleBackToLogin() {
         if (mainApp != null) {
@@ -233,6 +280,14 @@ public class RegisterController {
         }
     }
 
+    /**
+     * Mostra un messaggio di errore all'utente.
+     * <p>
+     * Se è presente una label dedicata, la utilizza per visualizzare
+     * il messaggio; in caso contrario mostra una finestra di dialogo.
+     *
+     * @param msg testo del messaggio di errore da visualizzare.
+     */
     private void showError(String msg) {
         if (errorLabel != null) {
             errorLabel.setText(msg);
@@ -246,10 +301,15 @@ public class RegisterController {
         }
     }
 
-    // =========================
-    //   DOMANDE DI SICUREZZA
-    // =========================
-
+    /**
+     * Recupera l'identificativo numerico dell'utente a partire
+     * dal suo username.
+     *
+     * @param username username dell'utente appena registrato.
+     * @return id dell'utente corrispondente.
+     * @throws SQLException se l'utente non viene trovato o si verifica
+     *                      un errore durante l'accesso al database.
+     */
     private int getUserIdByUsername(String username) throws SQLException {
         String sql = "SELECT user_id FROM users WHERE username = ?";
 
@@ -266,6 +326,19 @@ public class RegisterController {
         throw new SQLException("Utente non trovato dopo la registrazione.");
     }
 
+    /**
+     * Salva nel database le tre domande di sicurezza e le relative
+     * risposte associate all'utente indicato.
+     *
+     * @param userId id dell'utente.
+     * @param q1     testo della prima domanda.
+     * @param a1     risposta alla prima domanda.
+     * @param q2     testo della seconda domanda.
+     * @param a2     risposta alla seconda domanda.
+     * @param q3     testo della terza domanda.
+     * @param a3     risposta alla terza domanda.
+     * @throws SQLException se si verifica un errore durante l'inserimento nel database.
+     */
     private void saveSecurityQuestions(int userId,
                                        String q1, String a1,
                                        String q2, String a2,
@@ -282,6 +355,16 @@ public class RegisterController {
         }
     }
 
+    /**
+     * Inserisce una singola domanda di sicurezza per l'utente
+     * indicato utilizzando il {@link PreparedStatement} fornito.
+     *
+     * @param ps       prepared statement già inizializzato con la query di insert.
+     * @param userId   id dell'utente.
+     * @param question testo della domanda di sicurezza.
+     * @param answer   risposta associata alla domanda.
+     * @throws SQLException se si verifica un errore durante l'esecuzione dell'update.
+     */
     private void insertQuestion(PreparedStatement ps, int userId, String question, String answer) throws SQLException {
         ps.setInt(1, userId);
         ps.setString(2, question);

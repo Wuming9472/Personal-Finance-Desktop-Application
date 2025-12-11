@@ -13,6 +13,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Supplier;
 
+/**
+ * Controller JavaFX per la schermata di login.
+ * <p>
+ * Gestisce:
+ * <ul>
+ *     <li>autenticazione dell'utente tramite username e password;</li>
+ *     <li>navigazione verso la schermata di registrazione;</li>
+ *     <li>procedura di recupero password basata su domande di sicurezza;</li>
+ *     <li>aggiornamento dello stile dei campi e dei messaggi di errore.</li>
+ * </ul>
+ */
 public class LoginController {
 
     @FXML private TextField usernameField;
@@ -48,14 +59,37 @@ public class LoginController {
     private String expectedA2;
     private String expectedA3;
 
+    /**
+     * Imposta il riferimento all'applicazione principale.
+     * <p>
+     * Utilizzato per notificare il login effettuato con successo
+     * e per cambiare scena (dashboard, registrazione, ecc.).
+     *
+     * @param mainApp istanza dell'applicazione principale.
+     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
     }
 
+    /**
+     * Imposta il fornitore di connessioni al database.
+     * <p>
+     * Utile per test o per sostituire la sorgente di connessione di default.
+     *
+     * @param connectionSupplier funzione che fornisce una {@link Connection} valida.
+     */
     public void setConnectionSupplier(Supplier<Connection> connectionSupplier) {
         this.connectionSupplier = connectionSupplier;
     }
 
+
+    /**
+     * Inizializza la schermata di login.
+     * <p>
+     * Nasconde il messaggio di errore, inizializza lo stato del box
+     * per il reset della password e pulisce eventuali testi residui.
+     * Viene chiamato automaticamente da JavaFX dopo il caricamento dell'FXML.
+     */
     @FXML
     private void initialize() {
         if (errorLabel != null) {
@@ -68,8 +102,14 @@ public class LoginController {
         }
     }
 
-    // ================== LOGIN NORMALE ==================
-
+    /**
+     * Gestisce il tentativo di login dell'utente.
+     * <p>
+     * Reset degli stili di errore, lettura di username e password dai campi,
+     * validazione delle credenziali tramite {@link #isValidCredentials(String, String)}
+     * e, in caso di successo, impostazione dell'utente loggato e apertura
+     * della dashboard.
+     */
     @FXML
     private void handleLogin() {
         resetStyles();
@@ -92,6 +132,11 @@ public class LoginController {
         }
     }
 
+    /**
+     * Gestisce la richiesta di registrazione da parte dell'utente.
+     * <p>
+     * Delegando a {@link MainApp} l'apertura della schermata di registrazione.
+     */
     @FXML
     private void handleRegister() {
         if (mainApp != null) {
@@ -99,6 +144,17 @@ public class LoginController {
         }
     }
 
+    /**
+     * Verifica se le credenziali inserite (username e password) sono valide.
+     * <p>
+     * Controlla che i campi non siano vuoti, interroga il database
+     * alla ricerca di un utente con le credenziali fornite e, in caso
+     * positivo, inizializza il campo {@link #loggedUser}.
+     *
+     * @param user username inserito.
+     * @param pass password inserita.
+     * @return {@code true} se le credenziali sono valide, {@code false} altrimenti.
+     */
     private boolean isValidCredentials(String user, String pass) {
         if (user == null || user.trim().isEmpty() || pass == null || pass.trim().isEmpty()) {
             return false;
@@ -132,8 +188,14 @@ public class LoginController {
         }
     }
 
-    // ================== PASSWORD DIMENTICATA ==================
-
+    /**
+     * Avvia la procedura di recupero password per l'utente indicato nello
+     * username field.
+     * <p>
+     * Verifica la presenza dell'utente, carica dal database le tre domande
+     * di sicurezza e le relative risposte attese e rende visibile il box
+     * per l'inserimento delle risposte e della nuova password.
+     */
     @FXML
     private void handleForgotPassword() {
         hideError();
@@ -208,6 +270,15 @@ public class LoginController {
         }
     }
 
+    /**
+     * Completa la procedura di reset della password.
+     * <p>
+     * Verifica che le risposte alle domande di sicurezza coincidano con
+     * quelle salvate, controlla la validità della nuova password (presente,
+     * confermata e con lunghezza minima) e, se tutto è corretto, aggiorna
+     * la password dell'utente nel database.
+     * In caso di successo mostra un messaggio informativo e nasconde il box di reset.
+     */
     @FXML
     private void handleResetPassword() {
         hideError();
@@ -275,8 +346,15 @@ public class LoginController {
         }
     }
 
-    // ================== UTIL ==================
-
+    /**
+     * Mostra un messaggio di errore all'utente.
+     * <p>
+     * Se è presente una label dedicata, la utilizza per visualizzare il messaggio;
+     * in caso contrario mostra un {@link Alert} modale. Inoltre evidenzia
+     * i campi username e password con un bordo rosso.
+     *
+     * @param message testo del messaggio di errore da visualizzare.
+     */
     private void showError(String message) {
         if (errorLabel != null) {
             errorLabel.setText(message);
@@ -292,6 +370,10 @@ public class LoginController {
         passwordField.setStyle("-fx-border-color: #ef4444; -fx-border-radius: 6; -fx-background-color: transparent;");
     }
 
+    /**
+     * Nasconde il messaggio di errore e ripristina lo stile dei
+     * campi di input allo stato normale (bordo grigio).
+     */
     private void hideError() {
         if (errorLabel != null) {
             errorLabel.setVisible(false);
@@ -301,6 +383,12 @@ public class LoginController {
         passwordField.setStyle("-fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-color: transparent;");
     }
 
+    /**
+     * Reimposta gli stili grafici dei campi di input e nasconde
+     * eventuali errori visualizzati.
+     * <p>
+     * Metodo di comodo che delega a {@link #hideError()}.
+     */
     private void resetStyles() {
         hideError();
     }
