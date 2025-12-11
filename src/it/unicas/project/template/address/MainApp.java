@@ -13,33 +13,82 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-
+/**
+ * Classe principale dell'applicazione JavaFX.
+ * <p>
+ * Gestisce:
+ * <ul>
+ *     <li>l'inizializzazione dello {@link Stage} principale;</li>
+ *     <li>la navigazione tra le varie viste (Login, Register, Dashboard, Movimenti, Budget, Report, Account);</li>
+ *     <li>la creazione del layout principale ({@link RootLayoutController});</li>
+ *     <li>il riferimento all'utente attualmente autenticato ({@link #loggedUser});</li>
+ *     <li>l'apertura di finestre di dialogo (impostazioni database, statistiche, ecc.).</li>
+ * </ul>
+ * L'applicazione parte mostrando la schermata di Login; dopo un login riuscito viene
+ * inizializzato il layout principale e vengono caricate le pagine centrali.
+ */
 public class MainApp extends Application {
 
+    /**
+     * Finestra principale dell'applicazione.
+     */
     private Stage primaryStage;
+
+    /**
+     * Layout principale della finestra (contiene barra laterale/superiore e area centrale).
+     */
     private BorderPane rootLayout;
 
-    // Riferimento al controller della barra laterale/superiore
+    /**
+     * Controller associato al layout principale (menu laterale e barra superiore).
+     */
     private RootLayoutController rootController;
 
+    /**
+     * Utente attualmente autenticato nell'applicazione.
+     */
     private User loggedUser;
 
+    /**
+     * Riferimento al controller della pagina Budget, se già caricata.
+     */
     private BudgetController budgetController;
+
+    /**
+     * Riferimento al controller della pagina Report, se già caricata.
+     */
     private ReportController reportController;
+
+    /**
+     * Riferimento al controller della pagina Dashboard, se già caricata.
+     */
     private DashboardController dashboardController;
 
+    /**
+     * Punto di ingresso dell'applicazione JavaFX.
+     * <p>
+     * Imposta il titolo della finestra principale e mostra inizialmente
+     * solo la schermata di Login. Il layout principale verrà caricato
+     * successivamente dal {@link LoginController} dopo un login riuscito.
+     *
+     * @param primaryStage stage principale fornito dal runtime JavaFX
+     */
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("BalanceSuite");
 
-        // STEP 1: All'avvio mostriamo SOLO il Login.
-        // Non carichiamo ancora il RootLayout.
+        // All'avvio mostriamo solo il Login, senza caricare ancora il RootLayout.
         showLogin();
-
     }
 
-
+    /**
+     * Mostra la schermata di registrazione utente.
+     * <p>
+     * Carica il file FXML {@code view/Register.fxml}, imposta la scena
+     * sullo stage principale e collega il {@link RegisterController}
+     * alla {@code MainApp} per permettere la navigazione.
+     */
     public void showRegister() {
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -59,8 +108,12 @@ public class MainApp extends Application {
     }
 
     /**
-     * Mostra la schermata di Login a schermo intero (o dimensione prefissata).
-     * Questa sostituisce qualsiasi altra scena precedente.
+     * Mostra la schermata di Login.
+     * <p>
+     * Carica il file FXML {@code view/Login.fxml}, sostituisce la scena
+     * corrente con la vista di login e collega il {@link LoginController}
+     * alla {@code MainApp} per permettere, dopo l'autenticazione,
+     * l'inizializzazione del layout principale tramite {@link #initRootLayout()}.
      */
     public void showLogin() {
         try {
@@ -74,7 +127,7 @@ public class MainApp extends Application {
 
             // Collega il controller
             LoginController controller = loader.getController();
-            controller.setMainApp(this); // Passiamo this per permettere al Login di chiamare initRootLayout() dopo
+            controller.setMainApp(this);
 
             primaryStage.show();
         } catch (IOException e) {
@@ -83,14 +136,20 @@ public class MainApp extends Application {
     }
 
     /**
-     * Mostra la pagina Report (Grafici).
+     * Mostra la pagina Report (grafici) nell'area centrale del layout principale.
+     * <p>
+     * Carica il file FXML {@code view/Report.fxml}, inserisce la vista
+     * nel centro del {@link BorderPane} principale e collega il
+     * {@link ReportController} alla {@code MainApp}. Imposta inoltre
+     * il titolo della pagina nella barra superiore tramite il
+     * {@link RootLayoutController}, se presente.
      */
     public void showReport() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/Report.fxml"));
 
-            // CORREZIONE: Ora il root di Report.fxml è un AnchorPane
+            // Il root di Report.fxml è un AnchorPane
             AnchorPane view = (AnchorPane) loader.load();
 
             rootLayout.setCenter(view);
@@ -98,7 +157,7 @@ public class MainApp extends Application {
             ReportController controller = loader.getController();
             controller.setMainApp(this);
 
-            // *** Salvo il riferimento al controller del report
+            // Salva il riferimento al controller del report
             this.reportController = controller;
 
             if (rootController != null) {
@@ -109,32 +168,36 @@ public class MainApp extends Application {
             e.printStackTrace();
         }
     }
+
     /**
-     * Inizializza il layout principale (Menu laterale + Barra superiore).
-     * Questo metodo viene chiamato DAL LOGIN CONTROLLER dopo che l'accesso è riuscito.
+     * Inizializza il layout principale dell'applicazione
+     * (barra laterale, barra superiore, area centrale).
+     * <p>
+     * Questo metodo viene chiamato tipicamente dal {@link LoginController}
+     * dopo un login avvenuto con successo. Carica il file FXML
+     * {@code view/RootLayout.fxml}, sostituisce la scena di login con quella
+     * principale e collega il {@link RootLayoutController} alla {@code MainApp}
+     * per gestire la navigazione tra le diverse pagine.
      */
     public void initRootLayout() {
         try {
-            // Carica il root layout dal file fxml
+            // Carica il root layout dal file FXML
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
             rootLayout = (BorderPane) loader.load();
 
-            // Sostituisce la scena del Login con quella dell'App Principale
+            // Sostituisce la scena del Login con quella dell'app principale
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
 
-            // Imposta dimensioni minime o massimizza se vuoi
-            // primaryStage.setMaximized(true);
-
-            // Dà al controller accesso alla main app (per la navigazione)
+            // Recupera il controller del layout principale
             rootController = loader.getController();
             rootController.setMainApp(this);
 
             primaryStage.show();
 
-            // Una volta caricato lo scheletro (Root), carichiamo subito la Dashboard al centro
-            //showDashboard();
+            // Eventualmente si potrebbe caricare subito la Dashboard al centro
+            // showDashboard();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -142,21 +205,25 @@ public class MainApp extends Application {
     }
 
     /**
-     * Mostra la Dashboard (Home) al centro del RootLayout.
+     * Mostra la Dashboard (home) al centro del layout principale.
+     * <p>
+     * Carica il file FXML {@code view/Dashboard.fxml}, imposta la vista
+     * al centro del {@link #rootLayout} e collega il {@link DashboardController}
+     * alla {@code MainApp}. Aggiorna anche il titolo della pagina tramite
+     * il {@link RootLayoutController}, se disponibile.
      */
     public void showDashboard() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/Dashboard.fxml")); // O DashboardOverview.fxml
+            loader.setLocation(MainApp.class.getResource("view/Dashboard.fxml"));
             AnchorPane view = (AnchorPane) loader.load();
 
             rootLayout.setCenter(view);
 
-            // ECCO IL PUNTO FONDAMENTALE:
             DashboardController controller = loader.getController();
-            controller.setMainApp(this); // <--- SENZA QUESTO RIMANE A "..."
+            controller.setMainApp(this);
 
-            // *** Salvo il riferimento al controller della dashboard
+            // Salva il riferimento al controller della dashboard
             this.dashboardController = controller;
 
             if (rootController != null) {
@@ -169,7 +236,12 @@ public class MainApp extends Application {
     }
 
     /**
-     * Mostra la pagina dei Movimenti.
+     * Mostra la pagina dei movimenti.
+     * <p>
+     * Carica il file FXML {@code view/Movimenti.fxml}, inserisce la vista
+     * nell'area centrale del layout principale e collega il
+     * {@link MovimentiController} alla {@code MainApp}. Aggiorna anche
+     * il titolo della pagina tramite il {@link RootLayoutController}.
      */
     public void showMovimenti() {
         try {
@@ -192,7 +264,13 @@ public class MainApp extends Application {
     }
 
     /**
-     * Mostra la pagina del Budget.
+     * Mostra la pagina di pianificazione del budget.
+     * <p>
+     * Carica il file FXML {@code view/Budget.fxml}, inserisce la vista
+     * nell'area centrale del layout principale e collega il
+     * {@link BudgetController} alla {@code MainApp}. Memorizza inoltre
+     * il riferimento al controller per un eventuale utilizzo successivo
+     * e aggiorna il titolo della pagina.
      */
     public void showBudget() {
         try {
@@ -205,7 +283,7 @@ public class MainApp extends Application {
             BudgetController controller = loader.getController();
             controller.setMainApp(this);
 
-            // *** Salvo il riferimento al controller del budget
+            // Salva il riferimento al controller del budget
             this.budgetController = controller;
 
             if (rootController != null) {
@@ -217,6 +295,13 @@ public class MainApp extends Application {
         }
     }
 
+    /**
+     * Mostra la pagina delle impostazioni account utente.
+     * <p>
+     * Carica il file FXML {@code view/Account.fxml}, posiziona la vista
+     * al centro del layout principale e collega l'{@link AccountController}
+     * alla {@code MainApp}. Aggiorna anche il titolo della pagina.
+     */
     public void showAccountPage() {
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -236,13 +321,16 @@ public class MainApp extends Application {
             e.printStackTrace();
         }
     }
+
     /**
-     * Apre il dialog per le statistiche compleanni (funzionalità legacy/extra).
+     * Apre una finestra di dialogo con le statistiche sui compleanni.
+     * <p>
+     * Carica il file FXML {@code view/BirthdayStatistics.fxml} e lo mostra
+     * in uno {@link Stage} modale rispetto alla finestra principale.
+     * Questa funzionalità è indicata come legacy o extra.
      */
     public void showBirthdayStatistics() {
         try {
-            // Nota: Qui puntavi a Budget.fxml per errore, rimetto BirthdayStatistics se esiste,
-            // altrimenti commenta questo blocco.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/BirthdayStatistics.fxml"));
             AnchorPane page = (AnchorPane) loader.load();
@@ -261,7 +349,19 @@ public class MainApp extends Application {
     }
 
     /**
-     * Apre il dialog per le impostazioni del database.
+     * Apre la finestra di dialogo per la modifica delle impostazioni
+     * di connessione al database.
+     * <p>
+     * Carica il file FXML {@code view/SettingsEditDialog.fxml}, inizializza
+     * lo {@link SettingsEditDialogController} con l'istanza di
+     * {@link DAOMySQLSettings} corrente e mostra lo {@link Stage} in modalità
+     * modale. Al termine restituisce il risultato dell'azione utente
+     * (pulsante OK premuto oppure no).
+     *
+     * @param daoMySQLSettings oggetto che rappresenta le impostazioni correnti
+     *                         di connessione al database
+     * @return {@code true} se l'utente ha confermato le modifiche (OK),
+     *         {@code false} in caso di annullamento o errore
      */
     public boolean showSettingsEditDialog(DAOMySQLSettings daoMySQLSettings) {
         try {
@@ -279,8 +379,7 @@ public class MainApp extends Application {
             SettingsEditDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
 
-            // IMPORTANTE: Assicurati che il metodo nel controller si chiami così
-            // Se nel controller è "setSettings", cambia questa riga in controller.setSettings(...)
+            // Passa le impostazioni correnti al controller
             controller.setSettings(daoMySQLSettings);
 
             dialogStage.showAndWait();
@@ -293,34 +392,69 @@ public class MainApp extends Application {
     }
 
     /**
-     * Ritorna lo stage principale.
+     * Restituisce lo {@link Stage} principale dell'applicazione.
+     *
+     * @return stage principale
      */
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
+    /**
+     * Metodo main standard per avviare l'applicazione JavaFX.
+     *
+     * @param args argomenti da riga di comando
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
     // GETTER E SETTER UTENTE LOGGATO
 
+    /**
+     * Imposta l'utente attualmente autenticato nell'applicazione.
+     *
+     * @param user utente loggato da memorizzare
+     */
     public void setLoggedUser(User user) {
         this.loggedUser = user;
     }
 
+    /**
+     * Restituisce l'utente attualmente autenticato.
+     *
+     * @return utente loggato, oppure {@code null} se nessun utente è autenticato
+     */
     public User getLoggedUser() {
         return loggedUser;
     }
 
+    /**
+     * Restituisce il controller associato alla pagina Budget, se già caricato.
+     *
+     * @return istanza di {@link BudgetController}, oppure {@code null}
+     *         se la pagina non è ancora stata mostrata
+     */
     public BudgetController getBudgetController() {
         return budgetController;
     }
 
+    /**
+     * Restituisce il controller associato alla pagina Report, se già caricato.
+     *
+     * @return istanza di {@link ReportController}, oppure {@code null}
+     *         se la pagina non è ancora stata mostrata
+     */
     public ReportController getReportController() {
         return reportController;
     }
 
+    /**
+     * Restituisce il controller associato alla Dashboard, se già caricato.
+     *
+     * @return istanza di {@link DashboardController}, oppure {@code null}
+     *         se la dashboard non è ancora stata mostrata
+     */
     public DashboardController getDashboardController() {
         return dashboardController;
     }

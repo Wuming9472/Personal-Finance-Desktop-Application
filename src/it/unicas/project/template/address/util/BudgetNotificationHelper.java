@@ -36,6 +36,7 @@ import java.util.Optional;
  *     <li>quali categorie sono già state notificate nel mese corrente;</li>
  *     <li>quali notifiche sono state disabilitate con l'opzione
  *         "Non mostrare più" per il mese.</li>
+ * </ul>
  */
 public class BudgetNotificationHelper {
 

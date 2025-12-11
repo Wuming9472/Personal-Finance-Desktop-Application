@@ -31,14 +31,14 @@ import javafx.util.Duration;
  *   <li>La navigazione tra le diverse sezioni dell'app</li>
  *   <li>Le animazioni di transizione del menu</li>
  * </ul>
- * </p>
+ 
  * <p>
  * La sidebar supporta due modalità:
  * <ul>
  *   <li><b>Espansa</b>: mostra icone e testo dei menu (260px)</li>
  *   <li><b>Collassata</b>: mostra solo le icone con tooltip (82px)</li>
  * </ul>
- * </p>
+ 
  *
  * @author Personal Finance Team
  * @version 1.0
@@ -135,7 +135,7 @@ public class RootLayoutController {
      * Questo metodo viene chiamato automaticamente dopo il caricamento
      * del file FXML. Configura i tooltip per i pulsanti del menu e
      * imposta la Dashboard come sezione attiva di default.
-     * </p>
+     
      */
     @FXML
     private void initialize() {
@@ -152,7 +152,7 @@ public class RootLayoutController {
      * I tooltip vengono mostrati quando il menu è collassato,
      * permettendo all'utente di identificare le voci di menu
      * anche senza il testo visibile.
-     * </p>
+     
      */
     private void setupTooltips() {
         Tooltip dashboardTip = createStyledTooltip("Dashboard");
@@ -187,7 +187,7 @@ public class RootLayoutController {
      * <p>
      * Aggiorna automaticamente le informazioni dell'utente loggato
      * nella barra superiore.
-     * </p>
+     
      *
      * @param mainApp l'istanza di {@link MainApp}
      */
@@ -205,7 +205,7 @@ public class RootLayoutController {
      * Imposta il nome completo nel menu e calcola le iniziali
      * da mostrare nell'avatar. Le iniziali vengono estratte
      * dalla prima lettera di ogni parola del nome (max 2 lettere).
-     * </p>
+     
      *
      * @param username il nome utente da visualizzare
      */
@@ -253,7 +253,7 @@ public class RootLayoutController {
      *   <li>Dissolve/mostra le etichette di testo</li>
      * </ul>
      * La durata dell'animazione è di 350ms.
-     * </p>
+     
      */
     @FXML
     private void handleToggleMenu() {
@@ -289,7 +289,7 @@ public class RootLayoutController {
      * <p>
      * Le etichette vengono nascoste con un fade out di 200ms e poi
      * rimosse dal layout (setManaged false).
-     * </p>
+     
      */
     private void fadeOutLabels() {
         Label[] labels = {lblDashboard, lblMovimenti, lblBudget, lblReport, lblAccount};
@@ -313,7 +313,7 @@ public class RootLayoutController {
      * <p>
      * Le etichette vengono mostrate con un fade in di 250ms,
      * con un leggero ritardo per un effetto più fluido.
-     * </p>
+     
      */
     private void fadeInLabels() {
         Label[] labels = {lblDashboard, lblMovimenti, lblBudget, lblReport, lblAccount};
@@ -339,7 +339,7 @@ public class RootLayoutController {
      * Gestisce lo stile visivo dei pulsanti del menu, applicando
      * la classe CSS "menu-button-active" al pulsante selezionato
      * e aggiornando il colore del testo.
-     * </p>
+     
      *
      * @param button il pulsante da impostare come attivo
      */
@@ -456,7 +456,7 @@ public class RootLayoutController {
      * Gestisce il click su "Impostazioni" nel menu utente.
      * <p>
      * Attualmente reindirizza alla pagina Account.
-     * </p>
+     
      */
     @FXML
     private void handleSettings() {
@@ -470,7 +470,7 @@ public class RootLayoutController {
      * Gestisce il logout dell'utente.
      * <p>
      * Resetta l'utente loggato e torna alla schermata di login.
-     * </p>
+     
      */
     @FXML
     private void handleExit() {

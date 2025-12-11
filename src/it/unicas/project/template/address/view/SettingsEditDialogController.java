@@ -18,11 +18,11 @@ import javafx.stage.Stage;
  *   <li>Password</li>
  *   <li>Nome dello schema/database</li>
  * </ul>
- * </p>
+ 
  * <p>
  * Il dialog valida l'input dell'utente prima di salvare le modifiche
  * e mostra messaggi di errore appropriati in caso di campi non validi.
- * </p>
+ 
  *
  * @author Mario Molinara
  * @version 1.0
@@ -65,7 +65,7 @@ public class SettingsEditDialogController {
      * Questo metodo viene chiamato automaticamente dopo il caricamento
      * del file FXML. Imposta il campo del driver name con il valore
      * di default e svuota gli altri campi.
-     * </p>
+     
      */
     @FXML
     private void initialize() {
@@ -81,7 +81,7 @@ public class SettingsEditDialogController {
      * <p>
      * Configura anche l'icona del dialog utilizzando l'immagine
      * presente nella cartella resources.
-     * </p>
+     
      *
      * @param dialogStage lo Stage da associare a questo dialog
      */
@@ -96,7 +96,7 @@ public class SettingsEditDialogController {
      * Imposta l'oggetto settings da modificare nel dialog.
      * <p>
      * Popola i campi di testo con i valori correnti delle impostazioni.
-     * </p>
+     
      *
      * @param settings l'oggetto {@link DAOMySQLSettings} da modificare
      */
@@ -122,7 +122,7 @@ public class SettingsEditDialogController {
      * <p>
      * Valida l'input dell'utente e, se valido, aggiorna l'oggetto
      * settings con i nuovi valori e chiude il dialog.
-     * </p>
+     
      */
     @FXML
     private void handleOk() {
@@ -141,7 +141,7 @@ public class SettingsEditDialogController {
      * Gestisce il click sul pulsante Cancel.
      * <p>
      * Chiude il dialog senza salvare le modifiche.
-     * </p>
+     
      */
     @FXML
     private void handleCancel() {
@@ -159,7 +159,7 @@ public class SettingsEditDialogController {
      *   <li>Schema</li>
      * </ul>
      * In caso di errori, mostra un alert con l'elenco dei problemi.
-     * </p>
+     
      *
      * @return {@code true} se l'input è valido, {@code false} altrimenti
      */
