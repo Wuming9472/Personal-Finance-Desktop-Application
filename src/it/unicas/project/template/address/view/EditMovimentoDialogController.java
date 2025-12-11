@@ -10,6 +10,12 @@ import javafx.scene.control.*;
 import java.sql.*;
 import java.time.LocalDate;
 
+/**
+ * Controller JavaFX per la finestra di dialogo di modifica di un movimento.
+ * <p>
+ * Gestisce il popolamento dei campi, la validazione dell'input
+ * e l'aggiornamento dell'oggetto {@link Movimenti} associato.
+ */
 public class EditMovimentoDialogController {
 
     @FXML private TextField amountField;
@@ -23,7 +29,13 @@ public class EditMovimentoDialogController {
     private Movimenti movimento;
     private boolean okClicked = false;
 
-    // Wrapper per ComboBox Categorie (uguale al controller principale)
+    /**
+     * Wrapper per rappresentare una categoria all'interno della ComboBox.
+     * <p>
+     * Espone un identificativo numerico e un nome leggibile, e
+     * ridefinisce {@link #toString()} per mostrare correttamente
+     * il nome nella UI.
+     */
     public static class CategoryItem {
         int id;
         String name;
@@ -38,6 +50,17 @@ public class EditMovimentoDialogController {
         public int getId() {return id;}
     }
 
+    /**
+     * Inizializza i campi della dialog:
+     * <ul>
+     *     <li>popola le ComboBox (tipo, metodo di pagamento);</li>
+     *     <li>applica i formattatori per limitare la lunghezza dell'importo,
+     *         del metodo di pagamento e della descrizione;</li>
+     *     <li>aggiorna il contatore di caratteri;</li>
+     *     <li>carica le categorie dal database.</li>
+     * </ul>
+     * Viene chiamato automaticamente da JavaFX dopo il caricamento dell'FXML.
+     */
     @FXML
     private void initialize() {
         // Setup Tipo
@@ -91,7 +114,11 @@ public class EditMovimentoDialogController {
     }
 
     /**
-     * Carica le categorie dal database
+     * Carica l'elenco delle categorie dal database e lo imposta
+     * nella ComboBox delle categorie.
+     * <p>
+     * In caso di errore durante la lettura dal database mostra
+     * un messaggio di errore all'utente.
      */
     private void loadCategories() {
         String sql = "SELECT category_id, name FROM categories ORDER BY category_id ASC";
@@ -113,7 +140,13 @@ public class EditMovimentoDialogController {
     }
 
     /**
-     * Precompila i campi con i dati del movimento da modificare
+     * Precompila i campi della dialog con i dati del movimento
+     * da modificare.
+     * <p>
+     * Imposta importo, tipo, data, descrizione, metodo di pagamento
+     * e seleziona la categoria corretta nella ComboBox.
+     *
+     * @param movimento movimento da visualizzare e modificare.
      */
     public void setMovimento(Movimenti movimento) {
         this.movimento = movimento;
@@ -135,14 +168,30 @@ public class EditMovimentoDialogController {
     }
 
     /**
-     * Valida e salva le modifiche
+     * Indica se l'utente ha confermato le modifiche con esito positivo.
+     *
+     * @return {@code true} se la validazione è andata a buon fine e
+     *         l'utente ha confermato, {@code false} altrimenti.
      */
     public boolean isOkClicked() {
         return okClicked;
     }
 
     /**
-     * Valida l'input e aggiorna l'oggetto movimento
+     * Valida l'input dell'utente e, se non ci sono errori, aggiorna
+     * l'oggetto {@link Movimenti} con i nuovi valori inseriti.
+     * <p>
+     * Controlla:
+     * <ul>
+     *     <li>importo non vuoto, numerico e maggiore di zero;</li>
+     *     <li>tipo selezionato;</li>
+     *     <li>data selezionata;</li>
+     *     <li>categoria selezionata.</li>
+     * </ul>
+     * In caso di errori mostra una finestra di alert.
+     *
+     * @return {@code true} se i dati sono validi e il movimento è stato aggiornato,
+     *         {@code false} in caso di errori di validazione.
      */
     public boolean validateAndSave() {
         String errorMessage = "";
@@ -196,19 +245,31 @@ public class EditMovimentoDialogController {
     }
 
     /**
-     * Ottiene la categoria selezionata
+     * Restituisce l'identificativo numerico della categoria
+     * attualmente selezionata nella ComboBox.
+     *
+     * @return id della categoria selezionata oppure -1 se nessuna categoria è selezionata.
      */
     public int getSelectedCategoryId() {
         return categoryField.getValue() != null ? categoryField.getValue().id : -1;
     }
 
     /**
-     * Ottiene il movimento modificato
+     * Restituisce il movimento associato alla dialog, eventualmente
+     * aggiornato con i nuovi valori inseriti dall'utente.
+     *
+     * @return oggetto {@link Movimenti} correntemente modificato.
      */
     public Movimenti getMovimento() {
         return movimento;
     }
 
+    /**
+     * Mostra una finestra di dialogo di errore con il messaggio
+     * di validazione passato come parametro.
+     *
+     * @param message testo da visualizzare nel contenuto dell'alert.
+     */
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Campi non validi");

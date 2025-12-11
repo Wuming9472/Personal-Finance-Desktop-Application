@@ -1,5 +1,4 @@
 package it.unicas.project.template.address.view;
-
 import it.unicas.project.template.address.MainApp;
 import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
@@ -12,6 +11,15 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller JavaFX per la gestione dei budget mensili dell'utente.
+ * <p>
+ * Recupera dal database i limiti di spesa per ciascuna categoria,
+ * inizializza i budget di default se necessario e aggiorna le card
+ * dell'interfaccia (etichette e barre di avanzamento) in base ai
+ * dati correnti. Permette inoltre di modificare il limite di una
+ * singola categoria tramite finestra di dialogo.
+ */
 public class BudgetController {
 
     private MainApp mainApp;
@@ -78,6 +86,13 @@ public class BudgetController {
     @FXML private Label otherLimitLabel;
     @FXML private ProgressBar otherProgressBar;
 
+
+    /**
+     * Inizializza il controller impostando il mese e l'anno correnti.
+     * <p>
+     * Questo metodo viene chiamato automaticamente da JavaFX dopo
+     * il caricamento dell'FXML.
+     */
     @FXML
     private void initialize() {
         LocalDate now = LocalDate.now();
@@ -85,11 +100,25 @@ public class BudgetController {
         currentYear = now.getYear();
     }
 
+
+    /**
+     * Imposta il riferimento all'applicazione principale e carica
+     * i budget relativi all'utente attualmente loggato.
+     *
+     * @param mainApp istanza dell'applicazione principale.
+     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
         loadBudgetsForCurrentUser();
     }
 
+
+    /**
+     * Carica i budget per l'utente correntemente loggato, se presente.
+     * <p>
+     * Recupera l'ID utente dall'istanza di {@link MainApp} e avvia
+     * il refresh dei budget dal database.
+     */
     private void loadBudgetsForCurrentUser() {
         if (mainApp == null || mainApp.getLoggedUser() == null) return;
 
@@ -97,6 +126,15 @@ public class BudgetController {
         refreshBudgetsFromDb();
     }
 
+
+    /**
+     * Ricarica dal database i budget del mese e anno correnti per l'utente attivo.
+     * <p>
+     * Se non viene trovato alcun budget, vengono creati dei limiti
+     * predefiniti per l'utente e i dati vengono poi ricaricati.
+     * In seguito l'interfaccia viene aggiornata tramite
+     * {@link #updateUIFromBudgets()}.
+     */
     private void refreshBudgetsFromDb() {
         if (currentUserId <= 0) return;
 
@@ -117,6 +155,18 @@ public class BudgetController {
         }
     }
 
+    /**
+     * Crea una serie di budget predefiniti per l'utente indicato,
+     * per il mese e l'anno specificati.
+     * <p>
+     * I limiti vengono inizializzati per le principali categorie
+     * (alimentari, trasporti, bollette, svago, salute, investimenti, altro).
+     *
+     * @param userId identificativo dell'utente.
+     * @param month  mese di riferimento (1-12).
+     * @param year   anno di riferimento.
+     * @throws SQLException se si verifica un errore durante l'aggiornamento del database.
+     */
     private void createDefaultBudgetsForUser(int userId, int month, int year) throws SQLException {
         budgetDAO.setOrUpdateBudget(userId, 1, month, year, 400.0);
         budgetDAO.setOrUpdateBudget(userId, 2, month, year, 150.0);
@@ -128,6 +178,14 @@ public class BudgetController {
         budgetDAO.setOrUpdateBudget(userId, 8, month, year, 100.0);
     }
 
+    /**
+     * Aggiorna le card dell'interfaccia grafica in base alla lista di budget correnti.
+     * <p>
+     * Prima azzera i dati visualizzati per tutte le categorie e poi,
+     * per ciascun budget presente, imposta i testi (limite, speso, rimasto,
+     * percentuale) e aggiorna la barra di avanzamento con il colore
+     * appropriato in funzione del consumo.
+     */
     private void updateUIFromBudgets() {
         resetCard(foodRemainingLabel, foodSpentLabel, foodLimitLabel, foodPercentageLabel, foodProgressBar);
         resetCard(transportRemainingLabel, transportSpentLabel, transportLimitLabel, transportPercentageLabel, transportProgressBar);
@@ -176,6 +234,15 @@ public class BudgetController {
         }
     }
 
+    /**
+     * Reimposta i valori di una card di budget a uno stato iniziale (vuoto).
+     *
+     * @param remaining  label che mostra l'importo rimanente.
+     * @param spent      label che mostra l'importo speso.
+     * @param limit      label che mostra il limite di budget.
+     * @param percentage label che mostra la percentuale di utilizzo.
+     * @param bar        barra di avanzamento associata alla categoria.
+     */
     private void resetCard(Label remaining, Label spent, Label limit, Label percentage, ProgressBar bar) {
         if (remaining != null) remaining.setText("Rimasti: € 0.00");
         if (spent != null) spent.setText("Spesi: € 0.00");
@@ -187,6 +254,22 @@ public class BudgetController {
         }
     }
 
+
+    /**
+     * Aggiorna i dati visualizzati in una card di budget a partire
+     * dall'oggetto {@link Budget} fornito.
+     * <p>
+     * Imposta testi (speso, limite, rimanente, percentuale) e aggiorna
+     * la barra di avanzamento, scegliendo il colore in base al rapporto
+     * tra spesa e limite (verde, giallo o rosso).
+     *
+     * @param b          oggetto {@link Budget} con i dati della categoria.
+     * @param remaining  label che mostra l'importo rimanente.
+     * @param spent      label che mostra l'importo speso.
+     * @param limit      label che mostra il limite di budget.
+     * @param percentage label che mostra la percentuale di utilizzo.
+     * @param bar        barra di avanzamento associata alla categoria.
+     */
     private void updateCardFromBudget(Budget b, Label remaining, Label spent, Label limit, Label percentage, ProgressBar bar) {
         double budgetAmount = b.getBudgetAmount();
         double spentAmount = b.getSpentAmount();
@@ -221,6 +304,17 @@ public class BudgetController {
     @FXML private void handleEditInvest() { editSingleBudget(7, "Investimenti"); }
     @FXML private void handleEditOther() { editSingleBudget(8, "Altro"); }
 
+
+    /**
+     * Permette di modificare il limite di budget per una singola categoria.
+     * <p>
+     * Mostra una finestra di input con il valore corrente, valida il nuovo
+     * limite inserito dall'utente e, se corretto, aggiorna la voce nel
+     * database e ricarica i budget dall'origine dati.
+     *
+     * @param categoryId   identificativo numerico della categoria.
+     * @param categoryName nome descrittivo della categoria (es. "Alimentari").
+     */
     private void editSingleBudget(int categoryId, String categoryName) {
         double currentLimit = 0;
         for (Budget b : currentBudgets) {
@@ -273,6 +367,13 @@ public class BudgetController {
         });
     }
 
+
+    /**
+     * Mostra una finestra di dialogo di errore con il titolo e il messaggio specificati.
+     *
+     * @param title titolo da visualizzare nell'intestazione della finestra.
+     * @param msg   testo del messaggio di errore da mostrare all'utente.
+     */
     private void showError(String title, String msg) {
         Alert a = new Alert(Alert.AlertType.ERROR);
         a.setTitle("Errore");

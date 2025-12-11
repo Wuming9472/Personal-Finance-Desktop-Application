@@ -45,6 +45,14 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.Map;
 
+
+/**
+ * Controller JavaFX della dashboard principale dell'applicazione.
+ * <p>
+ * Mostra il riepilogo del mese selezionato (saldo, entrate, uscite),
+ * il grafico dell'andamento giornaliero, la lista degli ultimi movimenti,
+ * lo stato dei budget per categoria e una previsione del saldo a fine mese.
+ */
 public class DashboardController {
 
     @FXML private Label lblSaldo;
@@ -90,6 +98,14 @@ public class DashboardController {
     private float[] currentUsciteFinali;
     private boolean hoverResizeListenerInitialized = false;
 
+
+    /**
+     * Inizializza il controller impostando i valori di default delle label
+     * e preparando la struttura del tooltip personalizzato e dei listener
+     * per il grafico.
+     * <p>
+     * Viene chiamato automaticamente da JavaFX dopo il caricamento dell'FXML.
+     */
     @FXML
     private void initialize() {
         resetLabels("...");
@@ -120,6 +136,16 @@ public class DashboardController {
         customTooltip.getContent().add(tooltipContent);
     }
 
+
+    /**
+     * Imposta il riferimento all'applicazione principale e inizializza
+     * la dashboard per il mese corrente.
+     * <p>
+     * Configura l'aspetto del grafico e carica tutti i dati (saldo,
+     * movimenti, budget, grafico, previsione) per l'utente loggato.
+     *
+     * @param mainApp istanza dell'applicazione principale.
+     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
         // Inizializza con il mese corrente
@@ -146,6 +172,14 @@ public class DashboardController {
         this.connectionFactory = connectionFactory;
     }
 
+
+    /**
+     * Ricarica tutti i dati della dashboard per l'utente loggato
+     * e per il mese/anno attualmente selezionati.
+     * <p>
+     * Aggiorna saldo, entrate, uscite, previsione, label del mese,
+     * lista degli ultimi movimenti, stato dei budget e grafico a barre.
+     */
     public void refreshDashboardData() {
         if (mainApp == null || mainApp.getLoggedUser() == null) {
             resetLabels("-");
@@ -194,7 +228,8 @@ public class DashboardController {
     }
 
     /**
-     * Naviga al mese precedente
+     * Passa al mese precedente rispetto a quello attualmente selezionato
+     * e ricarica i dati della dashboard.
      */
     @FXML
     private void handlePreviousMonth() {
@@ -207,7 +242,8 @@ public class DashboardController {
     }
 
     /**
-     * Naviga al mese successivo
+     * Passa al mese successivo rispetto a quello attualmente selezionato
+     * e ricarica i dati della dashboard.
      */
     @FXML
     private void handleNextMonth() {
@@ -220,7 +256,17 @@ public class DashboardController {
     }
 
     /**
-     * Popola il BarChart con animazione delle barre che salgono dal basso
+     * Popola il grafico a barre con l'andamento di entrate e uscite
+     * per il mese indicato, raggruppando i giorni in 10 periodi.
+     * <p>
+     * Calcola i valori giornalieri dal database, li aggrega per periodo,
+     * imposta i dati nel BarChart, configura l'asse Y e avvia
+     * l'animazione personalizzata delle barre e i tooltip combinati.
+     *
+     * @param userId identificativo dell'utente.
+     * @param month  mese di riferimento (1-12).
+     * @param year   anno di riferimento.
+     * @throws SQLException se si verifica un errore durante la lettura dal database.
      */
     private void populateBarChart(int userId, int month, int year) throws SQLException {
         barChartAndamento.getData().clear();
@@ -349,7 +395,15 @@ public class DashboardController {
     }
 
     /**
-     * Aggiunge aree di hover trasparenti per ogni coppia di barre
+     * Aggiunge aree di hover trasparenti sopra le coppie di barre
+     * (entrate/uscite) del grafico, in modo da gestire un tooltip
+     * combinato per ciascun periodo.
+     *
+     * @param entrateNodes   nodi grafici delle barre delle entrate.
+     * @param usciteNodes    nodi grafici delle barre delle uscite.
+     * @param seriesEntrate  serie del grafico relativa alle entrate.
+     * @param entrateFinali  valori finali delle entrate per periodo.
+     * @param usciteFinali   valori finali delle uscite per periodo.
      */
     private void addHoverAreas(java.util.List<Node> entrateNodes, java.util.List<Node> usciteNodes,
                                 XYChart.Series<String, Number> seriesEntrate,
@@ -415,7 +469,16 @@ public class DashboardController {
     }
 
     /**
-     * Configura l'effetto hover su un'area di hover
+     * Configura l'effetto hover per una specifica area del grafico.
+     * <p>
+     * Alla posizione del mouse mostra un'area evidenziata, scala le barre
+     * associate e visualizza un tooltip personalizzato con il dettaglio
+     * di entrate, uscite e saldo del periodo.
+     *
+     * @param hoverArea area trasparente su cui rilevare l'hover.
+     * @param nodeEntrate nodo grafico della barra delle entrate.
+     * @param nodeUscite  nodo grafico della barra delle uscite.
+     * @param period      etichetta del periodo (es. "1-3").
      */
     private void setupHoverAreaEffect(Rectangle hoverArea, Node nodeEntrate, Node nodeUscite, String period) {
         hoverArea.setOnMouseEntered(e -> {
@@ -465,7 +528,13 @@ public class DashboardController {
     }
 
     /**
-     * Mostra il tooltip custom con entrate e uscite
+     * Mostra un tooltip personalizzato contenente entrate, uscite e saldo
+     * per il periodo selezionato, in corrispondenza della posizione
+     * del mouse sullo schermo.
+     *
+     * @param period etichetta del periodo visualizzato nel grafico.
+     * @param x      coordinata X dello schermo dove mostrare il tooltip.
+     * @param y      coordinata Y dello schermo dove mostrare il tooltip.
      */
     private void showCustomTooltip(String period, double x, double y) {
         float[] values = periodData.get(period);
@@ -518,7 +587,14 @@ public class DashboardController {
     }
 
     /**
-     * Anima le barre dal basso verso l'alto
+     * Anima le barre del grafico facendo crescere progressivamente
+     * il valore di entrate e uscite per ciascun periodo, con un effetto
+     * ad onda (leggero ritardo tra una coppia di barre e la successiva).
+     *
+     * @param seriesEntrate  serie del grafico relativa alle entrate.
+     * @param seriesUscite   serie del grafico relativa alle uscite.
+     * @param entrateFinali  valori finali delle entrate per periodo.
+     * @param usciteFinali   valori finali delle uscite per periodo.
      */
     private void animateBars(XYChart.Series<String, Number> seriesEntrate,
                              XYChart.Series<String, Number> seriesUscite,
@@ -556,6 +632,12 @@ public class DashboardController {
         return DAOMySQLSettings.getConnection();
     }
 
+
+    /**
+     * Configura l'aspetto generale del grafico a barre, impostando
+     * legenda, spaziatura tra le barre e tra le categorie e disabilitando
+     * l'animazione di default di JavaFX (sostituita da una custom).
+     */
     private void setupChartAppearance() {
         if (barChartAndamento != null) {
             barChartAndamento.setLegendVisible(true);
@@ -565,6 +647,13 @@ public class DashboardController {
         }
     }
 
+
+    /**
+     * Registra i listener sulle dimensioni del grafico e dell'area di plot
+     * per ricreare le aree di hover ogni volta che il grafico viene ridimensionato.
+     * <p>
+     * Questo evita che le aree sensibili rimangano disallineate rispetto alle barre.
+     */
     private void setupHoverAreaResizeListener() {
         if (barChartAndamento == null || hoverResizeListenerInitialized) {
             return;
@@ -594,6 +683,13 @@ public class DashboardController {
         plotContent.getChildren().removeIf(node -> node instanceof Rectangle && node.getStyleClass().contains("hover-area"));
     }
 
+
+    /**
+     * Ricrea le aree di hover sul grafico in base alla posizione corrente
+     * delle barre di entrate e uscite.
+     * <p>
+     * Viene chiamato dopo modifiche al layout o al ridimensionamento del grafico.
+     */
     private void refreshHoverAreas() {
         if (currentSeriesEntrate == null || currentSeriesUscite == null
                 || currentEntrateFinali == null || currentUsciteFinali == null) {
@@ -629,6 +725,16 @@ public class DashboardController {
         });
     }
 
+
+    /**
+     * Popola la griglia dei budget con una card per ciascuna categoria,
+     * mostrando quanto è stato speso, quanto rimane o quanto è stato
+     * superato il limite, e una barra di avanzamento colorata.
+     *
+     * @param userId identificativo dell'utente.
+     * @param month  mese di riferimento (1-12).
+     * @param year   anno di riferimento.
+     */
     private void populateBudgetStatus(int userId, int month, int year) {
         if (gridBudgetList == null) return;
         gridBudgetList.getChildren().clear();
@@ -734,6 +840,16 @@ public class DashboardController {
         }
     }
 
+    /**
+     * Calcola una previsione del saldo a fine mese sulla base dei movimenti
+     * registrati fino alla data odierna.
+     * <p>
+     * Utilizza una query aggregata e {@link ForecastCalculator} per stimare
+     * il saldo finale e aggiorna la label di previsione con il valore
+     * stimato e un colore coerente (verde o rosso).
+     *
+     * @param today data corrente utilizzata come riferimento per il calcolo.
+     */
     private void calculateForecast(LocalDate today) {
         if (lblPrevisione == null || mainApp == null || mainApp.getLoggedUser() == null) {
             return;
@@ -801,6 +917,12 @@ public class DashboardController {
     }
 
 
+    /**
+     * Popola il box laterale con la lista degli ultimi movimenti
+     * del mese selezionato, creando una riga grafica per ciascun movimento.
+     *
+     * @param list lista di movimenti da visualizzare.
+     */
     private void populateRecentMovements(List<Movimenti> list) {
         boxUltimiMovimenti.getChildren().clear();
 
@@ -817,6 +939,14 @@ public class DashboardController {
         }
     }
 
+    /**
+     * Crea la riga grafica (HBox) per rappresentare un singolo movimento,
+     * mostrando icona (entrata/uscita), descrizione, data e importo
+     * con colore differenziato in base al tipo.
+     *
+     * @param m movimento da rappresentare.
+     * @return HBox contenente la riga pronta per essere aggiunta alla view.
+     */
     private HBox createMovementRow(Movimenti m) {
         boolean isExpense = m.getType().equalsIgnoreCase("Uscita") || m.getType().equalsIgnoreCase("Expense");
         Color color = isExpense ? Color.web("#fee2e2") : Color.web("#dcfce7");
@@ -858,6 +988,13 @@ public class DashboardController {
         return row;
     }
 
+    /**
+     * Reimposta le label principali della dashboard (saldo, entrate, uscite)
+     * al testo indicato (ad esempio '...' o '-'), usato come stato di default
+     * o in caso di mancato caricamento dei dati.
+     *
+     * @param text testo da assegnare alle label.
+     */
     private void resetLabels(String text) {
         if(lblSaldo!=null) lblSaldo.setText(text);
         if(lblEntrate!=null) lblEntrate.setText(text);

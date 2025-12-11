@@ -14,6 +14,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Controller JavaFX per la gestione dell'account utente.
+ * <p>
+ * Permette di:
+ * <ul>
+ *     <li>visualizzare le iniziali e il nome utente loggato;</li>
+ *     <li>modificare la password;</li>
+ *     <li>impostare ed aggiornare le domande di sicurezza;</li>
+ *     <li>eliminare definitivamente l'account.</li>
+ * </ul>
+ */
 public class AccountController {
 
     @FXML private Label lblInitials;
@@ -34,6 +45,14 @@ public class AccountController {
 
     private MainApp mainApp;
 
+    /**
+     * Inizializza i componenti dell'interfaccia grafica.
+     * <p>
+     * In particolare popola le combobox con l'elenco delle possibili
+     * domande di sicurezza.
+     * Questo metodo viene chiamato automaticamente da JavaFX
+     * dopo il caricamento dell'FXML.
+     */
     @FXML
     private void initialize() {
         // Popola la lista di domande nei ComboBox
@@ -144,6 +163,15 @@ public class AccountController {
         }
     }
 
+    /**
+     * Imposta il riferimento all'applicazione principale e
+     * inizializza le informazioni dell'utente loggato nella view.
+     * <p>
+     * Mostra username e iniziali e carica le eventuali domande di
+     * sicurezza già salvate per l'utente.
+     *
+     * @param mainApp istanza dell'applicazione principale.
+     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
 
@@ -169,8 +197,15 @@ public class AccountController {
         }
     }
 
-    // ================== CAMBIO PASSWORD ==================
 
+    /**
+     * Gestisce il salvataggio di una nuova password per l'utente loggato.
+     * <p>
+     * Verifica che i campi siano compilati correttamente, che la nuova
+     * password rispetti i requisiti minimi e che le due nuove password
+     * coincidano. Se tutto è valido, delega l'aggiornamento al DAO.
+     * In caso di successo o errore mostra un messaggio all'utente.
+     */
     @FXML
     private void handleSaveChanges() {
         try {
@@ -212,8 +247,14 @@ public class AccountController {
         }
     }
 
-    // ================== ELIMINA ACCOUNT (con conferma) ==================
-
+    /**
+     * Gestisce l'eliminazione dell'account dell'utente loggato.
+     * <p>
+     * Mostra una finestra di conferma e, se l'utente accetta,
+     * richiede al DAO l'eliminazione definitiva dell'account
+     * e dei relativi dati. In caso di eliminazione avvenuta
+     * con successo, viene mostrata la schermata di login.
+     */
     @FXML
     private void handleDeleteAccount() {
         try {
@@ -252,8 +293,14 @@ public class AccountController {
         }
     }
 
-    // ================== DOMANDE DI SICUREZZA ==================
 
+    /**
+     * Carica dal database le domande di sicurezza associate all'utente
+     * e imposta i valori nelle combobox della view.
+     *
+     * @param userId identificativo dell'utente loggato.
+     * @throws SQLException se si verifica un errore durante l'accesso al database.
+     */
     private void loadSecurityQuestions(int userId) throws SQLException {
         String sql = "SELECT question, answer FROM security_questions WHERE user_id = ? LIMIT 3";
 
@@ -280,6 +327,15 @@ public class AccountController {
         }
     }
 
+
+    /**
+     * Salva nel database le domande di sicurezza e le relative risposte
+     * per l'utente loggato.
+     * <p>
+     * Verifica che tutte le domande siano selezionate, che le risposte
+     * non siano vuote e che le tre domande siano diverse tra loro.
+     * Le domande precedenti vengono cancellate e sostituite con le nuove.
+     */
     @FXML
     private void handleSaveSecurityQuestions() {
         try {
@@ -338,6 +394,17 @@ public class AccountController {
         }
     }
 
+
+    /**
+     * Inserisce una singola domanda di sicurezza per l'utente indicato
+     * utilizzando il PreparedStatement fornito.
+     *
+     * @param ps       prepared statement già inizializzato con la query di insert.
+     * @param userId   identificativo dell'utente.
+     * @param question testo della domanda di sicurezza.
+     * @param answer   risposta fornita dall'utente.
+     * @throws SQLException se si verifica un errore durante l'esecuzione dell'update.
+     */
     private void insertQuestion(PreparedStatement ps, int userId, String question, String answer) throws SQLException {
         ps.setInt(1, userId);
         ps.setString(2, question);
@@ -345,8 +412,11 @@ public class AccountController {
         ps.executeUpdate();
     }
 
-    // ================== UTIL ==================
-
+    /**
+     * Mostra un messaggio di errore all'utente tramite una finestra di dialogo.
+     *
+     * @param msg testo del messaggio di errore da visualizzare.
+     */
     private void showError(String msg) {
         Alert a = new Alert(Alert.AlertType.ERROR);
         a.setHeaderText(null);
@@ -354,6 +424,11 @@ public class AccountController {
         a.show();
     }
 
+    /**
+     * Mostra un messaggio informativo all'utente tramite una finestra di dialogo.
+     *
+     * @param msg testo del messaggio informativo da visualizzare.
+     */
     private void showInfo(String msg) {
         Alert a = new Alert(Alert.AlertType.INFORMATION);
         a.setHeaderText(null);
