@@ -197,11 +197,11 @@ class MovimentiControllerTest {
         Label charCountLabel = getField(controller, "charCountLabel");
 
         assertEquals("Uscita", typeField.getValue());
-        assertEquals("/100", charCountLabel.getText());
+        assertEquals("/40", charCountLabel.getText());
 
         TextArea descArea = getField(controller, "descArea");
         descArea.setText("prova123"); //8 caratteri
-        assertEquals("8/100", charCountLabel.getText());
+        assertEquals("8/40", charCountLabel.getText());
     }
 
     @Test

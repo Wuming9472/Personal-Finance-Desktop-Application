@@ -46,9 +46,7 @@ class ReportControllerTest {
         setField(controller, "lblStatusMessaggio", new Label());
         setField(controller, "lblGiorniRimanenti", new Label());
         setField(controller, "lblMediaSpeseGiornaliera", new Label());
-        setField(controller, "lblMediaEntrateGiornaliera", new Label());
-        setField(controller, "lblSpeseProiettateTotali", new Label());
-        setField(controller, "lblEntrateProiettateTotali", new Label());
+        setField(controller, "lblSpeseProiettateTotali", new Label());;
         setField(controller, "lblDisclaimer", new Label());
 
         // lineChartAndamento può restare null: in initialize c'è il check != null
@@ -113,9 +111,7 @@ class ReportControllerTest {
         Label lblStatusMessaggio = getField(controller, "lblStatusMessaggio");
         Label lblGiorniRimanenti = getField(controller, "lblGiorniRimanenti");
         Label lblMediaSpese = getField(controller, "lblMediaSpeseGiornaliera");
-        Label lblMediaEntrate = getField(controller, "lblMediaEntrateGiornaliera");
         Label lblSpeseProiettate = getField(controller, "lblSpeseProiettateTotali");
-        Label lblEntrateProiettate = getField(controller, "lblEntrateProiettateTotali");
 
         assertEquals("N/A", lblSaldoStimato.getText());
         assertTrue(lblPeriodoCalcolo.getText().contains("Dati insufficienti")
@@ -126,9 +122,7 @@ class ReportControllerTest {
 
         assertEquals("--", lblGiorniRimanenti.getText());
         assertEquals("--", lblMediaSpese.getText());
-        assertEquals("--", lblMediaEntrate.getText());
         assertEquals("--", lblSpeseProiettate.getText());
-        assertEquals("--", lblEntrateProiettate.getText());
     }
 
     /* ==================== TEST PREVISIONE: SITUAZIONE STABILE (> 200) ==================== */
@@ -162,7 +156,6 @@ class ReportControllerTest {
         Label lblGiorniRimanenti = getField(controller, "lblGiorniRimanenti");
         Label lblMediaSpese = getField(controller, "lblMediaSpeseGiornaliera");
         Label lblSpeseProiettate = getField(controller, "lblSpeseProiettateTotali");
-        Label lblEntrateProiettate = getField(controller, "lblEntrateProiettateTotali");
         Label lblStatusIcon = getField(controller, "lblStatusIcon");
         Label lblStatusTitolo = getField(controller, "lblStatusTitolo");
         Label lblStatusMessaggio = getField(controller, "lblStatusMessaggio");
@@ -174,7 +167,6 @@ class ReportControllerTest {
         assertEquals(remainingDays + " gg", lblGiorniRimanenti.getText());
         assertTrue(lblMediaSpese.getText().contains("Uscite: €"));
         assertTrue(lblSpeseProiettate.getText().contains("Uscite: €"));
-        assertTrue(lblEntrateProiettate.getText().contains("€"));
 
         assertEquals("📈", lblStatusIcon.getText());
         assertEquals("Situazione Stabile", lblStatusTitolo.getText());

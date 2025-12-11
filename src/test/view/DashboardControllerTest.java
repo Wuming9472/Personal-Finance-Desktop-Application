@@ -5,6 +5,7 @@ import it.unicas.project.template.address.model.Budget;
 import it.unicas.project.template.address.model.Movimenti;
 import it.unicas.project.template.address.model.User;
 import it.unicas.project.template.address.model.dao.mysql.BudgetDAOMySQLImpl;
+import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.model.dao.mysql.MovimentiDAOMySQLImpl;
 import it.unicas.project.template.address.view.DashboardController;
 import javafx.application.Platform;
@@ -18,7 +19,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -292,24 +294,25 @@ class DashboardControllerTest {
         StubBudgetDAO budgetDAO = new StubBudgetDAO();
         budgetDAO.budgets = List.of(budget);
 
-        it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings settings =
-                new it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings();
-
         controller.setMovimentiDAO(movimentiDAO);
         controller.setBudgetDAO(budgetDAO);
-        controller.setSettingsSupplier(() -> settings);
-        controller.setConnectionFactory(url -> createFakeConnectionForForecast());
 
-        // setMainApp chiama internamente refreshDashboardData: eseguiamo sul thread FX
-        runOnFxThreadAndWait(() -> controller.setMainApp(mainApp));
+        // Mock del metodo statico DAOMySQLSettings.getConnection()
+        try (MockedStatic<DAOMySQLSettings> mockedSettings = Mockito.mockStatic(DAOMySQLSettings.class)) {
+            mockedSettings.when(DAOMySQLSettings::getConnection)
+                    .thenReturn(createFakeConnectionForForecast());
 
-        // Verifiche sulla UI
-        assertEquals("€ 200,00", ((Label) getField(controller, "lblEntrate")).getText());
-        assertEquals("€ 50,00", ((Label) getField(controller, "lblUscite")).getText());
-        assertEquals("€ 150,00", ((Label) getField(controller, "lblSaldo")).getText());
-        assertEquals("N/A", ((Label) getField(controller, "lblPrevisione")).getText());
-        assertEquals(1, ((VBox) getField(controller, "boxUltimiMovimenti")).getChildren().size());
-        assertFalse(((GridPane) getField(controller, "gridBudgetList")).getChildren().isEmpty());
+            // setMainApp chiama internamente refreshDashboardData: eseguiamo sul thread FX
+            runOnFxThreadAndWait(() -> controller.setMainApp(mainApp));
+
+            // Verifiche sulla UI
+            assertEquals("€ 200,00", ((Label) getField(controller, "lblEntrate")).getText());
+            assertEquals("€ 50,00", ((Label) getField(controller, "lblUscite")).getText());
+            assertEquals("€ 150,00", ((Label) getField(controller, "lblSaldo")).getText());
+            assertEquals("N/A", ((Label) getField(controller, "lblPrevisione")).getText());
+            assertEquals(1, ((VBox) getField(controller, "boxUltimiMovimenti")).getChildren().size());
+            assertFalse(((GridPane) getField(controller, "gridBudgetList")).getChildren().isEmpty());
+        }
     }
 
     @Test

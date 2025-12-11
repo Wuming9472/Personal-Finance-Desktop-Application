@@ -51,7 +51,6 @@ public class ReportController {
     @FXML private Label lblGiorniRimanenti;
     @FXML private Label lblEntrateMese;
     @FXML private Label lblMediaSpeseGiornaliera;
-    @FXML private Label lblMediaEntrateGiornaliera;
     @FXML private Label lblSpeseProiettateTotali;
     @FXML private Label lblDisclaimer;
 
@@ -66,12 +65,6 @@ public class ReportController {
             pieChart.setLegendVisible(true);
         }
         initRangeSelector();
-
-        // Nascondo definitivamente la label della media entrate giornaliera
-        if (lblMediaEntrateGiornaliera != null) {
-            lblMediaEntrateGiornaliera.setVisible(false);
-            lblMediaEntrateGiornaliera.setManaged(false);
-        }
     }
 
     public void setMainApp(MainApp mainApp) {
@@ -516,7 +509,6 @@ public class ReportController {
             lblGiorniRimanenti.setText("--");
             lblEntrateMese.setText("--");
             lblMediaSpeseGiornaliera.setText("--");
-            lblMediaEntrateGiornaliera.setText("--");
             lblSpeseProiettateTotali.setText("--");
         });
     }
@@ -536,9 +528,6 @@ public class ReportController {
             // Uscite: media e proiezione
             lblMediaSpeseGiornaliera.setText(String.format("Uscite: € %.2f", mediaSpeseGiornaliera));
             lblSpeseProiettateTotali.setText(String.format("Uscite: € %.2f", speseProiettate));
-
-            // Entrate mese: totale reale, spostato sotto i giorni rimanenti
-            lblMediaEntrateGiornaliera.setText(""); // label invisibile, ma evito valori strani
 
             String statusIcon;
             String statusTitolo;
