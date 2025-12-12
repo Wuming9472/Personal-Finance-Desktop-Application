@@ -109,6 +109,31 @@ class DashboardControllerTest {
     }
 
     /**
+     * Configura il controller con i DAO stub e il MainApp finto.
+     */
+    private void setupControllerWithData(DashboardController controller, float entrate, float uscite, List<Movimenti> movimenti, List<Budget> budgets) {
+        User user = new User(1, "user", "pwd");
+        MainApp mainApp = new TestMainApp(user);
+
+        StubMovimentiDAO movimentiDAO = new StubMovimentiDAO();
+        movimentiDAO.entrate = entrate;
+        movimentiDAO.uscite = uscite;
+        movimentiDAO.movimenti = movimenti;
+
+        StubBudgetDAO budgetDAO = new StubBudgetDAO();
+        budgetDAO.budgets = budgets;
+
+        controller.setMovimentiDAO(movimentiDAO);
+        controller.setBudgetDAO(budgetDAO);
+
+        try (MockedStatic<DAOMySQLSettings> mockedSettings = Mockito.mockStatic(DAOMySQLSettings.class)) {
+            mockedSettings.when(DAOMySQLSettings::getConnection)
+                    .thenReturn(createFakeConnectionForForecast());
+            runOnFxThreadAndWait(() -> controller.setMainApp(mainApp));
+        }
+    }
+
+    /**
      * Esegue un Runnable sul JavaFX Application Thread e aspetta che finisca.
      */
     private static void runOnFxThreadAndWait(Runnable action) {
@@ -184,7 +209,7 @@ class DashboardControllerTest {
                         if (rt.equals(boolean.class)) return false;
                         if (rt.equals(int.class)) return 0;
                         if (rt.equals(double.class)) return 0d;
-                        if (rt.equals(float.class)) return 0f;   // 👈 AGGIUNGI QUESTA RIGA
+                        if (rt.equals(float.class)) return 0f;
                         return null;
                 }
             }
@@ -204,6 +229,7 @@ class DashboardControllerTest {
                     case "executeQuery":
                         return rs;
                     case "setInt":
+                    case "setDate":
                     case "close":
                         return null;
                     default:
@@ -347,6 +373,165 @@ class DashboardControllerTest {
         assertEquals(1, (Integer) getField(controller, "selectedMonth"));
         assertEquals(2024, (Integer) getField(controller, "selectedYear"));
     }
+
+    // ==================== TEST CALCOLI CARD ====================
+
+    /**
+     * Test: Saldo positivo quando entrate > uscite
+     * Verifica che il saldo sia calcolato correttamente e mostrato in verde.
+     */
+    @Test
+    void saldoPositivoQuandoEntrateSuperioriUscite() {
+        DashboardController controller = createControllerWithBasicUi();
+        setupControllerWithData(controller, 1500f, 800f, List.of(), List.of());
+
+        Label lblSaldo = getField(controller, "lblSaldo");
+        Label lblEntrate = getField(controller, "lblEntrate");
+        Label lblUscite = getField(controller, "lblUscite");
+
+        assertEquals("€ 1500,00", lblEntrate.getText());
+        assertEquals("€ 800,00", lblUscite.getText());
+        assertEquals("€ 700,00", lblSaldo.getText());
+        assertTrue(lblSaldo.getStyle().contains("#10b981"), "Il saldo positivo dovrebbe essere verde");
+    }
+
+    /**
+     * Test: Saldo negativo quando uscite > entrate
+     * Verifica che il saldo sia calcolato correttamente e mostrato in rosso.
+     */
+    @Test
+    void saldoNegativoQuandoUsciteSuperioriEntrate() {
+        DashboardController controller = createControllerWithBasicUi();
+        setupControllerWithData(controller, 500f, 1200f, List.of(), List.of());
+
+        Label lblSaldo = getField(controller, "lblSaldo");
+        Label lblEntrate = getField(controller, "lblEntrate");
+        Label lblUscite = getField(controller, "lblUscite");
+
+        assertEquals("€ 500,00", lblEntrate.getText());
+        assertEquals("€ 1200,00", lblUscite.getText());
+        assertEquals("€ -700,00", lblSaldo.getText());
+        assertTrue(lblSaldo.getStyle().contains("#ef4444"), "Il saldo negativo dovrebbe essere rosso");
+    }
+
+    /**
+     * Test: Saldo zero quando entrate = uscite
+     * Verifica che il saldo sia zero e mostrato in verde (>= 0).
+     */
+    @Test
+    void saldoZeroQuandoEntrateUgualiUscite() {
+        DashboardController controller = createControllerWithBasicUi();
+        setupControllerWithData(controller, 1000f, 1000f, List.of(), List.of());
+
+        Label lblSaldo = getField(controller, "lblSaldo");
+        Label lblEntrate = getField(controller, "lblEntrate");
+        Label lblUscite = getField(controller, "lblUscite");
+
+        assertEquals("€ 1000,00", lblEntrate.getText());
+        assertEquals("€ 1000,00", lblUscite.getText());
+        assertEquals("€ 0,00", lblSaldo.getText());
+        assertTrue(lblSaldo.getStyle().contains("#10b981"), "Il saldo zero dovrebbe essere verde");
+    }
+
+    /**
+     * Test: Nessun movimento nel mese
+     * Verifica che entrate, uscite e saldo siano tutti a zero.
+     */
+    @Test
+    void nessunaMovimentazioneNelMese() {
+        DashboardController controller = createControllerWithBasicUi();
+        setupControllerWithData(controller, 0f, 0f, List.of(), List.of());
+
+        Label lblSaldo = getField(controller, "lblSaldo");
+        Label lblEntrate = getField(controller, "lblEntrate");
+        Label lblUscite = getField(controller, "lblUscite");
+
+        assertEquals("€ 0,00", lblEntrate.getText());
+        assertEquals("€ 0,00", lblUscite.getText());
+        assertEquals("€ 0,00", lblSaldo.getText());
+        assertTrue(lblSaldo.getStyle().contains("#10b981"), "Il saldo zero dovrebbe essere verde");
+    }
+
+    /**
+     * Test: Solo entrate senza uscite
+     * Verifica che il saldo sia uguale alle entrate.
+     */
+    @Test
+    void soloEntrateSenzaUscite() {
+        DashboardController controller = createControllerWithBasicUi();
+        setupControllerWithData(controller, 2500f, 0f, List.of(), List.of());
+
+        Label lblSaldo = getField(controller, "lblSaldo");
+        Label lblEntrate = getField(controller, "lblEntrate");
+        Label lblUscite = getField(controller, "lblUscite");
+
+        assertEquals("€ 2500,00", lblEntrate.getText());
+        assertEquals("€ 0,00", lblUscite.getText());
+        assertEquals("€ 2500,00", lblSaldo.getText());
+        assertTrue(lblSaldo.getStyle().contains("#10b981"), "Il saldo positivo dovrebbe essere verde");
+    }
+
+    /**
+     * Test: Solo uscite senza entrate
+     * Verifica che il saldo sia negativo e uguale alle uscite (con segno meno).
+     */
+    @Test
+    void soloUsciteSenzaEntrate() {
+        DashboardController controller = createControllerWithBasicUi();
+        setupControllerWithData(controller, 0f, 350f, List.of(), List.of());
+
+        Label lblSaldo = getField(controller, "lblSaldo");
+        Label lblEntrate = getField(controller, "lblEntrate");
+        Label lblUscite = getField(controller, "lblUscite");
+
+        assertEquals("€ 0,00", lblEntrate.getText());
+        assertEquals("€ 350,00", lblUscite.getText());
+        assertEquals("€ -350,00", lblSaldo.getText());
+        assertTrue(lblSaldo.getStyle().contains("#ef4444"), "Il saldo negativo dovrebbe essere rosso");
+    }
+
+    /**
+     * Test: Importi con decimali
+     * Verifica che i calcoli con decimali siano corretti.
+     */
+    @Test
+    void calcoloConImportiDecimali() {
+        DashboardController controller = createControllerWithBasicUi();
+        setupControllerWithData(controller, 1234.56f, 789.12f, List.of(), List.of());
+
+        Label lblSaldo = getField(controller, "lblSaldo");
+        Label lblEntrate = getField(controller, "lblEntrate");
+        Label lblUscite = getField(controller, "lblUscite");
+
+        assertEquals("€ 1234,56", lblEntrate.getText());
+        assertEquals("€ 789,12", lblUscite.getText());
+        assertEquals("€ 445,44", lblSaldo.getText());
+    }
+
+   
+
+    /**
+     * Test: Verifica che senza utente loggato le label mostrino "-"
+     */
+    @Test
+    void senzaUtenteLoggatoLabelMostranoDash() {
+        DashboardController controller = createControllerWithBasicUi();
+
+        // MainApp senza utente loggato
+        MainApp mainApp = new TestMainApp(null);
+
+        runOnFxThreadAndWait(() -> controller.setMainApp(mainApp));
+
+        Label lblSaldo = getField(controller, "lblSaldo");
+        Label lblEntrate = getField(controller, "lblEntrate");
+        Label lblUscite = getField(controller, "lblUscite");
+
+        assertEquals("-", lblSaldo.getText());
+        assertEquals("-", lblEntrate.getText());
+        assertEquals("-", lblUscite.getText());
+    }
+
+    // ==================== HELPER METHODS ====================
 
     private void setField(Object target, String fieldName, Object value) {
         try {
