@@ -4,6 +4,7 @@
 [![JavaFX](https://img.shields.io/badge/JavaFX-UI-blue.svg)](https://openjfx.io/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)](https://www.mysql.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![JavaDoc](https://img.shields.io/badge/JavaDoc-API-blue.svg)](https://wuming9472.github.io/Personal-Finance-Desktop-Application/)
 
 Un'applicazione desktop moderna e intuitiva per la gestione delle finanze personali, sviluppata in Java con JavaFX. **BalanceSuite** ti aiuta a tenere traccia delle tue entrate e uscite, pianificare budget mensili per categoria e visualizzare report dettagliati con grafici interattivi.
 
@@ -19,7 +20,7 @@ Un'applicazione desktop moderna e intuitiva per la gestione delle finanze person
 - [Esecuzione](#-esecuzione)
 - [Struttura del Database](#-struttura-del-database)
 - [Funzionalità Dettagliate](#-funzionalità-dettagliate)
-- [Contribuire](#-contribuire)
+- [Documentazione API](#-documentazione-api)
 - [Licenza](#-licenza)
 
 ## ✨ Caratteristiche
@@ -491,6 +492,22 @@ Possibili migliori futuri:
 - [ ] **Mobile Companion App**: App mobile per inserimento rapido spese
 - [ ] **Categorizzazione Automatica**: Suggerimento categorie basato su titolo
 - [ ] **Ricorrenze**: Gestione movimenti ricorrenti (stipendio, affitto)
+
+
+
+## 📖 Documentazione API
+
+La documentazione JavaDoc completa di tutte le classi e metodi è disponibile online:
+
+🔗 **[Consulta la JavaDoc](https://wuming9472.github.io/Personal-Finance-Desktop-Application/)**
+
+Include documentazione dettagliata per:
+- Model classes (`User`, `Movimenti`, `Budget`, `Category`)
+- DAO interfaces e implementazioni MySQL
+- Controller JavaFX
+- Utility classes
+
+
 
 ## 📄 Licenza
 
