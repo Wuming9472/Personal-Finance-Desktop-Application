@@ -66,6 +66,12 @@ public class ReportController {
             pieChart.setLegendVisible(true);
         }
         initRangeSelector();
+
+        // Nascondo definitivamente la label della media entrate giornaliera
+        if (lblMediaEntrateGiornaliera != null) {
+            lblMediaEntrateGiornaliera.setVisible(false);
+            lblMediaEntrateGiornaliera.setManaged(false);
+        }
     }
 
     public void setMainApp(MainApp mainApp) {
@@ -466,7 +472,7 @@ public class ReportController {
                         return;
                     }
 
-                    int currentDay = today.getDayOfMonth();      // giorni trascorsi nel mese
+                    int currentDay = today.getDayOfMonth();       // giorni trascorsi nel mese
                     int remainingDays = daysInMonth - currentDay; // giorni rimanenti alla fine del mese
 
                     int giorniTrascorsi = currentDay;
@@ -475,14 +481,10 @@ public class ReportController {
                             ? totaleUscite / giorniTrascorsi
                             : 0.0;
 
-                    double mediaEntrateGiornaliera = giorniTrascorsi > 0
-                            ? totaleEntrate / giorniTrascorsi
-                            : 0.0;
-
                     double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
-                    double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
+                    // non calcolo le entrate proiettate perché una persona comune ha prevalentemente uscite fisse mensili e poche entrate isolate
 
-                    double saldoStimato = entrateProiettate - speseProiettate;
+                    double saldoStimato = totaleEntrate - speseProiettate;
 
                     updateForecastUI(
                             currentDay,
@@ -491,9 +493,7 @@ public class ReportController {
                             speseProiettate,
                             saldoStimato,
                             totaleEntrate,
-                            totaleUscite,
-                            mediaEntrateGiornaliera,
-                            entrateProiettate
+                            totaleUscite
                     );
                 } else {
                     displayInsufficientDataMessage();
@@ -501,6 +501,7 @@ public class ReportController {
             }
         }
     }
+
 
 
     private void displayInsufficientDataMessage() {
@@ -527,10 +528,10 @@ public class ReportController {
         });
     }
 
-    private void updateForecastUI(int currentDay, int remainingDays, double mediaSpeseGiornaliera,
+    private void updateForecastUI(int currentDay, int remainingDays,
+                                  double mediaSpeseGiornaliera,
                                   double speseProiettate, double saldoStimato,
-                                  double totaleEntrate, double totaleUscite,
-                                  double mediaEntrateGiornaliera, double entrateProiettate) {
+                                  double totaleEntrate, double totaleUscite) {
         Platform.runLater(() -> {
             lblPeriodoCalcolo.setText(String.format("Calcolata sui movimenti reali dal giorno 1 al %d", currentDay));
 
@@ -539,11 +540,13 @@ public class ReportController {
             lblGiorniRimanenti.setText(String.format("%d gg", remainingDays));
             lblEntrateMese.setText(String.format("€ %.2f", totaleEntrate));
 
+            // Uscite: media e proiezione
             lblMediaSpeseGiornaliera.setText(String.format("Uscite: € %.2f", mediaSpeseGiornaliera));
-            lblMediaEntrateGiornaliera.setText(String.format("Entrate: € %.2f", mediaEntrateGiornaliera));
-
             lblSpeseProiettateTotali.setText(String.format("Uscite: € %.2f", speseProiettate));
-            lblEntrateProiettateTotali.setText(String.format("Entrate: € %.2f", entrateProiettate));
+
+            // Entrate mese: totale reale, spostato sotto i giorni rimanenti
+            lblMediaEntrateGiornaliera.setText(""); // label invisibile, ma evito valori strani
+            lblEntrateProiettateTotali.setText(String.format("€ %.2f", totaleEntrate));
 
             String statusIcon;
             String statusTitolo;
@@ -564,7 +567,7 @@ public class ReportController {
                 messageColor = "#047857";
                 saldoColor = "#10b981";
             } else if (saldoStimato >= -100 && saldoStimato <= 200) {
-                statusIcon = "⚠️";
+                statusIcon = "⚠";
                 statusTitolo = "Attenzione";
                 statusMessaggio = "Previsione vicina al limite. Monitora le spese per evitare di chiudere in negativo.";
                 backgroundColor = "#fef3c7";
@@ -597,6 +600,7 @@ public class ReportController {
             lblSaldoStimato.setStyle("-fx-text-fill: " + saldoColor + ";");
         });
     }
+
 
     private Connection getConnection() throws SQLException {
         it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings settings =

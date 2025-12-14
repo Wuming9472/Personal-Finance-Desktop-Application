@@ -172,20 +172,21 @@
                                                 <!-- Dettagli Calcolo -->
                                                 <GridPane hgap="30.0" vgap="15.0">
                                                     <columnConstraints>
-                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
-                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
-                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="34.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
                                                     </columnConstraints>
                                                     <rowConstraints>
                                                         <RowConstraints />
                                                     </rowConstraints>
                                                     <children>
 
-                                                        <!-- Giorni Rimanenti -->
+                                                        <!-- Giorni Rimanenti + Entrate mese -->
                                                         <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="0">
                                                             <children>
                                                                 <Label style="-fx-font-size: 20px;" text="📅" />
-                                                                <VBox spacing="3.0">
+                                                                <VBox spacing="4.0">
                                                                     <children>
                                                                         <Label text="Giorni rimanenti" textFill="#64748b">
                                                                             <font>
@@ -202,8 +203,29 @@
                                                             </children>
                                                         </HBox>
 
-                                                        <!-- Media Movimenti Giornaliera -->
+                                                        <!-- Entrate Mese -->
                                                         <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1">
+                                                            <children>
+                                                                <Label style="-fx-font-size: 20px;" text="⬆" />
+                                                                <VBox spacing="3.0">
+                                                                    <children>
+                                                                        <Label text="Entrate mese" textFill="#64748b">
+                                                                            <font>
+                                                                                <Font size="13.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                        <Label fx:id="lblEntrateMese" text="€ 0.00" textFill="#10b981">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="18.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </HBox>
+
+                                                        <!-- Media Movimenti Giornaliera (solo uscite) -->
+                                                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="2">
                                                             <children>
                                                                 <Label style="-fx-font-size: 20px;" text="💰" />
                                                                 <VBox spacing="3.0">
@@ -218,7 +240,9 @@
                                                                                 <Font name="System Bold" size="14.0" />
                                                                             </font>
                                                                         </Label>
-                                                                        <Label fx:id="lblMediaEntrateGiornaliera" text="Entrate: € 50.00" textFill="#10b981">
+
+                                                                        <!-- Label media entrate nascosta ma mantenuta per il controller -->
+                                                                        <Label fx:id="lblMediaEntrateGiornaliera" managed="false" visible="false">
                                                                             <font>
                                                                                 <Font name="System Bold" size="14.0" />
                                                                             </font>
@@ -228,8 +252,8 @@
                                                             </children>
                                                         </HBox>
 
-                                                        <!-- Proiezioni Fine Mese -->
-                                                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="2">
+                                                        <!-- Proiezioni Fine Mese (solo uscite) -->
+                                                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="3">
                                                             <children>
                                                                 <Label style="-fx-font-size: 20px;" text="💸" />
                                                                 <VBox spacing="3.0">
@@ -240,11 +264,6 @@
                                                                             </font>
                                                                         </Label>
                                                                         <Label fx:id="lblSpeseProiettateTotali" text="Uscite: € 339.16" textFill="#ef4444">
-                                                                            <font>
-                                                                                <Font name="System Bold" size="14.0" />
-                                                                            </font>
-                                                                        </Label>
-                                                                        <Label fx:id="lblEntrateProiettateTotali" text="Entrate: € 1550.00" textFill="#10b981">
                                                                             <font>
                                                                                 <Font name="System Bold" size="14.0" />
                                                                             </font>
@@ -261,8 +280,8 @@
                                                 <HBox alignment="CENTER_LEFT" spacing="8.0" style="-fx-background-color: #f1f5f9; -fx-background-radius: 8; -fx-padding: 12;" translateY="15.0">
                                                     <children>
                                                         <Label style="-fx-font-size: 14px;" text="ⓘ" />
-                                                        <Label fx:id="lblDisclaimer" maxWidth="Infinity" minWidth="0" prefWidth="800" text="La previsione utilizza i movimenti del mese corrente dal giorno 1 fino a oggi. Sulla base della media giornaliera di entrate e uscite stima il saldo a fine mese e non considera movimenti futuri non ancora registrati." textFill="#475569" wrapText="true" HBox.hgrow="ALWAYS">
-                                                        <font>
+                                                        <Label fx:id="lblDisclaimer" maxWidth="Infinity" minWidth="0" prefWidth="800" text="La previsione utilizza i movimenti del mese corrente dal giorno 1 fino a oggi. Si basa sulla media giornaliera delle uscite per stimare le spese a fine mese e non considera movimenti futuri non ancora registrati." textFill="#475569" wrapText="true" HBox.hgrow="ALWAYS">
+                                                            <font>
                                                                 <Font size="12.0" />
                                                             </font>
                                                         </Label>
