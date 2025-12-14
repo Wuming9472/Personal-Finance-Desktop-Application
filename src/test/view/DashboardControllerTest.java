@@ -508,7 +508,7 @@ class DashboardControllerTest {
         assertEquals("€ 445,44", lblSaldo.getText());
     }
 
-   
+
 
     /**
      * Test: Verifica che senza utente loggato le label mostrino "-"

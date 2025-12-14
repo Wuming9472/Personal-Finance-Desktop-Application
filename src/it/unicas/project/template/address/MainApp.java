@@ -1,6 +1,7 @@
 package it.unicas.project.template.address;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import it.unicas.project.template.address.model.dao.mysql.DAOMySQLSettings;
 import it.unicas.project.template.address.view.*;
@@ -8,6 +9,7 @@ import it.unicas.project.template.address.model.User;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
@@ -77,6 +79,9 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("BalanceSuite");
+        this.primaryStage.getIcons().add(
+                new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icon.png")))
+        );
 
         // All'avvio mostriamo solo il Login, senza caricare ancora il RootLayout.
         showLogin();

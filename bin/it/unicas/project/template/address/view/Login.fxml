@@ -7,22 +7,14 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
-<?import javafx.scene.shape.SVGPath?>
 
-<AnchorPane prefWidth="900.0" style="-fx-background-color: white;"
-            xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="it.unicas.project.template.address.view.LoginController">
+<AnchorPane prefWidth="900.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicas.project.template.address.view.LoginController">
     <children>
-        <HBox AnchorPane.bottomAnchor="0.0"
-              AnchorPane.leftAnchor="0.0"
-              AnchorPane.rightAnchor="0.0"
-              AnchorPane.topAnchor="0.0">
+        <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
 
                 <!-- LATO SINISTRO: BRANDING -->
-                <VBox alignment="CENTER" prefWidth="400.0" spacing="20.0"
-                      style="-fx-background-color: #0f172a;" HBox.hgrow="NEVER">
+                <VBox alignment="CENTER" prefWidth="400.0" spacing="20.0" style="-fx-background-color: #0f172a;" HBox.hgrow="NEVER">
                     <children>
                         <StackPane>
                             <children>
@@ -34,9 +26,9 @@
 
                                 <HBox alignment="BOTTOM_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="6.0">
                                     <children>
-                                        <Rectangle arcHeight="6.0" arcWidth="6.0" fill="#60a5fa" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="12.0" />
-                                        <Rectangle arcHeight="6.0" arcWidth="6.0" fill="#3b82f6" height="48.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="12.0" />
-                                        <Rectangle arcHeight="6.0" arcWidth="6.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="12.0" />
+                                        <Rectangle arcHeight="6.0" arcWidth="6.0" fill="#60a5fa" height="28.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" translateY="5.0" width="12.0" />
+                                        <Rectangle arcHeight="6.0" arcWidth="6.0" fill="#3b82f6" height="48.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" translateY="5.0" width="12.0" />
+                                        <Rectangle arcHeight="6.0" arcWidth="6.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" translateY="5.0" width="12.0" />
                                     </children>
                                     <padding>
                                         <Insets bottom="20.0" />
@@ -76,14 +68,9 @@
                 </VBox>
 
                 <!-- LATO DESTRO: LOGIN + RECUPERO PASSWORD (SCORREVOLE) -->
-                <ScrollPane fitToHeight="true" fitToWidth="true"
-                            hbarPolicy="NEVER"
-                            vbarPolicy="AS_NEEDED"
-                            HBox.hgrow="ALWAYS"
-                            style="-fx-background-color: transparent;">
+                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;" vbarPolicy="AS_NEEDED" HBox.hgrow="ALWAYS">
                     <content>
-                        <VBox alignment="CENTER" prefWidth="500.0" spacing="20.0"
-                              style="-fx-background-color: white;">
+                        <VBox alignment="CENTER" prefWidth="500.0" spacing="20.0" style="-fx-background-color: white;">
                             <padding>
                                 <Insets bottom="30.0" left="50.0" right="50.0" top="30.0" />
                             </padding>
@@ -116,19 +103,14 @@
                                                 <Font name="System Bold" size="12.0" />
                                             </font>
                                         </Label>
-                                        <HBox alignment="CENTER_LEFT"
-                                              style="-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6;">
+                                        <HBox alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6;">
                                             <children>
                                                 <StackPane prefHeight="40.0" prefWidth="40.0">
                                                     <children>
-                                                        <SVGPath content="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                                                                 fill="#94a3b8" scaleX="0.7" scaleY="0.7" />
+                                                        <SVGPath content="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#94a3b8" scaleX="0.7" scaleY="0.7" />
                                                     </children>
                                                 </StackPane>
-                                                <TextField fx:id="usernameField"
-                                                           promptText="es. mario.rossi"
-                                                           style="-fx-background-color: transparent;"
-                                                           HBox.hgrow="ALWAYS">
+                                                <TextField fx:id="usernameField" promptText="es. mario.rossi" style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS">
                                                     <font>
                                                         <Font size="14.0" />
                                                     </font>
@@ -152,19 +134,14 @@
                                             </children>
                                         </HBox>
 
-                                        <HBox alignment="CENTER_LEFT"
-                                              style="-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6;">
+                                        <HBox alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6;">
                                             <children>
                                                 <StackPane prefHeight="40.0" prefWidth="40.0">
                                                     <children>
-                                                        <SVGPath content="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-9-2c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"
-                                                                 fill="#94a3b8" scaleX="0.7" scaleY="0.7" />
+                                                        <SVGPath content="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-9-2c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" fill="#94a3b8" scaleX="0.7" scaleY="0.7" />
                                                     </children>
                                                 </StackPane>
-                                                <PasswordField fx:id="passwordField"
-                                                               promptText="••••••••"
-                                                               style="-fx-background-color: transparent;"
-                                                               HBox.hgrow="ALWAYS">
+                                                <PasswordField fx:id="passwordField" promptText="••••••••" style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS">
                                                     <font>
                                                         <Font size="14.0" />
                                                     </font>
@@ -175,19 +152,16 @@
                                         <!-- LINK PASSWORD DIMENTICATA -->
                                         <HBox alignment="CENTER_RIGHT">
                                             <children>
-                                                <Hyperlink text="Password dimenticata?"
-                                                           onAction="#handleForgotPassword"
-                                                           textFill="#3b82f6" />
+                                                <Hyperlink onAction="#handleForgotPassword" text="Password dimenticata?" textFill="#3b82f6" />
                                             </children>
                                         </HBox>
                                     </children>
                                 </VBox>
 
                                 <!-- BOX RESET PASSWORD (inizialmente nascosto) -->
-                                <VBox fx:id="resetBox" spacing="8.0" visible="false" managed="false">
+                                <VBox fx:id="resetBox" managed="false" spacing="8.0" visible="false">
                                     <children>
-                                        <Label text="Rispondi alle domande di sicurezza"
-                                               textFill="#334155">
+                                        <Label text="Rispondi alle domande di sicurezza" textFill="#334155">
                                             <font>
                                                 <Font name="System Bold" size="13.0" />
                                             </font>
@@ -197,9 +171,7 @@
                                         <VBox spacing="3.0">
                                             <children>
                                                 <Label fx:id="question1Label" text="Domanda 1" textFill="#64748b" />
-                                                <PasswordField fx:id="answer1Field"
-                                                               promptText="Risposta"
-                                                               style="-fx-background-color: transparent;" />
+                                                <PasswordField fx:id="answer1Field" promptText="Risposta" style="-fx-background-color: transparent;" />
                                             </children>
                                         </VBox>
 
@@ -207,9 +179,7 @@
                                         <VBox spacing="3.0">
                                             <children>
                                                 <Label fx:id="question2Label" text="Domanda 2" textFill="#64748b" />
-                                                <PasswordField fx:id="answer2Field"
-                                                               promptText="Risposta"
-                                                               style="-fx-background-color: transparent;" />
+                                                <PasswordField fx:id="answer2Field" promptText="Risposta" style="-fx-background-color: transparent;" />
                                             </children>
                                         </VBox>
 
@@ -217,9 +187,7 @@
                                         <VBox spacing="3.0">
                                             <children>
                                                 <Label fx:id="question3Label" text="Domanda 3" textFill="#64748b" />
-                                                <PasswordField fx:id="answer3Field"
-                                                               promptText="Risposta"
-                                                               style="-fx-background-color: transparent;" />
+                                                <PasswordField fx:id="answer3Field" promptText="Risposta" style="-fx-background-color: transparent;" />
                                             </children>
                                         </VBox>
 
@@ -231,9 +199,7 @@
                                                         <Font name="System Bold" size="12.0" />
                                                     </font>
                                                 </Label>
-                                                <PasswordField fx:id="newPasswordField"
-                                                               promptText="Nuova password"
-                                                               style="-fx-background-color: transparent;" />
+                                                <PasswordField fx:id="newPasswordField" promptText="Nuova password" style="-fx-background-color: transparent;" />
                                             </children>
                                         </VBox>
 
@@ -244,28 +210,16 @@
                                                         <Font name="System Bold" size="12.0" />
                                                     </font>
                                                 </Label>
-                                                <PasswordField fx:id="confirmNewPasswordField"
-                                                               promptText="Ripeti nuova password"
-                                                               style="-fx-background-color: transparent;" />
+                                                <PasswordField fx:id="confirmNewPasswordField" promptText="Ripeti nuova password" style="-fx-background-color: transparent;" />
                                             </children>
                                         </VBox>
 
-                                        <Button text="Reimposta password"
-                                                onAction="#handleResetPassword"
-                                                prefHeight="40.0"
-                                                maxWidth="Infinity"
-                                                style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 6;" />
+                                        <Button maxWidth="Infinity" onAction="#handleResetPassword" prefHeight="40.0" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 6;" text="Reimposta password" />
                                     </children>
                                 </VBox>
 
                                 <!-- BOTTONE LOGIN -->
-                                <Button defaultButton="true"
-                                        maxWidth="1.7976931348623157E308"
-                                        mnemonicParsing="false"
-                                        onAction="#handleLogin"
-                                        prefHeight="45.0"
-                                        style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand;"
-                                        text="ACCEDI">
+                                <Button defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogin" prefHeight="45.0" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand;" text="ACCEDI">
                                     <font>
                                         <Font name="System Bold" size="14.0" />
                                     </font>
@@ -279,9 +233,7 @@
                                 </Button>
 
                                 <!-- LINK REGISTRAZIONE -->
-                                <Hyperlink onAction="#handleRegister"
-                                           text="Non hai un account? Registrati."
-                                           textFill="#3b82f6" />
+                                <Hyperlink onAction="#handleRegister" text="Non hai un account? Registrati." textFill="#3b82f6" />
 
                                 <!-- ERROR LABEL -->
                                 <Label fx:id="errorLabel" text="" textFill="#ef4444" visible="false" />
