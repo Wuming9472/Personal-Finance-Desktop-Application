@@ -20,6 +20,7 @@ Un'applicazione desktop moderna e intuitiva per la gestione delle finanze person
 - [Esecuzione](#-esecuzione)
 - [Struttura del Database](#-struttura-del-database)
 - [Funzionalità Dettagliate](#-funzionalità-dettagliate)
+- [Roadmap Future](#-roadmap-future)
 - [Documentazione API](#-documentazione-api)
 - [Licenza](#-licenza)
 
