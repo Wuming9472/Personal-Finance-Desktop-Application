@@ -1,82 +1,82 @@
-# 💰 BalanceSuite - Personal Finance Desktop Application
+# BalanceSuite - Personal Finance Desktop Application
 
 [![Java](https://img.shields.io/badge/Java-14+-orange.svg)](https://www.oracle.com/java/)
 [![JavaFX](https://img.shields.io/badge/JavaFX-UI-blue.svg)](https://openjfx.io/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)](https://www.mysql.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![JavaDoc](https://img.shields.io/badge/JavaDoc-API-blue.svg)](https://wuming9472.github.io/Personal-Finance-Desktop-Application/)
 
-Un'applicazione desktop moderna e intuitiva per la gestione delle finanze personali, sviluppata in Java con JavaFX. **BalanceSuite** ti aiuta a tenere traccia delle tue entrate e uscite, pianificare budget mensili per categoria e visualizzare report dettagliati con grafici interattivi.
+BalanceSuite è un’applicazione desktop per la gestione delle finanze personali sviluppata in Java con JavaFX. Consente di registrare entrate e uscite, pianificare budget mensili per categoria e consultare report dettagliati tramite grafici interattivi.
 
-## 📋 Indice
+## Indice
 
-- [Caratteristiche](#-caratteristiche)
-- [Screenshot](#-screenshot)
-- [Tecnologie Utilizzate](#-tecnologie-utilizzate)
-- [Architettura del Progetto](#-architettura-del-progetto)
-- [Prerequisiti](#-prerequisiti)
-- [Installazione](#-installazione)
-- [Configurazione Database](#-configurazione-database)
-- [Esecuzione](#-esecuzione)
-- [Struttura del Database](#-struttura-del-database)
-- [Funzionalità Dettagliate](#-funzionalità-dettagliate)
-- [Contribuire](#-contribuire)
-- [Licenza](#-licenza)
+- [Caratteristiche](#caratteristiche)
+- [Screenshot](#screenshot)
+- [Tecnologie utilizzate](#tecnologie-utilizzate)
+- [Architettura del progetto](#architettura-del-progetto)
+- [Prerequisiti](#prerequisiti)
+- [Installazione](#installazione)
+- [Configurazione database](#configurazione-database)
+- [Esecuzione](#esecuzione)
+- [Struttura del database](#struttura-del-database)
+- [Funzionalità dettagliate](#funzionalità-dettagliate)
+- [Roadmap](#roadmap)
+- [Documentazione API](#documentazione-api)
+- [Licenza](#licenza)
+- [Autori](#autori)
 
-## ✨ Caratteristiche
+## Caratteristiche
 
-### 🏠 Dashboard Interattiva
-- **Vista mensile completa** con navigazione tra mesi
-- **Riepilogo finanziario**: saldo corrente, entrate totali, uscite totali
-- **Previsione intelligente** del saldo a fine mese basata sui trend di spesa
-- **Grafico a barre animato** per visualizzare entrate/uscite per periodi (3 giorni)
-- **Lista movimenti recenti** con icone colorate e categorie
-- **Stato budget in tempo reale** con barre di progresso e alert visivi
+### Dashboard interattiva
+- Vista mensile con navigazione tra periodi
+- Riepilogo: saldo corrente, entrate totali, uscite totali
+- Stima del saldo a fine mese basata sui trend di spesa
+- Grafico a barre per entrate/uscite su finestre temporali (periodi da 3 giorni)
+- Elenco movimenti recenti con categorizzazione
+- Monitoraggio budget in tempo reale con barre di avanzamento e avvisi visivi
 
-### 💸 Gestione Movimenti
-- **Registrazione completa** di entrate e uscite
-- **Categorizzazione** dei movimenti (Alimentari, Trasporti, Stipendio, etc.)
-- Tracciamento di **data, importo, titolo e metodo di pagamento**
-- **Modifica ed eliminazione** facile dei movimenti esistenti
-- **Tabella filtrabile** per ricercare transazioni specifiche
-- **Validazione input** per garantire dati corretti
+### Gestione movimenti
+- Registrazione completa di entrate e uscite
+- Categorizzazione dei movimenti (es. Alimentari, Trasporti, Stipendio)
+- Tracciamento di data, importo, titolo e metodo di pagamento
+- Modifica ed eliminazione dei movimenti esistenti
+- Tabella filtrabile per ricerca transazioni
+- Validazione degli input
 
-### 📊 Budget Planning
-- **Impostazione budget mensili** per categoria
-- **Monitoraggio in tempo reale** della spesa per ogni categoria
-- **Calcolo automatico** di: importo speso, rimanente e percentuale utilizzata
-- **Alert visivi** per budget in via di esaurimento o superati
-- **Sistema di notifiche** configurabile per avvisi di superamento budget
-- **Disattivazione notifiche** per singola categoria
+### Budget planning
+- Definizione budget mensili per categoria
+- Monitoraggio in tempo reale della spesa per categoria
+- Calcolo automatico di speso, residuo e percentuale di utilizzo
+- Avvisi visivi per budget prossimi al limite o superati
+- Notifiche configurabili per superamento budget
+- Disattivazione notifiche per singola categoria
 
-### 📈 Report e Analytics
-- **Grafico a torta interattivo** per distribuzione spese per categoria
-- **Grafico a linea temporale** (area chart) per trend mensili
-- **Selezione periodo personalizzato** (ultimi 6 mesi, 1 anno, tutto)
-- **Previsione avanzata** con calcolo di:
-  - Saldo stimato a fine mese
-  - Media spese/entrate giornaliere
-  - Proiezione totali
-  - Giorni rimanenti
-- **Categoria critica** (quella con più spese)
-- **Tooltip dettagliati** su tutti i grafici
-- **Animazioni fluide** per una UX moderna
+### Report e analytics
+- Grafico a torta per distribuzione spese per categoria
+- Grafico temporale (area chart) per trend mensili
+- Selezione periodo (ultimi 6 mesi, ultimo anno, completo)
+- Modulo di previsione con calcolo di:
+  - saldo stimato a fine mese
+  - medie giornaliere di entrate/uscite
+  - proiezione dei totali
+  - giorni rimanenti
+- Identificazione della categoria con maggiore spesa nel periodo
+- Tooltip su grafici e animazioni per una migliore esperienza utente
 
-### 👤 Gestione Account
-- **Sistema di autenticazione** sicuro
-- **Registrazione nuovi utenti** con validazione
-- **Dashboard personalizzata** per utente
-- **Impostazioni database** configurabili dall'app
-- **Multi-utente**: ogni utente ha i propri dati isolati
+### Gestione account
+- Autenticazione utente
+- Registrazione nuovi utenti con validazione
+- Dati isolati per utente (multi-utenza)
+- Parametri database configurabili dall’applicazione
 
-### 🎨 UI/UX Moderna
-- **Design pulito e moderno** con colori consistenti
-- **Tema personalizzabile** (8 temi disponibili: Cupertino Light/Dark, Nord Light/Dark, Primer Light/Dark, Dracula)
-- **Animazioni fluide** su grafici e transizioni
-- **Menu collapsibile** per ottimizzare lo spazio
-- **Responsive** e adattivo alle dimensioni della finestra
-- **Icone e indicatori visivi** per feedback immediato
+### UI/UX
+- Interfaccia moderna e coerente
+- Tema selezionabile (8 temi: Cupertino Light/Dark, Nord Light/Dark, Primer Light/Dark, Dracula)
+- Animazioni su grafici e transizioni
+- Menu collassabile
+- Layout adattivo alle dimensioni della finestra
 
-## 📸 Screenshot
+## Screenshot
 
 <img width="1920" height="1000" alt="Screenshot (1)" src="https://github.com/user-attachments/assets/a85edb41-05d0-4f64-ac71-f85fb530ed01" />
 <img width="1920" height="1004" alt="Screenshot (3)" src="https://github.com/user-attachments/assets/e62f108e-9624-4a94-ae5b-4a8f7b0293a0" />
@@ -84,39 +84,38 @@ Un'applicazione desktop moderna e intuitiva per la gestione delle finanze person
 <img width="1920" height="1003" alt="Screenshot (6)" src="https://github.com/user-attachments/assets/6d853eb1-2d47-43b3-8eba-056e4cc0cca2" />
 <img width="1920" height="453" alt="Screenshot (7)" src="https://github.com/user-attachments/assets/a40a8b57-22ce-4a90-8c75-136d4f811f50" />
 
-
-
-
-
-## 🛠 Tecnologie Utilizzate
+## Tecnologie utilizzate
 
 ### Backend
 - **Java 14+** - Linguaggio di programmazione principale
-- **JavaFX** - Framework UI per interfaccia grafica moderna
+- **JavaFX** - Framework UI per interfaccia grafica
 - **MySQL 8.0+** - Database relazionale per persistenza dati
 - **JDBC** - Connettività database
 - **MySQL Connector/J 8.0.27** - Driver JDBC per MySQL
 
-### Pattern e Architetture
-- **MVC (Model-View-Controller)** - Separazione logica business/presentazione
-- **DAO (Data Access Object)** - Astrazione accesso ai dati
-- **Factory Pattern** - Gestione istanze DAO
-- **Observer Pattern** - Gestione eventi UI con JavaFX Properties
+### Pattern e architetture
+- **MVC (Model-View-Controller)** - Separazione tra logica di business e presentazione
+- **DAO (Data Access Object)** - Astrazione dell’accesso ai dati
+- **Factory Pattern** - Gestione delle istanze DAO
+- **Observer Pattern** - Gestione degli eventi UI con JavaFX Properties
 - **Singleton** - Configurazione database centralizzata
 
 ### Testing
 - **JUnit 5** - Framework di testing
 - **Custom Test Runner** - Runner minimale per esecuzione test
 
-### Build & Development
+### Build e sviluppo
 - **Ant** - Build automation
 - **IntelliJ IDEA / Eclipse** - IDE supportati
 - **MySQL Workbench** - Design e gestione database
 
+## Architettura del progetto
 
-## 📦 Prerequisiti
+Il progetto adotta un’architettura MVC con accesso ai dati tramite DAO. La configurazione di connessione al database è centralizzata e riutilizzata attraverso un approccio singleton. Le viste JavaFX e i controller gestiscono la presentazione e l’interazione con l’utente, mantenendo separata la logica applicativa.
 
-Prima di iniziare, assicurati di avere installato:
+## Prerequisiti
+
+Assicurati di avere installato:
 
 - **Java JDK 14 o superiore**
   ```bash
@@ -124,7 +123,7 @@ Prima di iniziare, assicurati di avere installato:
   ```
 
 - **JavaFX SDK** (se non incluso nel JDK)
-  - Download: [https://openjfx.io/](https://openjfx.io/)
+  - Download: https://openjfx.io/
 
 - **MySQL 8.0 o superiore**
   ```bash
@@ -135,65 +134,60 @@ Prima di iniziare, assicurati di avere installato:
   - IntelliJ IDEA, Eclipse o NetBeans
   - Con supporto JavaFX
 
-## 🚀 Installazione
+## Installazione
 
-### 1. Clona il Repository
-
+### 1) Clona il repository
 ```bash
 git clone https://github.com/Wuming9472/Personal-Finance-Desktop-Application.git
 cd Personal-Finance-Desktop-Application
 ```
 
-### 2. Configura le Dipendenze
-
+### 2) Configura le dipendenze
 Assicurati che la libreria MySQL Connector sia presente in `lib/`:
-
 ```bash
 ls lib/
 # Dovresti vedere: mysql-connector-java-8.0.27.jar
 ```
 
-### 3. Importa il Progetto nell'IDE
+### 3) Importa il progetto nell’IDE
 
-#### IntelliJ IDEA:
-1. File → Open → Seleziona la directory del progetto
-2. Imposta SDK Java 14+
+#### IntelliJ IDEA
+1. **File → Open** → seleziona la directory del progetto  
+2. Imposta **SDK Java 14+**  
 3. Aggiungi JavaFX al classpath:
-   - File → Project Structure → Libraries → + → Java
+   - **File → Project Structure → Libraries → + → Java**
    - Seleziona la directory `lib` di JavaFX SDK
-4. Configura Run Configuration:
-   - Main class: `it.unicas.project.template.address.MainApp`
-   - VM Options:
+4. Configura la Run Configuration:
+   - **Main class**: `it.unicas.project.template.address.MainApp`
+   - **VM Options**:
      ```
      --module-path /path/to/javafx-sdk/lib --add-modules javafx.controls,javafx.fxml
      ```
 
-#### Eclipse:
-1. File → Import → Existing Projects into Workspace
+#### Eclipse
+1. **File → Import → Existing Projects into Workspace**
 2. Seleziona la directory del progetto
 3. Aggiungi JavaFX e MySQL Connector al Build Path
-4. Run As → Java Application → MainApp
+4. **Run As → Java Application → MainApp**
 
-## 🗄 Configurazione Database
+## Configurazione database
 
-### 1. Crea il Database
-
+### 1) Crea il database
 ```bash
 mysql -u root -p
 ```
 
+Esegui lo script:
 ```sql
 source /path/to/Personal-Finance-Desktop-Application/PersonalFinanceDB.sql
 ```
 
 Oppure importa manualmente:
-
 ```bash
 mysql -u root -p < PersonalFinanceDB.sql
 ```
 
-### 2. Verifica Creazione
-
+### 2) Verifica la creazione
 ```sql
 USE personal_finance_db;
 SHOW TABLES;
@@ -206,25 +200,23 @@ Dovresti vedere:
 - `budgets`
 - `security_questions`
 
-### 3. Configura Credenziali
-
-Al primo avvio, l'applicazione mostrerà un dialog per configurare:
-- **Host**: `localhost` (default)
-- **Schema**: `personal_finance_db`
-- **Username**: il tuo username MySQL
-- **Password**: la tua password MySQL
+### 3) Configura le credenziali
+Al primo avvio, l’applicazione mostra un dialog per configurare:
+- Host (default `localhost`)
+- Schema `personal_finance_db`
+- Username MySQL
+- Password MySQL
 
 Le credenziali vengono salvate in `DAOMySQLSettings` per gli avvii successivi.
 
-## ▶️ Esecuzione
+## Esecuzione
 
 ### Da IDE
 1. Esegui la classe `MainApp.java`
-2. Apparirà la schermata di Login
+2. Si apre la schermata di login
 3. Registra un nuovo account o accedi con credenziali esistenti
 
-### Da Command Line
-
+### Da riga di comando
 ```bash
 # Compila (se non già compilato)
 javac -d bin -cp "lib/*:src" src/it/unicas/project/template/address/**/*.java
@@ -236,267 +228,225 @@ java -cp "bin:lib/*" --module-path /path/to/javafx-sdk/lib \
 ```
 
 ### Con Ant
-
 ```bash
 ant -f build/build.xml
 ```
 
-## 🗃 Struttura del Database
+## Struttura del database
 
 ### Schema: `personal_finance_db`
 
 #### Tabella `users`
 Memorizza gli utenti registrati.
 
-| Campo      | Tipo         | Descrizione            |
-|------------|--------------|------------------------|
-| user_id    | INT (PK, AI) | ID univoco utente      |
-| username   | VARCHAR(16)  | Nome utente (unique)   |
-| password   | VARCHAR(32)  | Password in chiaro*    |
+| Campo    | Tipo         | Descrizione          |
+|----------|--------------|----------------------|
+| user_id  | INT (PK, AI) | ID univoco utente    |
+| username | VARCHAR(16)  | Nome utente (unique) |
+| password | VARCHAR(32)  | Password in chiaro*  |
 
-> **Nota Sicurezza**: La password è attualmente in chiaro. Per produzione, implementare hashing (BCrypt, SHA-256).
+Nota sicurezza: la password è attualmente memorizzata in chiaro. Per ambienti di produzione è necessario implementare hashing (es. BCrypt o SHA-256 con salt).
 
 #### Tabella `categories`
 Categorie predefinite per classificare i movimenti.
 
-| Campo       | Tipo         | Descrizione                   |
-|-------------|--------------|-------------------------------|
-| category_id | INT (PK, AI) | ID univoco categoria          |
+| Campo       | Tipo         | Descrizione                      |
+|------------|--------------|----------------------------------|
+| category_id | INT (PK, AI) | ID univoco categoria             |
 | name        | VARCHAR(100) | Nome (es. Alimentari, Stipendio) |
 
 #### Tabella `movements`
 Transazioni finanziarie degli utenti.
 
-| Campo          | Tipo           | Descrizione                      |
-|----------------|----------------|----------------------------------|
-| movement_id    | INT (PK, AI)   | ID univoco movimento             |
-| user_id        | INT (FK)       | Riferimento a users              |
-| category_id    | INT (FK)       | Riferimento a categories         |
-| type           | VARCHAR(20)    | "Entrata" o "Uscita"             |
-| date           | DATETIME       | Data transazione                 |
-| amount         | DECIMAL(10,2)  | Importo                          |
-| title          | VARCHAR(255)   | Descrizione/nota                 |
-| payment_method | VARCHAR(50)    | Metodo pagamento (es. Carta)     |
+| Campo          | Tipo          | Descrizione                |
+|----------------|---------------|----------------------------|
+| movement_id    | INT (PK, AI)  | ID univoco movimento       |
+| user_id        | INT (FK)      | Riferimento a `users`      |
+| category_id    | INT (FK)      | Riferimento a `categories` |
+| type           | VARCHAR(20)   | `Entrata` o `Uscita`       |
+| date           | DATETIME      | Data transazione           |
+| amount         | DECIMAL(10,2) | Importo                    |
+| title          | VARCHAR(255)  | Descrizione/nota           |
+| payment_method | VARCHAR(50)   | Metodo pagamento           |
 
 #### Tabella `budgets`
 Budget mensili per categoria.
 
-| Campo       | Tipo          | Descrizione                     |
-|-------------|---------------|---------------------------------|
-| budget_id   | INT (PK, AI)  | ID univoco budget               |
-| user_id     | INT (FK)      | Riferimento a users             |
-| category_id | INT (FK)      | Riferimento a categories        |
-| month       | INT           | Mese (1-12)                     |
-| year        | INT           | Anno (aggiunto da applicazione*)|
-| amount      | DECIMAL(10,2) | Limite budget                   |
+| Campo       | Tipo          | Descrizione                      |
+|-------------|---------------|----------------------------------|
+| budget_id   | INT (PK, AI)  | ID univoco budget                |
+| user_id     | INT (FK)      | Riferimento a `users`            |
+| category_id | INT (FK)      | Riferimento a `categories`       |
+| month       | INT           | Mese (1-12)                      |
+| year        | INT           | Anno (aggiunto da applicazione*) |
+| amount      | DECIMAL(10,2) | Limite budget                    |
 
-> **Nota**: Il campo `year` è stato aggiunto nell'implementazione Java per supportare budget multi-anno.
+Nota: il campo `year` è gestito dall’implementazione Java per supportare budget multi-anno.
 
 #### Tabella `security_questions`
-Domande di sicurezza in caso di password dimenticata.
+Domande di sicurezza per recupero password.
 
-| Campo       | Tipo          | Descrizione                     |
-|-------------|---------------|---------------------------------|
-| question_id | INT (PK, AI)  | ID univoco budget               |
-| user_id     | INT (FK)      | Riferimento a users             |
-| question    | VARCHAR(32)   | Domanda di sicurezza            |
-| answer      | VARCHAR       | Risposta associata              |
-
+| Campo       | Tipo         | Descrizione          |
+|-------------|--------------|----------------------|
+| question_id | INT (PK, AI) | ID univoco domanda   |
+| user_id     | INT (FK)     | Riferimento a `users`|
+| question    | VARCHAR(32)  | Domanda di sicurezza |
+| answer      | VARCHAR      | Risposta associata   |
 
 ### Relazioni
-
-```
+```text
 users (1) ──< (N) movements
 users (1) ──< (N) budgets
 users (1) ──< (N) security_questions
 categories (1) ──< (N) movements
 categories (1) ──< (N) budgets
-
 ```
 
-## 🎯 Funzionalità Dettagliate
+## Funzionalità dettagliate
 
 ### Dashboard
 
-**Navigazione Temporale**
-- Bottoni "Mese Precedente" / "Mese Successivo"
+**Navigazione temporale**
+- Pulsanti “Mese precedente” / “Mese successivo”
 - Visualizzazione dinamica del periodo selezionato
 
-**Card Riepilogo**
-- **Saldo**: Entrate - Uscite (verde se positivo, rosso se negativo)
-- **Entrate Totali**: Somma di tutte le entrate del mese
-- **Uscite Totali**: Somma di tutte le uscite del mese
-- **Previsione Saldo**: Proiezione intelligente del saldo a fine mese
-  - Visibile solo per il mese corrente
-  - Basata su media spese/entrate giornaliere
-  - Calcolo: `(EntrateMedie * GiorniRimanenti) - (SpeseMedie * GiorniRimanenti) + SaldoAttuale`
+**Riepilogo**
+- Saldo: entrate - uscite (positivo/negativo con indicatori visivi)
+- Entrate totali del mese
+- Uscite totali del mese
+- Previsione saldo: proiezione del saldo a fine mese (solo mese corrente) basata su medie giornaliere
 
-**Grafico Andamento (BarChart)**
-- Entrate (verde) vs Uscite (rosse) per periodo di 3 giorni
-- 10 periodi totali per coprire il mese
-- Animazione di crescita delle barre dal basso
-- Tooltip custom su hover con:
-  - Entrate del periodo
-  - Uscite del periodo
-  - Saldo del periodo
-- Effetto zoom leggero sulle barre al passaggio del mouse
-- Area hover trasparente per migliore UX
+**Grafico andamento (BarChart)**
+- Confronto entrate vs uscite su finestre temporali di 3 giorni
+- 10 periodi per copertura del mese
+- Tooltip con entrate, uscite e saldo del periodo
+- Animazioni e interazioni (hover) per migliorare la leggibilità
 
-**Ultimi Movimenti**
-- Lista scrollabile dei movimenti dell'ultimo mese
-- Icone colorate (verde per entrate, rosso per uscite)
-- Data, titolo (o categoria se titolo vuoto), importo
+**Movimenti recenti**
+- Lista scorrevole dei movimenti dell’ultimo mese
+- Data, titolo (o categoria se titolo assente), importo
 
-**Stato Budget**
-- Grid 2x2 con card per ogni budget attivo
-- Barra di progresso colorata (verde < 80%, gialla 80-100%, rossa > 100%)
-- Badge "!" per budget in esaurimento o superati
-- Visualizzazione speso, rimanente e percentuale
+**Stato budget**
+- Card per ciascun budget attivo con progressione spesa
+- Indicatori: stabile, in esaurimento, superato
 
-### Gestione Movimenti
+### Gestione movimenti
 
-**Creazione Movimento**
-1. Click su "Nuovo Movimento"
-2. Dialog con form:
-   - **Tipo**: ComboBox (Entrata/Uscita)
-   - **Categoria**: ComboBox con categorie da DB
-   - **Data**: DatePicker
-   - **Importo**: TextField numerico
-   - **Titolo**: TextField (opzionale)
-   - **Metodo Pagamento**: TextField (opzionale)
-3. Validazione:
-   - Importo > 0
-   - Data valida
-   - Categoria selezionata
-4. Salvataggio su DB e refresh tabella
+**Creazione movimento**
+1. Seleziona “Nuovo movimento”
+2. Compila il form:
+   - Tipo (Entrata/Uscita)
+   - Categoria
+   - Data
+   - Importo
+   - Titolo (opzionale)
+   - Metodo pagamento (opzionale)
+3. Validazione (importo > 0, data valida, categoria selezionata)
+4. Salvataggio su database e aggiornamento tabella
 
-**Modifica Movimento**
-1. Seleziona movimento dalla tabella
-2. Click su "Modifica"
-3. Dialog precompilato con dati esistenti
-4. Conferma modifica → Update su DB
+**Modifica movimento**
+- Selezione dalla tabella, apertura dialog precompilato, aggiornamento su DB
 
-**Eliminazione Movimento**
-1. Seleziona movimento
-2. Click su "Elimina"
-3. Conferma → Delete da DB
+**Eliminazione movimento**
+- Selezione dalla tabella, conferma, rimozione su DB
 
-**Notifiche Budget**
-- Al salvataggio di un movimento di tipo "Uscita":
-  - Controllo automatico se il budget della categoria è superato
-  - Popup di notifica con:
-    - Budget limite
-    - Spesa attuale
-    - Superamento
-    - Opzione "Non mostrare più per questa categoria"
+**Notifiche budget**
+- Su salvataggio di un’uscita: controllo budget per categoria
+- Notifica con limite, spesa attuale e superamento
+- Opzione per disattivare notifiche per la categoria
 - Preferenze salvate in `budget_notifications.json`
 
-### Budget Planning
+### Budget planning
+- Modifica importo limite per categoria e mese
+- Avvisi visivi basati su soglie di utilizzo (es. <80%, 80–100%, >100%)
 
-**Modifica Budget**
-1. Seleziona budget dalla tabella
-2. Click su "Modifica"
-3. Aggiorna importo limite
-4. Update su DB
+### Report e analytics
 
-**Alert Visivi**
-- Budget < 80%: Barra verde
-- Budget 80-100%: Barra gialla
-- Budget > 100%: Barra rossa + icona warning
-
-### Report & Analytics
-
-**Grafico a Torta (PieChart)**
+**PieChart**
 - Distribuzione percentuale spese per categoria
-- Colori distinti per categoria
 - Tooltip con importo e percentuale
-- Animazione di apparizione slices
-- Effetto hover con zoom e evidenziazione
-- Legend con nomi categorie
+- Animazioni e interazioni
 
-**Grafico Temporale (SmoothAreaChart)**
-- Due serie: Entrate (verde) e Uscite (rosse)
-- Asse X: Mesi
-- Asse Y: Importo (€)
-- Area riempita con gradiente
-- Tooltip con valori esatti
-- Animazione di disegno linea da sinistra a destra
+**Grafico temporale (SmoothAreaChart)**
+- Serie entrate e uscite nel tempo
+- Tooltip e animazioni
 
-**Selezione Periodo**
-- ComboBox con opzioni:
-  - Ultimi 6 mesi
-  - Ultimo anno
-- Refresh automatico dei grafici alla selezione
+**Selezione periodo**
+- Ultimi 6 mesi
+- Ultimo anno
+- Intero storico (se previsto)
 
-**Pannello Previsione (Forecast)**  
-Visibile solo se ci sono abbastanza dati (almeno 7 **giorni diversi** con movimenti nel **mese corrente**)
+**Pannello previsione (Forecast)**
+Visibile solo se sono presenti dati sufficienti (almeno 7 giorni distinti con movimenti nel mese corrente).
 
-- **Periodo di Calcolo**: dal giorno **1** del mese corrente **fino a oggi**  
-- **Saldo Stimato**: saldo previsto a fine mese  
-  `SaldoStimato = EntrateTotali − SpeseProiettateTotali`
-- **Giorni Trascorsi**: numero di giorni di calendario dall’inizio del mese a oggi  
-  `GiorniTrascorsi = giorno_corrente_del_mese`
-- **Giorni Rimanenti**: giorni di calendario dalla data odierna fino alla fine del mese  
-  `GiorniRimanenti = GiorniNelMese − GiorniTrascorsi`
-- **Media Spese Giornaliera**: spesa media giornaliera del mese corrente  
-  `MediaSpeseGiornaliera = TotaleUscite / GiorniTrascorsi`
-- **Spese Proiettate Totali**: spese stimate a fine mese  
-  `SpeseProiettateTotali = TotaleUscite + (MediaSpeseGiornaliera * GiorniRimanenti)`
-- **Status Badge**: indicatore visivo dello stato previsto del saldo a fine mese  
-  - verde = situazione stabile (saldoStimato > 200)  
-  - giallo = attenzione (−100 ≤ saldoStimato ≤ 200)  
-  - rosso = situazione critica (saldoStimato < −100)
-- **Disclaimer**: la previsione è una stima basata sull’andamento medio delle entrate e uscite **del mese corrente fino a oggi** e **non considera movimenti futuri non ancora registrati**.
+- Periodo di calcolo: dal giorno 1 del mese corrente fino a oggi
+- Saldo stimato a fine mese:
+  - `SaldoStimato = EntrateTotali − SpeseProiettateTotali`
+- Giorni trascorsi:
+  - `GiorniTrascorsi = giorno_corrente_del_mese`
+- Giorni rimanenti:
+  - `GiorniRimanenti = GiorniNelMese − GiorniTrascorsi`
+- Media spese giornaliera:
+  - `MediaSpeseGiornaliera = TotaleUscite / GiorniTrascorsi`
+- Spese proiettate totali:
+  - `SpeseProiettateTotali = TotaleUscite + (MediaSpeseGiornaliera * GiorniRimanenti)`
+- Indicatore di stato:
+  - verde: saldoStimato > 200
+  - giallo: −100 ≤ saldoStimato ≤ 200
+  - rosso: saldoStimato < −100
+- Nota: la previsione è una stima basata sull’andamento medio del mese corrente fino a oggi e non considera movimenti futuri non ancora registrati.
 
+**Categoria critica**
+- Identifica la categoria con maggiore spesa nel periodo
 
-**Categoria Critica**
-- Identifica la categoria con più spese nel periodo
-- Visualizzata con importo totale
+**Risparmio stimato**
+- Calcolo: entrate totali - uscite totali (nel periodo selezionato)
 
-**Risparmio Stimato**
-- Calcolo: `Entrate Totali - Uscite Totali` del periodo
+### Gestione account
 
-### Account Management
+**Profilo**
+- Username e user ID
+- Statistiche account (numero movimenti, eventuale data registrazione se disponibile)
 
-**Visualizzazione Profilo**
-- Username loggato
-- User ID
-- Statistiche account:
-  - Numero movimenti totali
-  - Data registrazione (se disponibile)
-
-
-**Impostazioni Database**
-- Modifica credenziali connessione
-- Test connessione prima di salvare
-- Dialog separato per sicurezza
+**Impostazioni database**
+- Modifica credenziali di connessione
+- Test connessione prima del salvataggio
+- Dialog dedicato
 
 **Logout**
-- Ritorno alla schermata di login
-- Pulizia sessione utente
+- Ritorno alla schermata di login e chiusura sessione
 
+## Roadmap
 
-## 🔮 Roadmap Future
+Possibili evoluzioni:
+- [ ] Hashing password (BCrypt)
+- [ ] Export/import dati (CSV/Excel) per movimenti e budget
+- [ ] Supporto multi-valuta
+- [ ] Gestione ricevute (upload e associazione ai movimenti)
+- [ ] Obiettivi di risparmio con tracking
+- [ ] Notifiche desktop native
+- [ ] Cambio tema automatico in base all’orario
+- [ ] Previsioni con modelli ML
+- [ ] Companion app mobile
+- [ ] Suggerimento categorie automatico in base al titolo
+- [ ] Gestione ricorrenze (stipendio, affitto, ecc.)
 
-Possibili migliori futuri:
+## Documentazione API
 
-- [ ] **Sicurezza Password**: Hashing password con BCrypt
-- [ ] **Export/Import Dati**: Export CSV/Excel di movimenti e budget
-- [ ] **Multi-Currency**: Supporto valute multiple
-- [ ] **Ricevute**: Upload e associazione ricevute/fatture ai movimenti
-- [ ] **Obiettivi di Risparmio**: Impostazione e tracking obiettivi finanziari
-- [ ] **Notifiche Desktop**: Notifiche native OS per alert budget
-- [ ] **Dark Mode Auto**: Cambio automatico tema in base a orario
-- [ ] **Machine Learning**: Previsioni spese basate su ML
-- [ ] **Mobile Companion App**: App mobile per inserimento rapido spese
-- [ ] **Categorizzazione Automatica**: Suggerimento categorie basato su titolo
-- [ ] **Ricorrenze**: Gestione movimenti ricorrenti (stipendio, affitto)
+La documentazione JavaDoc è disponibile online:
+- https://wuming9472.github.io/Personal-Finance-Desktop-Application/
 
-## 📄 Licenza
+Include dettagli per:
+- Model (`User`, `Movimenti`, `Budget`, `Category`)
+- Interfacce DAO e implementazioni MySQL
+- Controller JavaFX
+- Classi di utilità
+
+## Licenza
 
 Questo progetto è rilasciato sotto licenza **MIT**. Vedi il file [LICENSE](LICENSE) per dettagli.
 
-```
+```text
 MIT License
 
 Copyright (c) 2024 Wuming9472, ingridcristiano
@@ -520,8 +470,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## 👥 Autori
+## Autori
 
-- **Wuming9472** - [GitHub Profile](https://github.com/Wuming9472)
-- **ingridcristiano** - [GitHub Profile](https://github.com/ingridcristiano)
-
+- **Wuming9472** - https://github.com/Wuming9472  
+- **ingridcristiano** - https://github.com/ingridcristiano
