@@ -169,7 +169,7 @@ public class DashboardController {
                 cardPrevisione.setManaged(isCurrentMonth);
             }
             if (isCurrentMonth) {
-                calculateForecast(saldo, totalEntrate, totalUscite, now);
+                calculateForecast(now);
             }
 
             if (lblMeseCorrente != null) {
@@ -734,53 +734,62 @@ public class DashboardController {
         }
     }
 
-    private void calculateForecast(float saldoAttuale, float entrate, float uscite, LocalDate now) {
-        if (lblPrevisione == null) return;
+    private void calculateForecast(LocalDate today) {
+        if (lblPrevisione == null || mainApp == null || mainApp.getLoggedUser() == null) {
+            return;
+        }
 
         try {
             int userId = mainApp.getLoggedUser().getUser_id();
-            int daysInMonth = now.lengthOfMonth();
+
+            // Mese corrente e numero di giorni nel mese
+            var currentMonth = java.time.YearMonth.from(today);
+            int daysInMonth = currentMonth.lengthOfMonth();
+            LocalDate startOfMonth = currentMonth.atDay(1);
 
             String query = "SELECT " +
                     "SUM(CASE WHEN LOWER(type) IN ('entrata', 'income') THEN amount ELSE 0 END) as totaleEntrate, " +
                     "SUM(CASE WHEN LOWER(type) IN ('uscita', 'expense') THEN amount ELSE 0 END) as totaleUscite, " +
-                    "COUNT(DISTINCT DATE(date)) as giorniConMovimenti, " +
-                    "MAX(DATE(date)) as dataRecente " +
+                    "COUNT(DISTINCT DATE(date)) as giorniConMovimenti " +
                     "FROM movements " +
                     "WHERE user_id = ? " +
-                    "AND YEAR(date) = ? " +
-                    "AND MONTH(date) = ?";
+                    "AND date >= ? " +
+                    "AND date <= ?";
 
             try (Connection conn = getConnection();
                  PreparedStatement pstmt = conn.prepareStatement(query)) {
 
                 pstmt.setInt(1, userId);
-                pstmt.setInt(2, now.getYear());
-                pstmt.setInt(3, now.getMonthValue());
+                pstmt.setDate(2, java.sql.Date.valueOf(startOfMonth));
+                pstmt.setDate(3, java.sql.Date.valueOf(today));
 
                 try (ResultSet rs = pstmt.executeQuery()) {
                     if (rs.next()) {
                         double totaleEntrate = rs.getDouble("totaleEntrate");
                         double totaleUscite = rs.getDouble("totaleUscite");
                         int giorniConMovimenti = rs.getInt("giorniConMovimenti");
-                        java.sql.Date dataRecenteSQL = rs.getDate("dataRecente");
 
-                        if (giorniConMovimenti < 7 || dataRecenteSQL == null) {
+                        // Stessa regola del Report: almeno 7 giorni diversi con movimenti
+                        if (giorniConMovimenti < 7) {
                             lblPrevisione.setText("N/A");
                             return;
                         }
 
-                        LocalDate dataRecente = dataRecenteSQL.toLocalDate();
-                        int currentDay = dataRecente.getDayOfMonth();
+                        int currentDay = today.getDayOfMonth();
                         int remainingDays = daysInMonth - currentDay;
 
-                        double mediaSpeseGiornaliera = totaleUscite / currentDay; //50
-                        double mediaEntrateGiornaliera = totaleEntrate / currentDay; //200
+                        double mediaSpeseGiornaliera = currentDay > 0
+                                ? totaleUscite / currentDay
+                                : 0.0;
 
-                        double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays); // 50 + (50 * 20) = 1050
-                        double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays); // 200 + (200 * 20) = 4200
+                        double mediaEntrateGiornaliera = currentDay > 0
+                                ? totaleEntrate / currentDay
+                                : 0.0;
 
-                        double saldoStimato = entrateProiettate - speseProiettate; // 4200 - 1050 = 3150
+                        double speseProiettate = totaleUscite + (mediaSpeseGiornaliera * remainingDays);
+                        double entrateProiettate = totaleEntrate + (mediaEntrateGiornaliera * remainingDays);
+
+                        double saldoStimato = entrateProiettate - speseProiettate;
 
                         lblPrevisione.setText(String.format("€ %.2f", saldoStimato));
                     } else {
