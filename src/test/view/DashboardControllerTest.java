@@ -305,11 +305,6 @@ class DashboardControllerTest {
         movement.setTitle("Stipendio");
         movement.setDate(LocalDate.now());
 
-        // 1 budget di esempio
-        Budget budget = new Budget();
-        budget.setCategoryName("Casa");
-        budget.setBudgetAmount(200f);
-        budget.setSpentAmount(50f);
 
         // Stub dei DAO
         StubMovimentiDAO movimentiDAO = new StubMovimentiDAO();
@@ -317,11 +312,8 @@ class DashboardControllerTest {
         movimentiDAO.uscite = 50f;
         movimentiDAO.movimenti = List.of(movement);
 
-        StubBudgetDAO budgetDAO = new StubBudgetDAO();
-        budgetDAO.budgets = List.of(budget);
 
         controller.setMovimentiDAO(movimentiDAO);
-        controller.setBudgetDAO(budgetDAO);
 
         // Mock del metodo statico DAOMySQLSettings.getConnection()
         try (MockedStatic<DAOMySQLSettings> mockedSettings = Mockito.mockStatic(DAOMySQLSettings.class)) {
