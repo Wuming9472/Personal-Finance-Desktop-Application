@@ -53,7 +53,6 @@ public class ReportController {
     @FXML private Label lblMediaSpeseGiornaliera;
     @FXML private Label lblMediaEntrateGiornaliera;
     @FXML private Label lblSpeseProiettateTotali;
-    @FXML private Label lblEntrateProiettateTotali;
     @FXML private Label lblDisclaimer;
 
     @FXML
@@ -519,7 +518,6 @@ public class ReportController {
             lblMediaSpeseGiornaliera.setText("--");
             lblMediaEntrateGiornaliera.setText("--");
             lblSpeseProiettateTotali.setText("--");
-            lblEntrateProiettateTotali.setText("--");
         });
     }
 
@@ -541,7 +539,6 @@ public class ReportController {
 
             // Entrate mese: totale reale, spostato sotto i giorni rimanenti
             lblMediaEntrateGiornaliera.setText(""); // label invisibile, ma evito valori strani
-            lblEntrateProiettateTotali.setText(String.format("€ %.2f", totaleEntrate));
 
             String statusIcon;
             String statusTitolo;
